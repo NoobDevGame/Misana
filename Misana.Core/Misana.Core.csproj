@@ -40,6 +40,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Ecs\BaseSystem.cs" />
+    <Compile Include="Ecs\Component.cs" />
+    <Compile Include="Ecs\ComponentArrayPool.cs" />
+    <Compile Include="Ecs\ComponentConfigAttribute.cs" />
+    <Compile Include="Ecs\ComponentInitializer.cs" />
+    <Compile Include="Ecs\ComponentRegistry.cs" />
+    <Compile Include="Ecs\Entity.cs" />
+    <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="Ecs\SystemConfigurationAttribute.cs" />
+    <Compile Include="Ecs\SystemInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
