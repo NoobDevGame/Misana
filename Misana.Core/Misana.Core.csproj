@@ -50,7 +50,17 @@
     <Compile Include="Ecs\EntityManager.cs" />
     <Compile Include="Ecs\SystemConfigurationAttribute.cs" />
     <Compile Include="Ecs\SystemInitializer.cs" />
+    <Compile Include="Map\Area.cs" />
+    <Compile Include="Map\Layer.cs" />
+    <Compile Include="Map\Map.cs" />
+    <Compile Include="Map\MapLoader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Misana.Contracts\Misana.Contracts.csproj">
+      <Project>{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}</Project>
+      <Name>Misana.Contracts</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
