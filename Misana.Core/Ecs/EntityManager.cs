@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using Misana.Contracts;
 
 namespace Misana.Core.Ecs
 {
@@ -32,6 +33,7 @@ namespace Misana.Core.Ecs
             return new EntityManager(SystemInitializer.Initialize(systemAssemblies));
         }
 
+        public GameTime GameTime;
         public void ApplyChanges()
         {
             foreach (var e in _removedEntities)
@@ -46,8 +48,9 @@ namespace Misana.Core.Ecs
             }
         }
 
-        public void Update()
+        public void Update(GameTime gameTime)
         {
+            GameTime = gameTime;
             ApplyChanges();
             Tick();
         }
@@ -130,13 +133,15 @@ namespace Misana.Core.Ecs
 
         public Entity NewEntity()
         {
-            var e = new Entity {
+            var e = new Entity(Interlocked.Increment(ref _entityId)) {
                 Components = ComponentArrayPool.Take(),
                 Manager = this
             };
 
             return e;
         }
+
+        private int _entityId = 0;
 
         public Entity Add(Entity e)
         {

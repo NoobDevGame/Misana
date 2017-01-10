@@ -2,7 +2,7 @@
 
 namespace Misana.Core.Ecs
 {
-    public static class ComponentArrayPool
+    internal static class ComponentArrayPool
     {
         private static ConcurrentStack<Component[]> _freeList;
 

@@ -40,22 +40,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\GameJam2017\GameJam2017\NoobFight.Contract\Map\IArea.cs">
-      <Link>Map/IArea.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GameJam2017\GameJam2017\NoobFight.Contract\Map\ILayer.cs">
-      <Link>Map/ILayer.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GameJam2017\GameJam2017\NoobFight.Contract\Map\IMap.cs">
-      <Link>Map/IMap.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GameJam2017\GameJam2017\NoobFight.Contract\Map\MapTexture.cs">
-      <Link>Map/MapTexture.cs</Link>
-    </Compile>
-    <Compile Include="..\..\GameJam2017\GameJam2017\NoobFight.Contract\Map\TileProperty.cs">
-      <Link>Map/TileProperty.cs</Link>
-    </Compile>
     <Compile Include="Entity\IEntity.cs" />
+    <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Map\IArea.cs" />
     <Compile Include="Map\ILayer.cs" />

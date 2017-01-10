@@ -9,7 +9,7 @@ namespace Misana.Core.Ecs
 {
     internal static class ComponentInitializer
     {
-        public static readonly Dictionary<string, Action<Entity, BinaryReader>> Deserializers;
+        //public static readonly Dictionary<string, Action<Entity, BinaryReader>> Deserializers;
         public static readonly int ComponentCount;
 
         static ComponentInitializer()
@@ -26,7 +26,7 @@ namespace Misana.Core.Ecs
             var registryType = typeof(ComponentRegistry<>);
 
             ComponentCount = componentTypes.Count;
-            Deserializers = new Dictionary<string, Action<Entity, BinaryReader>>(ComponentCount);
+            //Deserializers = new Dictionary<string, Action<Entity, BinaryReader>>(ComponentCount);
             ComponentArrayPool.Initialize(ComponentCount);
             ComponentRegistry.Release = new Action<Component>[ComponentCount];
 
@@ -62,40 +62,40 @@ namespace Misana.Core.Ecs
 
                 EntityManager.OnNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
 
-                var deserializeMethod = componentType.GetMethod(
-                    "Deserialize",
-                    BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public,
-                    null,
-                    new[] {
-                        typeof(Entity),
-                        componentType,
-                        typeof(BinaryReader)
-                    },
-                    null);
-                if (deserializeMethod == null)
-                {
-                    throw new Exception(
-                        $"Component {componentType.FullName} has no valid deserialize method. Expected signature: static void Deserialize(Entity,{componentType.FullName},BinaryReader)");
-                }
+//                var deserializeMethod = componentType.GetMethod(
+//                    "Deserialize",
+//                    BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public,
+//                    null,
+//                    new[] {
+//                        typeof(Entity),
+//                        componentType,
+//                        typeof(BinaryReader)
+//                    },
+//                    null);
+//                if (deserializeMethod == null)
+//                {
+//                    throw new Exception(
+//                        $"Component {componentType.FullName} has no valid deserialize method. Expected signature: static void Deserialize(Entity,{componentType.FullName},BinaryReader)");
+//                }
 
-                var p1 = Expression.Parameter(typeof(Entity));
-                var p3 = Expression.Parameter(typeof(BinaryReader));
-                var variable = Expression.Variable(componentType);
+//                var p1 = Expression.Parameter(typeof(Entity));
+//                var p3 = Expression.Parameter(typeof(BinaryReader));
+//                var variable = Expression.Variable(componentType);
+//
+//                var getMethod = rType.GetMethod("Take", BindingFlags.Static | BindingFlags.Public);
 
-                var getMethod = rType.GetMethod("Take", BindingFlags.Static | BindingFlags.Public);
-
-                Deserializers[componentType.FullName] = Expression.Lambda<Action<Entity, BinaryReader>>(
-                    Expression.Block(
-                        new[] {
-                            variable
-                        },
-                        Expression.Assign(variable, Expression.Call(null, getMethod)),
-                        Expression.Assign(Expression.ArrayAccess(Expression.Field(p1, typeof(Entity).GetField("Components")), Expression.Constant(i)), variable),
-                        Expression.Call(deserializeMethod, p1, variable, p3)
-                    ),
-                    false,
-                    p1,
-                    p3).Compile();
+//                Deserializers[componentType.FullName] = Expression.Lambda<Action<Entity, BinaryReader>>(
+//                    Expression.Block(
+//                        new[] {
+//                            variable
+//                        },
+//                        Expression.Assign(variable, Expression.Call(null, getMethod)),
+//                        Expression.Assign(Expression.ArrayAccess(Expression.Field(p1, typeof(Entity).GetField("Components")), Expression.Constant(i)), variable),
+//                        Expression.Call(deserializeMethod, p1, variable, p3)
+//                    ),
+//                    false,
+//                    p1,
+//                    p3).Compile();
             }
         }
     }

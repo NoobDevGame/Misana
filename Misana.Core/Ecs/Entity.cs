@@ -1,12 +1,14 @@
 ﻿using System;
+using Misana.Contracts.Entity;
 
 namespace Misana.Core.Ecs
 {
-    public class Entity
+    public class Entity : IEntity
     {
         public bool Complete;
         public EntityManager Manager;
         public Component[] Components;
+        public readonly int Id;
 
         public T Get<T>() where T : Component, new() => (T)Components[ComponentRegistry<T>.Index];
 
@@ -30,6 +32,9 @@ namespace Misana.Core.Ecs
 
         public Entity Commit() => Complete ? this : Manager.Add(this);
 
-        internal Entity() { }
+        internal Entity(int id)
+        {
+            Id = id;
+        }
     }
 }

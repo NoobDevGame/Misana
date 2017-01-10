@@ -10,7 +10,7 @@ namespace Misana.Core.Ecs
     {
         private static ConcurrentStack<T> _freeList;
         
-        private static readonly  Mutex M = new Mutex(false);
+        private static readonly Mutex M = new Mutex(false);
 
         public static List<BaseSystem>[] InterestedSystems;
 

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Misana.Contracts;
 
 namespace Misana.Core.Ecs
 {
@@ -11,6 +12,8 @@ namespace Misana.Core.Ecs
         {
             Manager = manager;
         }
+
+        protected GameTime GameTime => Manager.GameTime;
 
         protected int Capacity = InitialSize;
         protected int Count = 0;
