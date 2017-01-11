@@ -1,35 +1,41 @@
-﻿using System.Data;
-using Misana.Contracts.Entity;
-using Misana.Contracts.Map;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
+using System.IO;
+using System.Reflection;
+using Misana.Core.Ecs;
 
 namespace Misana.Core.Map
 {
-    public class Map :IMap
+    public class Map
     {
-        public IArea StartArea { get; }
+        public Area StartArea { get; }
         public string Name { get; }
-        public IArea[] Areas { get; }
+        public Area[] Areas { get; }
 
-        public Map(string name, IArea startArea, IArea[] areas)
+        public EntityManager Entities { get; }
+
+        public static readonly Version MapVersion = new Version(0,1);
+
+
+        public Map(string name, Area startArea, Area[] areas)
         {
+            if(startArea == null)
+                throw  new ArgumentNullException(nameof(startArea));
+
+            if (areas == null)
+                throw  new ArgumentNullException(nameof(areas));
+
+            if (areas.Length == 0)
+                throw new ArgumentOutOfRangeException(nameof(areas),"area must be greater the 0.");
+
             Name = name;
             StartArea = startArea;
             Areas = areas;
+
+            Entities = EntityManager.Create(name, new List<Assembly> {typeof(Entity).Assembly });
         }
 
-        public void SetId(IEntity entity)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void Load()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public IEntity GetEntityById(int id)
-        {
-            throw new System.NotImplementedException();
-        }
+        private Map() {}
     }
 }

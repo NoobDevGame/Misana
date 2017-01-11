@@ -1,8 +1,6 @@
-﻿using Misana.Contracts.Map;
-
-namespace Misana.Core.Map
+﻿namespace Misana.Core.Map
 {
-    public class Layer : ILayer
+    public class Layer
     {
         public int Id { get; }
         public int[] Tiles { get; }

@@ -5,8 +5,6 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana", "Misana\Misana.csproj", "{5A4E971D-AA95-4FA1-953A-8625E05CEE57}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Contracts", "Misana.Contracts\Misana.Contracts.csproj", "{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Core", "Misana.Core\Misana.Core.csproj", "{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Server", "Misana.Server\Misana.Server.csproj", "{57E4A198-09A0-411E-8C4D-1C1AC1C194CA}"
@@ -27,10 +25,6 @@ Global
 		{5A4E971D-AA95-4FA1-953A-8625E05CEE57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5A4E971D-AA95-4FA1-953A-8625E05CEE57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5A4E971D-AA95-4FA1-953A-8625E05CEE57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}.Release|Any CPU.ActiveCfg = Release|Any CPU

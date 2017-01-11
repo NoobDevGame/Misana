@@ -1,4 +1,5 @@
-﻿namespace Misana.Contracts.Map
+﻿
+namespace Misana.Core.Map
 {
     public struct MapTexture
     {

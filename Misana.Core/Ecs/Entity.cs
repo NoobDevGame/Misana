@@ -1,9 +1,8 @@
 ﻿using System;
-using Misana.Contracts.Entity;
 
 namespace Misana.Core.Ecs
 {
-    public class Entity : IEntity
+    public class Entity
     {
         public bool Complete;
         public EntityManager Manager;

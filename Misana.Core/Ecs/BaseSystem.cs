@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Misana.Contracts;
 
 namespace Misana.Core.Ecs
 {

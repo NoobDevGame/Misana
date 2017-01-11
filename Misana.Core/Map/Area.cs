@@ -1,13 +1,10 @@
 ﻿using System.Collections.Generic;
-using Misana.Contracts;
-using Misana.Contracts.Entity;
-using Misana.Contracts.Map;
 
 namespace Misana.Core.Map
 {
-    public class Area : IArea
+    public class Area
     {
-        public Area(string name, int id, int width, int height, Vector2 spawnPoint, ILayer[] layers)
+        public Area(string name, int id, int width, int height, Vector2 spawnPoint, Layer[] layers)
         {
             Name = name;
             Id = id;
@@ -31,20 +28,7 @@ namespace Misana.Core.Map
 
         public Dictionary<string, MapTexture> MapTextures { get; }
 
-        public ILayer[] Layers { get; }
-
-        private List<IEntity> entities = new List<IEntity>();
-        public IEnumerable<IEntity> Entities => entities;
-
-        public void AddEntity(IEntity entity)
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public void RemoveEntity(IEntity entity)
-        {
-            throw new System.NotImplementedException();
-        }
+        public Layer[] Layers { get; }
 
         public MapTexture GetMapTextures(int id)
         {
@@ -56,9 +40,5 @@ namespace Misana.Core.Map
             throw new System.NotImplementedException();
         }
 
-        public bool ContainsEntity(IEntity entity)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

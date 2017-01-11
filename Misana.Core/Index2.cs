@@ -1,4 +1,4 @@
-﻿namespace Misana.Contracts
+﻿namespace Misana.Core
 {
     public struct Index2
     {

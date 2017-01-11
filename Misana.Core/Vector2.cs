@@ -1,4 +1,4 @@
-﻿namespace Misana.Contracts
+﻿namespace Misana.Core
 {
     public struct Vector2
     {
@@ -10,6 +10,9 @@
             X = x;
             Y = y;
         }
+
+        public static Vector2 Zero  = new Vector2(0,0);
+        public static Vector2 One  = new Vector2(1,1);
 
         public static Vector2 operator +(Vector2 vec1, Vector2 vec2)
         {
@@ -35,5 +38,7 @@
         {
             return new Vector2(vec1.X * (float)value,vec1.Y *  (float)value);
         }
+
+
     }
 }
