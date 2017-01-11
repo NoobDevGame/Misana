@@ -47,9 +47,9 @@ namespace Misana.Core.Systems
 
                     if (distance > 0)
                         continue;
+
                     vecDistance = vecDistance.Normalize() * Math.Abs(distance);
                     
-
                     if (!entityCollider.Fixed && entity2Collider.Fixed)
                     {
                         motionComponent.Move += vecDistance;
@@ -64,6 +64,16 @@ namespace Misana.Core.Systems
                         motionComponent.Move += vecDistance * (entity2Collider.Mass / mass);
                         motion2Component.Move -= vecDistance * (entityCollider.Mass / mass);
                     }
+
+                    if(entityCollider.AppliesSideEffect)
+                        Entities[i].Add<EntityCollision>(ec => {
+                            ec.OtherEntityId = Entities[j].Id;
+                        });
+
+                    if (entity2Collider.AppliesSideEffect)
+                        Entities[j].Add<EntityCollision>(ec => {
+                            ec.OtherEntityId = Entities[i].Id;
+                        });
                 }
             }
         }

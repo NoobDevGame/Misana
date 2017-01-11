@@ -34,10 +34,19 @@ namespace Misana.Components
 
             Entities = EntityManager.Create("LocalEntities",
                 new List<BaseSystem> {
+                    // Input
                     new InputSystem(),
+
+                    // Movement
                     new EntityCollidingMover(),
                     new BlockCollidingMoverSystem(),
-                    new MoverSystem(),
+                    new MoverSystem(), // <- Last
+
+                    // Collision Resolution
+                    new VelocityApplicatorSystem(),
+                    new EntityCollisionRemoverSystem(), // <- Last
+
+                    // Renderer
                     CharacterRender,
                 }
             );
