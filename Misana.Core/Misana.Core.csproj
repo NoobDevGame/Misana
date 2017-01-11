@@ -54,8 +54,6 @@
     <Compile Include="Ecs\ComponentRegistry.cs" />
     <Compile Include="Ecs\Entity.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
-    <Compile Include="Ecs\SystemConfigurationAttribute.cs" />
-    <Compile Include="Ecs\SystemInitializer.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Maps\Area.cs" />
@@ -73,7 +71,8 @@
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\PositionComponent.cs" />
     <Compile Include="Systems\InputSystem.cs" />
-    <Compile Include="Systems\MoverSystem.cs" />
+    <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
+    <Compile Include="Systems\NonCollidingMoverSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>

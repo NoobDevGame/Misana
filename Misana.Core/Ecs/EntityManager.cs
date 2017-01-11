@@ -19,18 +19,24 @@ namespace Misana.Core.Ecs
         public readonly int Index;
         internal readonly List<BaseSystem> Systems;
 
-        private EntityManager(List<Tuple<Func<EntityManager, BaseSystem>, SystemConfigurationAttribute>> systemConstructorsWithConfig)
+        private EntityManager(List<BaseSystem> systems)
         {
             Index = Interlocked.Increment(ref _entityManagerIndex);
+
             foreach (var fn in OnNewManager)
                 fn();
-            Systems = systemConstructorsWithConfig.Select(t => t.Item1(this)).ToList();
+
+            foreach(var s in systems)
+                s.Initialize(this);
+
+            Systems = systems;
         }
 
-        public static EntityManager Create(string name, List<Assembly> systemAssemblies)
+        public static EntityManager Create(string name, List<BaseSystem> systems)
         {
-            return new EntityManager(SystemInitializer.Initialize(systemAssemblies));
+            return new EntityManager(systems);
         }
+
         static EntityManager()
         {
             var foo = ComponentInitializer.ComponentCount;

@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Reflection;
 using Misana.Core.Ecs;
+using Misana.Core.Systems;
 
 namespace Misana.Core.Maps
 {
@@ -33,7 +34,13 @@ namespace Misana.Core.Maps
             StartArea = startArea;
             Areas = areas;
 
-            Entities = EntityManager.Create(name, new List<Assembly> {typeof(Entity).Assembly });
+            Entities = EntityManager.Create(name, 
+                new List<BaseSystem> {
+                    new InputSystem(),
+                    new BlockCollidingMoverSystem(),
+                    new NonCollidingMoverSystem()
+                }    
+            );
         }
 
         private Map() {}
