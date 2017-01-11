@@ -17,6 +17,12 @@ namespace Misana.Core.Ecs
             return this;
         }
 
+        public Entity Add<T>(T c) where T : Component, new()
+        {
+            Manager.Add(this, c);
+            return this;
+        }
+
         public Entity Add<T>(Action<T> action, bool throwOnExists = true) where T : Component, new()
         {
             Manager.Add(this, action, throwOnExists);

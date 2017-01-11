@@ -142,6 +142,23 @@ namespace Misana.Core.Ecs
             return this;
         }
 
+        public EntityManager Add<T>(Entity e, T component, bool expectedUnmanaged = true) where T : Component, new()
+        {
+            if(expectedUnmanaged && !component.Unmanaged)
+                throw new InvalidOperationException();
+
+            var idx = ComponentRegistry<T>.Index;
+            e.Components[idx] = component;
+
+            if (e.Complete)
+            {
+                foreach (var s in ComponentRegistry<T>.InterestedSystems[Index])
+                    s.EntityChanged(e);
+            }
+
+            return this;
+        }
+
         public EntityManager Add<T>(Entity e, Action<T> action, bool throwOnExists = true) where T : Component, new()
         {
             if (action == null)
@@ -178,7 +195,9 @@ namespace Misana.Core.Ecs
             if (cmp == null)
                 return this;
 
-            ComponentRegistry<T>.Release(cmp);
+            if(!cmp.Unmanaged)
+                ComponentRegistry<T>.Release(cmp);
+
             e.Components[ComponentRegistry<T>.Index] = null;
 
             if (e.Complete)
@@ -223,7 +242,10 @@ namespace Misana.Core.Ecs
             Entity e;
 
             if (_entityMap.TryGetValue(id, out e))
+            {
                 _entityMap.Remove(id);
+                RemoveEntity(e);
+            }
 
             return e;
         }
@@ -238,6 +260,7 @@ namespace Misana.Core.Ecs
 
         public void RemoveEntity(Entity entity)
         {
+            _entityMap.Remove(entity.Id);
             _removedEntities.Add(entity);
         }
     }
