@@ -35,6 +35,7 @@ namespace Misana.Components
             Entities = EntityManager.Create("LocalEntities",
                 new List<BaseSystem> {
                                 new InputSystem(),
+                                new EntityCollidingMover(),
                                 new BlockCollidingMoverSystem(),
                                 new NonCollidingMoverSystem(),
                                 CharacterRender,
