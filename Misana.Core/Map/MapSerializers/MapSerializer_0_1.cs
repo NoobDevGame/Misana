@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.IO;
 using System.Linq;
 
@@ -10,7 +11,84 @@ namespace Misana.Core.Map.MapSerializers
 
         protected override Map Deserialize(BinaryReader br)
         {
-            throw new NotImplementedException();
+            var name = br.ReadString();
+            var firstAreaId = br.ReadInt32();
+            var firstAreaName = br.ReadString();
+
+            var areaLength = br.ReadInt32();
+            Area[] areas = new Area[areaLength];
+            for (int i = 0; i < areaLength; i++)
+            {
+                areas[i] = DeserializeArea(br);
+            }
+
+            return  new Map(name,areas[firstAreaId -1],areas);
+        }
+
+        private Area DeserializeArea(BinaryReader br)
+        {
+            var id = br.ReadInt32();
+            var name = br.ReadString();
+            var width = br.ReadInt32();
+            var height = br.ReadInt32();
+
+            Vector2 spawnpoint = new Vector2(br.ReadSingle(),br.ReadSingle());
+
+            var layerlenght = br.ReadInt32();
+            Layer[] layers = new Layer[layerlenght];
+
+            for (int i = 0; i < layerlenght; i++)
+            {
+                layers[i] = DeserializeLayer(br);
+            }
+
+            Area area = new Area(name,id,width,height,spawnpoint,layers);
+
+            var texturecount = br.ReadInt32();
+            for (int i = 0; i < texturecount; i++)
+            {
+                MapTexture texture = DeserializeTexture(br);
+                area.MapTextures.Add(texture.Key,texture);
+            }
+
+            return area;
+
+        }
+
+        private Layer DeserializeLayer(BinaryReader br)
+        {
+            var id = br.ReadInt32();
+
+            var lenght = br.ReadInt32();
+            int[] tiles = new int[lenght];
+            for (int i = 0; i < lenght; i++)
+            {
+                tiles[i] = br.ReadInt32();
+            }
+
+            return new Layer(id,tiles);
+        }
+
+        private MapTexture DeserializeTexture(BinaryReader br)
+        {
+            var key = br.ReadString();
+            var firstid = br.ReadInt32();
+            var tilecount = br.ReadInt32();
+            var spacing = br.ReadInt32();
+            var tileheight = br.ReadInt32();
+            var tilewidth = br.ReadInt32();
+            var columns = br.ReadInt32();
+
+            var texture = new MapTexture(key,firstid,tilecount,spacing,tileheight,tilewidth,columns);
+
+            for (int i = 0; i < tilecount; i++)
+            {
+                TileProperty tile = new TileProperty();
+                tile.Blocked = br.ReadBoolean();
+                texture.SetTileProperty(i,tile);
+            }
+
+            return texture;
         }
 
         protected override void Serialize(Map map,BinaryWriter bw)
@@ -57,6 +135,7 @@ namespace Misana.Core.Map.MapSerializers
                 bw.Write(texture.Spacing);
                 bw.Write(texture.Tileheight);
                 bw.Write(texture.Tilewidth);
+                bw.Write(texture.Columns);
 
                 bw.Write(texture.Tilecount);
                 for (int i = 0; i < texture.Tilecount; i++)

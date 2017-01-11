@@ -25,7 +25,14 @@ namespace Misana.Core.Map
                 var build = br.ReadInt32();
                 var revision = br.ReadInt32();
 
-                Version version = new Version(major,minor,build,revision);
+                Version version = null;
+
+                if(build > 0 && revision > 0)
+                    version = new Version(major,minor,build,revision);
+                else if(build > 0)
+                    version = new Version(major,minor,build);
+                else
+                    version = new Version(major,minor);
 
                 return MapSerializer.DeserializeMap(version, br);
 
