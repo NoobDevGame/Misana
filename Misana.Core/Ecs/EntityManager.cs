@@ -13,7 +13,9 @@ namespace Misana.Core.Ecs
 
         private static int _entityManagerIndex = -1;
 
-        // ReSharper disable once CollectionNeverQueried.Local
+        public IEnumerable<Entity> Entities => _entities;
+        private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
+        
         private readonly List<Entity> _entities = new List<Entity>();
         
         private readonly List<Entity> _removedEntities = new List<Entity>();
@@ -205,10 +207,31 @@ namespace Misana.Core.Ecs
             if(e.Manager != this)
                 throw new ArgumentException("Entity Manager mismatch on Entity addition", nameof(e));
 
+            _entities.Add(e);
+            _entityMap[e.Id] = e;
+
             e.Complete = true;
 
             foreach (var s in Systems)
                 s.EntityAdded(e);
+
+            return e;
+        }
+
+        public Entity RemoveEntity(int id)
+        {
+            Entity e;
+
+            if (_entityMap.TryGetValue(id, out e))
+                _entityMap.Remove(id);
+
+            return e;
+        }
+
+        public Entity GetEntityById(int id)
+        {
+            Entity e;
+            _entityMap.TryGetValue(id, out e);
 
             return e;
         }
