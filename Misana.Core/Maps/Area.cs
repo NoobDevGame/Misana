@@ -29,6 +29,8 @@ namespace Misana.Core.Maps
 
         public Dictionary<string, MapTexture> MapTextures { get; }
 
+        public Dictionary<string, int> UsedTileSheets { get; }
+
         public Layer[] Layers { get; }
 
         public MapTexture GetMapTextures(int id)

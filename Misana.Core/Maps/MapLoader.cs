@@ -10,14 +10,12 @@ namespace Misana.Core.Maps
 
         private static readonly string dirPath =  Path.Combine("Content", "Maps");
 
-        public static Map Load(string name)
+        public static Map LoadPath(string path)
         {
-            var path = Path.Combine(dirPath, $"{name}.mm");
-
             if (!File.Exists(path))
-                throw  new FileNotFoundException("File not founded",path);
+                throw new FileNotFoundException("File not founded", path);
 
-            using (var fs = File.Open(path,FileMode.Open,FileAccess.ReadWrite))
+            using (var fs = File.Open(path, FileMode.Open, FileAccess.ReadWrite))
             using (var br = new BinaryReader(fs))
             {
                 var major = br.ReadInt32();
@@ -27,27 +25,30 @@ namespace Misana.Core.Maps
 
                 Version version = null;
 
-                if(build > 0 && revision > 0)
-                    version = new Version(major,minor,build,revision);
-                else if(build > 0)
-                    version = new Version(major,minor,build);
+                if (build > 0 && revision > 0)
+                    version = new Version(major, minor, build, revision);
+                else if (build > 0)
+                    version = new Version(major, minor, build);
                 else
-                    version = new Version(major,minor);
+                    version = new Version(major, minor);
 
                 return MapSerializer.DeserializeMap(version, br);
 
             }
         }
 
-        public static void Save(Map map)
+        public static Map Load(string name)
+        {
+            var path = Path.Combine(dirPath, $"{name}.mm");
+            return LoadPath(path);
+
+        }
+
+        public static void Save(Map map, string path)
         {
 
-            if (!Directory.Exists(dirPath))
-                Directory.CreateDirectory(dirPath);
-
-            var path = Path.Combine(dirPath, $"{map.Name}.mm");
-
-            using (var fs = File.Open(path,FileMode.Create,FileAccess.ReadWrite))
+            var fs = File.Create(path);
+            //using (var fs = File.Create(path))
             using (var bw = new BinaryWriter(fs))
             {
                 //Version

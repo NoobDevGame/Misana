@@ -10,5 +10,10 @@
             Id = id;
             Tiles = tiles;
         }
+
+        public override string ToString()
+        {
+            return Id.ToString();
+        }
     }
 }

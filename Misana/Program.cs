@@ -13,10 +13,6 @@ namespace Misana
         {
             using (MisanaGame game = new MisanaGame())
             {
-                var map = MapLoader.CreateMapFromTiled("Lobby", "Lobby/main");
-
-                MapLoader.Save(map);
-
                 game.Run(60, 60);
             }
         }

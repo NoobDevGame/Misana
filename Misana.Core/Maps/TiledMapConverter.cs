@@ -99,9 +99,8 @@ namespace Misana.Core.Maps
 
         #endregion
 
-        public static Area LoadArea(string name,int id)
+        public static Area LoadArea(string path,int id)
         {
-            var path = Path.Combine("Content", "Maps","Tiled", $"{name}.json");
             if (File.Exists(path))
             {
                 using (var fs = File.OpenRead(path))
@@ -109,7 +108,7 @@ namespace Misana.Core.Maps
                 {
                     var mapjson = sr.ReadToEnd();
                     var mapobject = JsonConvert.DeserializeObject<FileArea>(mapjson);
-                    var map = Convert(mapobject,id, name);
+                    var map = Convert(mapobject,id, Path.GetFileNameWithoutExtension(path));
                     return map;
                 }
             }
