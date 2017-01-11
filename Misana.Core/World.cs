@@ -30,8 +30,7 @@ namespace Misana.Core
                 .Add<PositionComponent>(p =>
                 {
                     p.CurrentArea = CurrentMap.StartArea;
-                    p.Position = new Vector2(2, 3
-                        );  
+                    p.Position = new Vector2(2, 3);  
                 })
                 .Add<DimensionComponent>(p =>
                 {
@@ -39,22 +38,43 @@ namespace Misana.Core
                 })
                 .Add<MotionComponent>()
                 .Add<BlockColliderComponent>()
-                .Add<EntityCollider>()
-                .Add<CharacterComponent>(p => 
-                {
-                    p.Name = "Heidi";
-                })
+                .Add<EntityCollider>(ec => { ec.AppliesSideEffect = true; })
+                .Add<VelocityApplicator>(va => { va.Force = new Vector2(2.5f,0);})
+                .Add<CharacterComponent>(p => {p.Name = "Heidi";})
                 .Add<CharacterRenderComponent>(p =>
                 {
                     p.TilePosition = new Index2(0, 9);
                 })
                 .Commit();
+
+            Entities.NewEntity()
+               .Add<PositionComponent>(p =>
+               {
+                   p.CurrentArea = CurrentMap.StartArea;
+                   p.Position = new Vector2(4, 3);
+               })
+               .Add<DimensionComponent>(p =>
+               {
+                   p.Radius = 0.5f;
+               })
+               .Add<MotionComponent>()
+               .Add<BlockColliderComponent>()
+               .Add<EntityCollider>()
+               .Add<CharacterComponent>(p =>
+               {
+                   p.Name = "Heidi";
+               })
+               .Add<CharacterRenderComponent>(p =>
+               {
+                   p.TilePosition = new Index2(0, 9);
+               })
+               .Commit();
         }
 
         public int CreatePlayer(PlayerInputComponent input,PositionComponent position)
         {
             position.CurrentArea = CurrentMap.StartArea;
-            position.Position = new Vector2(4, 3);
+            position.Position = new Vector2(5, 3);
 
             var entity =  Entities.NewEntity()
                 .Add(position)

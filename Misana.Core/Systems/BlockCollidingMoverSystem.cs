@@ -14,14 +14,6 @@ namespace Misana.Core.Systems
 
         protected override void Update(Entity e, MotionComponent r1, PositionComponent r2, BlockColliderComponent _, DimensionComponent o1)
         {
-            CheckCollision(r1, r2, o1);
-
-            r2.Position += r1.Move;
-            r1.Move = Vector2.Zero;
-        }
-
-        public void CheckCollision(MotionComponent r1, PositionComponent r2, DimensionComponent o1)
-        {
             bool collision = false;
             int loops = 0;
 

@@ -12,7 +12,7 @@ namespace Misana.Core.Systems
     {
         protected override void Update(Entity e, PlayerInputComponent r1, MotionComponent r2)
         {
-            r2.Move = r1.Move * GameTime.ElapsedTime.TotalSeconds;
+            r2.Move += r1.Move * GameTime.ElapsedTime.TotalSeconds;
         }
     }
 }

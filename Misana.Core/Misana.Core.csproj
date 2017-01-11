@@ -48,7 +48,9 @@
     <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\EntityCollider.cs" />
+    <Compile Include="Components\EntityCollision.cs" />
     <Compile Include="Components\MotionComponent.cs" />
+    <Compile Include="Components\VelocityApplicator.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
     <Compile Include="Ecs\Component.cs" />
     <Compile Include="Ecs\ComponentArrayPool.cs" />
@@ -74,8 +76,10 @@
     <Compile Include="Components\PositionComponent.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMover.cs" />
+    <Compile Include="Systems\EntityCollisionRemoverSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
-    <Compile Include="Systems\NonCollidingMoverSystem.cs" />
+    <Compile Include="Systems\MoverSystem.cs" />
+    <Compile Include="Systems\VelocityApplicatorSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>

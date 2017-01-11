@@ -10,7 +10,7 @@ namespace Misana.Core.Components
     public class EntityCollider : Component<EntityCollider>
     {
         public float Mass { get; set; }
-
+        public bool AppliesSideEffect { get; set; }
         public bool Fixed { get; set; }
 
         public EntityCollider()
