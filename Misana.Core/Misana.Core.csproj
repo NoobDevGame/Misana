@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\BlockCollisionComponent.cs" />
+    <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
@@ -69,8 +70,8 @@
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\PositionComponent.cs" />
-    <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
+    <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\NonCollidingMoverSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="World.cs" />

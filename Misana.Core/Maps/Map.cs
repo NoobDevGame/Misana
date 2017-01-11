@@ -14,8 +14,6 @@ namespace Misana.Core.Maps
         public string Name { get; }
         public Area[] Areas { get; }
 
-        public EntityManager Entities { get; }
-
         public static readonly Version MapVersion = new Version(0,1);
 
 
@@ -33,14 +31,6 @@ namespace Misana.Core.Maps
             Name = name;
             StartArea = startArea;
             Areas = areas;
-
-            Entities = EntityManager.Create(name, 
-                new List<BaseSystem> {
-                    new InputSystem(),
-                    new BlockCollidingMoverSystem(),
-                    new NonCollidingMoverSystem()
-                }    
-            );
         }
 
         private Map() {}

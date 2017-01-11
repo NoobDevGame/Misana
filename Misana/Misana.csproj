@@ -61,6 +61,7 @@
     <Compile Include="Components\CameraComponent.cs" />
     <Compile Include="Components\PlayerGameComponent.cs" />
     <Compile Include="Components\SimulationComponent.cs" />
+    <Compile Include="Controls\CharacterRenderSystem.cs" />
     <Compile Include="MisanaGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

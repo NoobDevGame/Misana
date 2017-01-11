@@ -23,16 +23,14 @@ namespace Misana.Components
         public CameraComponent(MisanaGame game) : base(game)
         {
             Game = game;
+            Zoom = 1;
         }
 
         public override void Draw(GameTime gameTime)
         {
             base.Draw(gameTime);
 
-            if (Game.Player.Player == null)
-                return;
-
-            var position = Game.Player.Player.Get<PositionComponent>();
+            var position = Game.Player.Position;
 
             Vector2 viewportHalf = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height) / 2;
 

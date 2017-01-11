@@ -12,27 +12,35 @@ namespace Misana.Components
 {
     internal class PlayerGameComponent : GameComponent
     {
-        public Entity Player { get; set; }
+        public PlayerInputComponent Input { get; private set; }
+
+        public PositionComponent Position { get; private set; }
+
+        public int PlayerId { get; set; }
 
         public new MisanaGame Game;
 
         public PlayerGameComponent(MisanaGame game) : base(game)
         {
             Game = game;
+            Input = new PlayerInputComponent()
+            {
+                Unmanaged = true,
+            };
+
+            Position = new PositionComponent()
+            {
+                Unmanaged = true,
+            };
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if (Player == null)
-                return;
-
-            var input = Player.Get<PlayerInputComponent>();
+            var keyboard = Keyboard.GetState();
 
             Misana.Core.Vector2 move = Misana.Core.Vector2.Zero;
-
-            var keyboard = Keyboard.GetState();
 
             if (keyboard.IsKeyDown(Keys.A))
                 move += new Misana.Core.Vector2(-1, 0);
@@ -46,7 +54,7 @@ namespace Misana.Components
             if (keyboard.IsKeyDown(Keys.S))
                 move += new Misana.Core.Vector2(0, 1);
 
-            input.Move = move;
+            Input.Move = move;
         }
     }
 }
