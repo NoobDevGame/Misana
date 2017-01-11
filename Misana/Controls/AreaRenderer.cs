@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using engenious.Graphics;
@@ -41,6 +42,7 @@ namespace Misana.Controls
             {
                 int x = 0, y = 0;
                 var text = _screen.Content.Load<Texture2D>(set.Key);
+                Debug.WriteLine(set.Key);
                 int[] buffer = new int[text.Width * text.Height];
                 text.GetData(buffer);
                 for (int i = 0; i < buffer.Length; i++)
@@ -50,22 +52,17 @@ namespace Misana.Controls
                 int curColumn=0;
                 for (int currentTile=0;currentTile<set.Value.Tilecount;currentTile++)
                 {
-
                     int yOffset = 0;
                     int curWidth = Math.Min(text.Width - x, width);
+
                     if (curWidth != width)
                         Array.Clear(tileBuffer,0,tileBuffer.Length);
                     for (int i = 0; i < text.Width * height; i += text.Width, yOffset++)
                     {
                         Array.Copy(buffer, (y * text.Width + x) + i, tileBuffer, yOffset * width + (width-curWidth)/2, curWidth);
                     }
-                    using (var fs = new System.IO.FileStream("test.raw", System.IO.FileMode.OpenOrCreate,
-                        System.IO.FileAccess.Write))
-                    using (BinaryWriter writer = new BinaryWriter(fs))
-                    {
-                        for (int i = 0; i < tileBuffer.Length; i++)
-                            writer.Write(tileBuffer[i]);
-                    }
+
+
                     _tiles.SetData(tileBuffer, tileIndex++);
 
                     x += width + set.Value.Spacing;

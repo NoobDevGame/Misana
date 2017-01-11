@@ -25,6 +25,7 @@ namespace Misana
 
         public override void LoadContent()
         {
+            base.LoadContent();
             TestMap = MapLoader.Load("Lobby");
         }
     }

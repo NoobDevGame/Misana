@@ -136,5 +136,10 @@ namespace Misana.Components
         {
 
         }
+
+        public override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+        }
     }
 }
