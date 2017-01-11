@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using engenious.Graphics;
 using Misana.Components;
-using Misana.Core.Map;
+using Misana.Core.Maps;
 
 namespace Misana.Controls
 {

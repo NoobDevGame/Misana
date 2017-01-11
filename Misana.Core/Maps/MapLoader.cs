@@ -1,9 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using Misana.Core.Map.MapSerializers;
+using Misana.Core.Maps.MapSerializers;
 
-namespace Misana.Core.Map
+namespace Misana.Core.Maps
 {
     public static class MapLoader
     {

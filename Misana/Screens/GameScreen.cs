@@ -66,10 +66,9 @@ namespace Misana.Screens
             if (Manager.ActiveScreen is PauseScreen || Manager.ActiveScreen is TabScreen)
                 return;
 
+            /*
 
             var key = Keyboard.GetState();
-
-            Input input = new Input();
 
             if (key.IsKeyDown(Keys.A))
                 input.MoveLeft = true;
@@ -97,6 +96,8 @@ namespace Misana.Screens
                 
                 input.MousePosition = new Vector2(mouse.X - Manager.Game.Window.ClientRectangle.Width/2, mouse.Y- Manager.Game.Window.ClientRectangle.Height/2);
             }
+
+            */
         }
     }
 }

@@ -3,7 +3,7 @@ using System.CodeDom;
 using System.IO;
 using System.Linq;
 
-namespace Misana.Core.Map.MapSerializers
+namespace Misana.Core.Maps.MapSerializers
 {
     internal class MapSerializer_0_1 : MapSerializer
     {

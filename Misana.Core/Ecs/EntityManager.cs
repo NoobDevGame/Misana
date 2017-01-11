@@ -31,6 +31,10 @@ namespace Misana.Core.Ecs
         {
             return new EntityManager(SystemInitializer.Initialize(systemAssemblies));
         }
+        static EntityManager()
+        {
+            var foo = ComponentInitializer.ComponentCount;
+        }
 
         public GameTime GameTime;
         public void ApplyChanges()

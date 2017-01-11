@@ -1,4 +1,4 @@
-﻿namespace Misana.Core.Map
+﻿namespace Misana.Core.Maps
 {
     public class Layer
     {

@@ -6,5 +6,11 @@ namespace Misana.Core
     {
         public TimeSpan ElapsedTime;
         public TimeSpan TotalTime;
+
+        public GameTime(TimeSpan elapsedGameTime, TimeSpan totalGameTime)
+        {
+            ElapsedTime = elapsedGameTime;
+            TotalTime = totalGameTime;
+        }
     }
 }

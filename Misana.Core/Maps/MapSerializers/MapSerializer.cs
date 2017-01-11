@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace Misana.Core.Map.MapSerializers
+namespace Misana.Core.Maps.MapSerializers
 {
     public abstract class MapSerializer
     {
@@ -17,7 +17,7 @@ namespace Misana.Core.Map.MapSerializers
         {
             Type serializerType = null;
             if (!serializers.TryGetValue(version,out serializerType))
-                throw new Exception($"Serializer not founded MapVersion {version}");
+                throw new Exception($"Serializer not founded Map Version {version}");
 
             var serializer = (MapSerializer)Activator.CreateInstance(serializerType);
 

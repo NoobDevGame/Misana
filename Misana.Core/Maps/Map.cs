@@ -5,7 +5,7 @@ using System.IO;
 using System.Reflection;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Map
+namespace Misana.Core.Maps
 {
     public class Map
     {

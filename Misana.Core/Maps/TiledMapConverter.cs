@@ -4,7 +4,7 @@ using System.IO;
 using Misana.Core.Ecs;
 using Newtonsoft.Json;
 
-namespace Misana.Core.Map
+namespace Misana.Core.Maps
 {
     static class TiledMapConverter
     {

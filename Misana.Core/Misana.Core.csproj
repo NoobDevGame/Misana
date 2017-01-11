@@ -43,6 +43,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
     <Compile Include="Ecs\Component.cs" />
     <Compile Include="Ecs\ComponentArrayPool.cs" />
@@ -55,18 +56,24 @@
     <Compile Include="Ecs\SystemInitializer.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
-    <Compile Include="Input.cs" />
-    <Compile Include="Map\Area.cs" />
-    <Compile Include="Map\Layer.cs" />
-    <Compile Include="Map\Map.cs" />
-    <Compile Include="Map\MapLoader.cs" />
-    <Compile Include="Map\MapSerializers\MapSerializer.cs" />
-    <Compile Include="Map\MapSerializers\MapSerializer_0_1.cs" />
-    <Compile Include="Map\MapTexture.cs" />
-    <Compile Include="Map\TiledMapConverter.cs" />
-    <Compile Include="Map\TileProperty.cs" />
+    <Compile Include="Maps\Area.cs" />
+    <Compile Include="Maps\Layer.cs" />
+    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Maps\MapLoader.cs" />
+    <Compile Include="Maps\MapSerializers\MapSerializer.cs" />
+    <Compile Include="Maps\MapSerializers\MapSerializer_0_1.cs" />
+    <Compile Include="Maps\MapTexture.cs" />
+    <Compile Include="Maps\TiledMapConverter.cs" />
+    <Compile Include="Maps\TileProperty.cs" />
+    <Compile Include="MessageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Simulation.cs" />
+    <Compile Include="Components\PlayerInputComponent.cs" />
+    <Compile Include="Components\PositionComponent.cs" />
+    <Compile Include="Systems\InputSystem.cs" />
+    <Compile Include="Systems\MoverSystem.cs" />
     <Compile Include="Vector2.cs" />
+    <Compile Include="World.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Misana.Contracts\Misana.Contracts.csproj">
