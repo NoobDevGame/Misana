@@ -48,7 +48,7 @@ namespace Misana.Core.Maps.MapSerializers
             for (int i = 0; i < texturecount; i++)
             {
                 MapTexture texture = DeserializeTexture(br);
-                area.MapTextures.Add(texture.Key,texture);
+                //area.MapTextures.Add(texture.Key,texture);
             }
 
             return area;
@@ -60,11 +60,11 @@ namespace Misana.Core.Maps.MapSerializers
             var id = br.ReadInt32();
 
             var lenght = br.ReadInt32();
-            int[] tiles = new int[lenght];
-            for (int i = 0; i < lenght; i++)
-            {
-                tiles[i] = br.ReadInt32();
-            }
+            Tile[] tiles = new Tile[lenght];
+            //for (int i = 0; i < lenght; i++)
+            //{
+            //    tiles[i] = br.ReadInt32();
+            //}
 
             return new Layer(id,tiles);
         }
@@ -126,23 +126,23 @@ namespace Misana.Core.Maps.MapSerializers
 
 
             //Textures
-            bw.Write((area.MapTextures.Count));
-            foreach (var texture in area.MapTextures.Select(i => i.Value))
-            {
-                bw.Write(texture.Key);
-                bw.Write(texture.Firstgid);
-                bw.Write(texture.Tilecount);
-                bw.Write(texture.Spacing);
-                bw.Write(texture.Tileheight);
-                bw.Write(texture.Tilewidth);
-                bw.Write(texture.Columns);
+            //bw.Write((area.MapTextures.Count));
+            //foreach (var texture in area.MapTextures.Select(i => i.Value))
+            //{
+            //    bw.Write(texture.Key);
+            //    bw.Write(texture.Firstgid);
+            //    bw.Write(texture.Tilecount);
+            //    bw.Write(texture.Spacing);
+            //    bw.Write(texture.Tileheight);
+            //    bw.Write(texture.Tilewidth);
+            //    bw.Write(texture.Columns);
 
-                for (int i = 0; i < texture.Tilecount; i++)
-                {
-                    var property = texture.GetTileProperty(i);
-                    bw.Write(property.Blocked);
-                }
-            }
+            //    for (int i = 0; i < texture.Tilecount; i++)
+            //    {
+            //        var property = texture.GetTileProperty(i);
+            //        bw.Write(property.Blocked);
+            //    }
+            //}
         }
 
         private void SerializeLayer(Layer layer, BinaryWriter bw)
@@ -150,8 +150,8 @@ namespace Misana.Core.Maps.MapSerializers
             bw.Write(layer.Id);
             
             bw.Write(layer.Tiles.Length);
-            for (int i = 0; i < layer.Tiles.Length; i++)
-                bw.Write(layer.Tiles[i]);
+            //for (int i = 0; i < layer.Tiles.Length; i++)
+                //bw.Write(layer.Tiles[i]);
         }
     }
 }

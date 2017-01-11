@@ -67,21 +67,23 @@ namespace Misana.Editor.Controls
                         {
                             for (int y = 0; y < editor.CurrentArea.Height; y++)
                             {
+                                var index = editor.CurrentArea.GetTileIndex(x, y);
+                                var tile = layer.Tiles[index];
 
-                                var index = x + editor.CurrentArea.Width * y;
-                                var id = layer.Tiles[index];
-
-                                if (id == 0)
+                                if (tile.TilesheetID == 0 || tile.TextureID == 0)
                                     continue;
 
-                                var maptexture = editor.CurrentArea.GetMapTextures(id);
-                                var image = editor.TileSheets[maptexture.Key];
+                                var tilesheetName = editor.CurrentArea.TilesheetName(tile.TilesheetID);
+                                var tileID = tile.TextureID -1;
 
-                                var rawid = id - maptexture.Firstgid;
-                                var rx = rawid % maptexture.Columns;
-                                var ry = rawid / maptexture.Columns;
+                                var image = editor.TileSheets[tilesheetName];
 
-                                bg.DrawImage(image, new Rectangle(x * 32, y * 32, 32, 32), new Rectangle(rx * 17, ry * 17, 16, 16), GraphicsUnit.Pixel);
+                                var tHeight = (image.Height+1) / 17;
+                                var tWidth = (image.Width+1) / 17;
+                                var tx = (tileID) % tWidth;
+                                var ty = (tileID) / tWidth;
+
+                                bg.DrawImage(image, new Rectangle(x * 32, y * 32, 32, 32), new Rectangle(tx * 17,ty * 17, 16, 16), GraphicsUnit.Pixel);
                             }
                         }
                     }
