@@ -55,6 +55,7 @@
     <Compile Include="Ecs\SystemInitializer.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
+    <Compile Include="Input.cs" />
     <Compile Include="Map\Area.cs" />
     <Compile Include="Map\Layer.cs" />
     <Compile Include="Map\Map.cs" />

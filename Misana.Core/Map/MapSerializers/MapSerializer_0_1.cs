@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Misana.Core.Map.MapSerializers
 {
-    class MapSerializer_0_1 : MapSerializer
+    internal class MapSerializer_0_1 : MapSerializer
     {
         public override Version MapVersion  => new Version(0,1);
 
