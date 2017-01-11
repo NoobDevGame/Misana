@@ -44,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\BlockColliderComponent.cs" />
+    <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\EntityCollider.cs" />

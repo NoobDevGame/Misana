@@ -40,6 +40,10 @@ namespace Misana.Core
                 .Add<MotionComponent>()
                 .Add<BlockColliderComponent>()
                 .Add<EntityCollider>()
+                .Add<CharacterComponent>(p => 
+                {
+                    p.Name = "Heidi";
+                })
                 .Add<CharacterRenderComponent>(p =>
                 {
                     p.TilePosition = new Index2(0, 9);

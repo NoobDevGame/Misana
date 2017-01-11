@@ -14,15 +14,20 @@ namespace Misana.Controls
     {
         private Texture2D _pixel;
         private Texture2D _characterTexture;
+        private SpriteFont _font;
 
         protected override void Update(Entity e, CharacterRenderComponent r1, PositionComponent r2, DimensionComponent o2)
         {
         }
-
+        public override void Tick()
+        {
+        }
         public void LoadContent(MisanaGame game)
         {
             _pixel = new Texture2D(game.GraphicsDevice, 1, 1);
             _pixel.SetData<Color>(new Color[] { Color.White });
+
+            _font = game.Content.Load<SpriteFont>("Hud");
 
             _characterTexture = game.Content.Load<Texture2D>("TileSheetCharacters");
         }
@@ -54,12 +59,27 @@ namespace Misana.Controls
 
                 Vector2 position = new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize + camera.CameraOffset ;
 
+                bool drawname = (positionComponent.Position - game.Player.Position.Position).LengthSquared() < 9;
+
                 if (entity.Id == game.Player.PlayerId)
+                {
                     position = camera.PlayerPosition;
+                    drawname = false;
+                }
+
+                
+
+                var characterInfo = entity.Get<CharacterComponent>();
+
+                if (drawname && characterInfo != null && !string.IsNullOrEmpty(characterInfo.Name))
+                {
+                    var length = _font.MeasureString(characterInfo.Name);
+                    var textposition = position + new Vector2(-length.X / 2f, -dimension.Y - length.Y);
+
+                    batch.DrawString(_font, characterInfo.Name, textposition, Color.LightGray);
+                }
 
                 position -= dimension;
-                
-                
 
                 batch.Draw(_characterTexture, new Rectangle((int)position.X, (int)position.Y, (int)(dimension.X * 2 * camera.Zoom), (int)(dimension.Y * 2 * camera.Zoom)),source, Color.White);
             }
