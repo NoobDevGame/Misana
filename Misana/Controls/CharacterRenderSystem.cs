@@ -15,13 +15,9 @@ namespace Misana.Controls
         private Texture2D _pixel;
         private Texture2D _characterTexture;
         private SpriteFont _font;
+        
+        public override void Tick() { }
 
-        protected override void Update(Entity e, CharacterRenderComponent r1, PositionComponent r2, DimensionComponent o2)
-        {
-        }
-        public override void Tick()
-        {
-        }
         public void LoadContent(MisanaGame game)
         {
             _pixel = new Texture2D(game.GraphicsDevice, 1, 1);

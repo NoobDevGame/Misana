@@ -10,11 +10,6 @@ namespace Misana.Core.Systems
 {
     public class EntityCollidingMover : BaseSystemR4<EntityCollider, PositionComponent, DimensionComponent,MotionComponent>
     {
-        protected override void Update(Entity e, EntityCollider r1, PositionComponent r2, DimensionComponent r3, MotionComponent r4)
-        {
-            
-        }
-
         public override void Tick()
         {
             for (int i = 0; i < Count; i++)

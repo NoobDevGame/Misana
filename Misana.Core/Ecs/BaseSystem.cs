@@ -194,7 +194,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1);
+        protected virtual void Update(Entity e, TR1 r1) { }
 
         protected BaseSystemR1()
         {
@@ -253,7 +253,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2) { }
 
         protected override void Initialize()
         {
@@ -265,7 +265,6 @@ namespace Misana.Core.Ecs
         {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index };
         }
-
     }
 
     public abstract class BaseSystemR3<TR1, TR2, TR3> : BaseSystem
@@ -322,7 +321,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2, TR3 r3);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2, TR3 r3) { }
 
         protected override void Initialize()
         {
@@ -333,10 +332,8 @@ namespace Misana.Core.Ecs
 
         protected BaseSystemR3()
         {
-           
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, ComponentRegistry<TR3>.Index };
         }
-
     }
 
     public abstract class BaseSystemR4<TR1, TR2, TR3,TR4> : BaseSystem
@@ -401,7 +398,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2, TR3 r3, TR4 r4);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2, TR3 r3, TR4 r4) {}
 
         protected override void Initialize()
         {
@@ -416,7 +413,6 @@ namespace Misana.Core.Ecs
 
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, ComponentRegistry<TR3>.Index, ComponentRegistry<TR4>.Index };
         }
-
     }
 
     public abstract class BaseSystemR2N1<TR1, TR2, TN1> : BaseSystem
@@ -466,7 +462,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2) { }
 
         protected override void Initialize()
         {
@@ -477,7 +473,6 @@ namespace Misana.Core.Ecs
 
         protected BaseSystemR2N1()
         {
-           
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index };
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
@@ -497,7 +492,6 @@ namespace Misana.Core.Ecs
         {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
-
     }
 
     public abstract class BaseSystemR1N2<TR1, TN1, TN2> : BaseSystemR1<TR1>
@@ -522,7 +516,6 @@ namespace Misana.Core.Ecs
        where TR1 : Component, new()
        where TO1 : Component, new()
     {
-
         protected TR1[] R1S = new TR1[InitialSize];
         protected TO1[] O1S = new TO1[InitialSize];
 
@@ -565,7 +558,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TO1 o1);
+        protected virtual void Update(Entity e, TR1 r1, TO1 o1) { }
 
         protected override void Initialize()
         {
@@ -626,7 +619,6 @@ namespace Misana.Core.Ecs
        where TO1 : Component, new()
        where TO2 : Component, new()
     {
-
         protected TR1[] R1S = new TR1[InitialSize];
         protected TO1[] O1S = new TO1[InitialSize];
         protected TO2[] O2S = new TO2[InitialSize];
@@ -677,7 +669,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TO1 o1, TO2 o2);
+        protected virtual void Update(Entity e, TR1 r1, TO1 o1, TO2 o2) { }
 
         protected override void Initialize()
         {
@@ -754,7 +746,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2, TO1 o1);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2, TO1 o1) { }
 
         protected override void Initialize()
         {
@@ -781,7 +773,6 @@ namespace Misana.Core.Ecs
        where TR3 : Component, new()
        where TO1 : Component, new()
     {
-
         protected TR1[] R1S = new TR1[InitialSize];
         protected TR2[] R2S = new TR2[InitialSize];
         protected TR3[] R3S = new TR3[InitialSize];
@@ -838,7 +829,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2, TR3 r3, TO1 o1);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2, TR3 r3, TO1 o1) { }
 
         protected override void Initialize()
         {
@@ -860,14 +851,12 @@ namespace Misana.Core.Ecs
         }
     }
 
-
     public abstract class BaseSystemR2O2<TR1, TR2, TO1, TO2> : BaseSystem
        where TR1 : Component, new()
        where TR2 : Component, new()
        where TO1 : Component, new()
        where TO2 : Component, new()
     {
-
         protected TR1[] R1S = new TR1[InitialSize];
         protected TR2[] R2S = new TR2[InitialSize];
         protected TO1[] O1S = new TO1[InitialSize];
@@ -924,7 +913,7 @@ namespace Misana.Core.Ecs
             }
         }
 
-        protected abstract void Update(Entity e, TR1 r1, TR2 r2, TO1 o1, TO2 o2);
+        protected virtual void Update(Entity e, TR1 r1, TR2 r2, TO1 o1, TO2 o2) { }
 
         protected override void Initialize()
         {
@@ -964,7 +953,6 @@ namespace Misana.Core.Ecs
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
     }
-
 
     public abstract class BaseSystemR1O2N1<TR1, TO1, TO2, TN1> : BaseSystemR1O2<TR1, TO1, TO2>
         where TR1 : Component, new()

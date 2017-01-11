@@ -12,7 +12,5 @@ namespace Misana.Core.Systems
                 Entities[i--].Remove<EntityCollision>();
             }
         }
-
-        protected override void Update(Entity e, EntityCollision r1) { }
     }
 }
