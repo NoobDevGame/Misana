@@ -31,9 +31,12 @@ namespace Misana.Editor.Controls
                 selectedTile = value;
                 //Invalidate(new Rectangle(selectedTile.X * 32 - 1, selectedTile.Y * 32 - 1, 33,33));
                 selectionOnly = true;
+                OnSelectionChanged?.Invoke(this, null);
                 Invalidate();
             }
-        } 
+        }
+
+        public event EventHandler OnSelectionChanged;
 
         private Index2 selectedTile = new Index2(1,1);
 

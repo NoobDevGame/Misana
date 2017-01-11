@@ -55,12 +55,18 @@ namespace Misana.Editor
             MapRenderer = new RenderControl(this);
             MapRenderer.Dock = DockStyle.Fill;
 
+
             InitializeComponent();
 
 
             rightSplit.Panel1.Controls.Add(MapRenderer);
 
             treeView_maps.ImageList = IconHelper.ImageList;
+
+            MapRenderer.OnSelectionChanged += (s, e) =>
+            {
+                propertyGrid_tile.SelectedObject = TileClass.FromStruct(CurrentArea.Layers[0].Tiles[CurrentArea.GetTileIndex(MapRenderer.SelectedTile.X, MapRenderer.SelectedTile.Y)]);
+            };
 
         }
 
