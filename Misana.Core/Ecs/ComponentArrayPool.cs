@@ -33,10 +33,11 @@ namespace Misana.Core.Ecs
             {
                 for (int i = 0; i < EntityManager.ComponentCount; i++)
                 {
-                    if (arr[i] != null)
+                    if (arr[i] != null && !arr[i].Unmanaged)
                     {
                         ComponentRegistry.Release[i](arr[i]);
                     }
+
                     arr[i] = null;
                 }
             }
