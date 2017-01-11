@@ -66,7 +66,7 @@ namespace Misana.Core.Ecs
                 var prefill = 16;
                 if (attr.Length > 0)
                 {
-                    var a = (ComponentConfigAttribute)attr[0];
+                    var a = (ComponentConfigAttribute) attr[0];
                     prefill = a.Prefill;
                 }
 
@@ -88,6 +88,7 @@ namespace Misana.Core.Ecs
 
                 EntityManager.OnNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
             }
+        }
 
         public GameTime GameTime;
         public void ApplyChanges()

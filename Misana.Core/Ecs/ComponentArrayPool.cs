@@ -22,7 +22,7 @@ namespace Misana.Core.Ecs
         {
             Component[] item;
             if (!_freeList.TryPop(out item))
-                item = new Component[ComponentInitializer.ComponentCount];
+                item = new Component[EntityManager.ComponentCount];
 
             return item;
         }
@@ -31,7 +31,7 @@ namespace Misana.Core.Ecs
         {
             if (clear)
             {
-                for (int i = 0; i < ComponentInitializer.ComponentCount; i++)
+                for (int i = 0; i < EntityManager.ComponentCount; i++)
                 {
                     if (arr[i] != null)
                     {

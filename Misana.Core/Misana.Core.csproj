@@ -50,7 +50,6 @@
     <Compile Include="Ecs\Component.cs" />
     <Compile Include="Ecs\ComponentArrayPool.cs" />
     <Compile Include="Ecs\ComponentConfigAttribute.cs" />
-    <Compile Include="Ecs\ComponentInitializer.cs" />
     <Compile Include="Ecs\ComponentRegistry.cs" />
     <Compile Include="Ecs\Entity.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
