@@ -137,7 +137,6 @@ namespace Misana.Core.Maps.MapSerializers
                 bw.Write(texture.Tilewidth);
                 bw.Write(texture.Columns);
 
-                bw.Write(texture.Tilecount);
                 for (int i = 0; i < texture.Tilecount; i++)
                 {
                     var property = texture.GetTileProperty(i);

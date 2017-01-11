@@ -43,6 +43,132 @@
                 }],
          "tilecount":1767,
          "tileheight":16,
+         "tileproperties":
+            {
+             "0":
+                {
+                 "blocked":true
+                },
+             "1":
+                {
+                 "blocked":true
+                },
+             "114":
+                {
+                 "blocked":true
+                },
+             "115":
+                {
+                 "blocked":true
+                },
+             "116":
+                {
+                 "blocked":true
+                },
+             "117":
+                {
+                 "blocked":true
+                },
+             "118":
+                {
+                 "blocked":true
+                },
+             "2":
+                {
+                 "blocked":true
+                },
+             "3":
+                {
+                 "blocked":true
+                },
+             "4":
+                {
+                 "blocked":true
+                },
+             "57":
+                {
+                 "blocked":true
+                },
+             "58":
+                {
+                 "blocked":true
+                },
+             "59":
+                {
+                 "blocked":true
+                },
+             "60":
+                {
+                 "blocked":true
+                },
+             "61":
+                {
+                 "blocked":true
+                }
+            },
+         "tilepropertytypes":
+            {
+             "0":
+                {
+                 "blocked":"bool"
+                },
+             "1":
+                {
+                 "blocked":"bool"
+                },
+             "114":
+                {
+                 "blocked":"bool"
+                },
+             "115":
+                {
+                 "blocked":"bool"
+                },
+             "116":
+                {
+                 "blocked":"bool"
+                },
+             "117":
+                {
+                 "blocked":"bool"
+                },
+             "118":
+                {
+                 "blocked":"bool"
+                },
+             "2":
+                {
+                 "blocked":"bool"
+                },
+             "3":
+                {
+                 "blocked":"bool"
+                },
+             "4":
+                {
+                 "blocked":"bool"
+                },
+             "57":
+                {
+                 "blocked":"bool"
+                },
+             "58":
+                {
+                 "blocked":"bool"
+                },
+             "59":
+                {
+                 "blocked":"bool"
+                },
+             "60":
+                {
+                 "blocked":"bool"
+                },
+             "61":
+                {
+                 "blocked":"bool"
+                }
+            },
          "tiles":
             {
              "0":
@@ -109,7 +235,6 @@
          "tilewidth":16
         }],
  "tilewidth":16,
- "type":"map",
  "version":1,
  "width":20
 }

@@ -32,10 +32,16 @@ namespace Misana.Core
                 .Add<PositionComponent>(p =>
                 {
                     p.CurrentArea = CurrentMap.StartArea;
-                    p.Position = new Vector2(5, 5);
+                    p.Position = new Vector2(3, 3);
+                })
+                .Add<DimensionComponent>(p => 
+                {
+                    p.Radius = 0.5f;
                 })
                 .Add<PlayerInputComponent>()
-                .Add<MotionComponent>().Commit();
+                .Add<MotionComponent>()
+                .Add<BlockCollisionComponent>()
+                .Commit();
 
             return entity;
         }

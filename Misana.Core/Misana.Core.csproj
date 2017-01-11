@@ -43,6 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Components\BlockCollisionComponent.cs" />
+    <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
     <Compile Include="Ecs\Component.cs" />

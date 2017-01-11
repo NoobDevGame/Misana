@@ -14,6 +14,8 @@ namespace Misana.Components
 
         public Vector2 CameraOffset { get; set; }
 
+        public Vector2 PlayerPosition { get; set; }
+
         public readonly int TileSize = 32;
 
         public int Zoom { get; set; }
@@ -34,7 +36,9 @@ namespace Misana.Components
 
             Vector2 viewportHalf = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height) / 2;
 
-            CameraOffset = new Vector2(position.Position.X * TileSize, position.Position.Y * TileSize) - viewportHalf;
+            CameraOffset = viewportHalf - new Vector2(position.Position.X * TileSize, position.Position.Y * TileSize);
+
+            PlayerPosition = viewportHalf;
 
         }
     }

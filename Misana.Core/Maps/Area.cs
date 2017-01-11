@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 
 namespace Misana.Core.Maps
 {
@@ -32,12 +33,35 @@ namespace Misana.Core.Maps
 
         public MapTexture GetMapTextures(int id)
         {
-            throw new System.NotImplementedException();
+            return MapTextures.Values.First(m => m.Firstgid <= id && id <= m.Firstgid + m.Tilecount);
         }
 
         public bool IsCellBlocked(int x, int y)
         {
-            throw new System.NotImplementedException();
+            if (x < 0 || y < 0)
+                return true;
+
+            if (x >= Width || y >= Height)
+                return true;
+
+            var index = x + Width * y;
+
+            foreach (var layer in Layers)
+            {
+                var id = layer.Tiles[index];
+
+                if (id == 0)
+                    continue;
+
+                var mapTexture = GetMapTextures(id);
+
+                var property = mapTexture.GetTileProperty(id - mapTexture.Firstgid);
+
+                if (property.Blocked)
+                    return true;
+            }
+
+            return false;
         }
 
     }

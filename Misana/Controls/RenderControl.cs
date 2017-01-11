@@ -5,6 +5,7 @@ using engenious;
 using engenious.Graphics;
 using Misana.Components;
 using MonoGameUi;
+using Misana.Core.Components;
 
 namespace Misana.Controls
 {
@@ -21,6 +22,7 @@ namespace Misana.Controls
         {
             this.manager = manager;
             _pixel = new Texture2D(manager.GraphicsDevice, 1, 1);
+            _pixel.SetData<Color>(new Color[] { Color.White });
             effect = manager.Content.Load<Effect>("simple");
             CreateIndexBuffer();
         }
@@ -71,9 +73,10 @@ namespace Misana.Controls
             manager.GraphicsDevice.SetRenderTarget(ControlTexture);
             manager.GraphicsDevice.Clear(Color.Black);
             var cOffset = Vector2.Zero;
+
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, manager.GraphicsDevice.Viewport.Width, 0, manager.GraphicsDevice.Viewport.Height, 0, -1);
             Matrix view = Matrix.CreateLookAt(new Vector3(0,0,1),Vector3.Zero,Vector3.UnitY);
-            Matrix world =Matrix.CreateTranslation(-cameraOffset.X,-cameraOffset.Y,0);
+            Matrix world =Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0);
             world.M11 = world.M22=world.M33 = manager.Game.CameraComponent.TileSize;
             effect.Parameters["WorldViewProj"].SetValue(projection*world);
             //effect.Parameters["offset"].SetValue(new Vector2(cOffset.X+player.Radius * 70, cOffset.Y+player.Height * 70));
@@ -98,17 +101,36 @@ namespace Misana.Controls
 
 
 
-            //var player = manager.Game.SimulationComponent.Player;
+            var player = manager.Game.Player.Player;
             var area = manager.Game.TestMap.StartArea;
 
             if (area == null)
                 return;
-            //var cOffset = manager.Game.CameraComponent.Offset;
+
+            if (player == null)
+                return;
 
             if (ControlTexture != null)
             {
                 batch.Draw(ControlTexture,new Vector2(0,0),Color.White);
             }
+
+            var camera = manager.Game.CameraComponent;
+
+            var dimensioncomp = player.Get<DimensionComponent>();
+            var positioncomp = player.Get<PositionComponent>();
+
+            Vector2 dimension = new Vector2(1, 1);
+
+            if (dimensioncomp != null)
+                dimension = new Vector2(dimensioncomp.HalfSize.X, dimensioncomp.HalfSize.Y);
+
+            dimension *= camera.TileSize;
+
+            var position = camera.PlayerPosition - dimension;
+
+            batch.Draw(_pixel, new Rectangle((int)position.X,(int)position.Y,(int)(dimension.X * 2), (int)(dimension.Y * 2)), Color.Red);
+
 
             /*
             foreach (var entity in area.Entities)
