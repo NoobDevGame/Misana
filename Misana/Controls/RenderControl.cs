@@ -74,7 +74,7 @@ namespace Misana.Controls
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, manager.GraphicsDevice.Viewport.Width, 0, manager.GraphicsDevice.Viewport.Height, 0, -1);
             Matrix view = Matrix.CreateLookAt(new Vector3(0,0,1),Vector3.Zero,Vector3.UnitY);
             Matrix world = Matrix.Identity; //Matrix.CreateTranslation(cOffset.X+player.Radius * 70, cOffset.Y+player.Height * 70, 0);
-            world.M11 = world.M22=world.M33 = 70;
+            world.M11 = world.M22=world.M33 = 32;
             effect.Parameters["WorldViewProj"].SetValue(projection*world);
             //effect.Parameters["offset"].SetValue(new Vector2(cOffset.X+player.Radius * 70, cOffset.Y+player.Height * 70));
             if (_renderer?.Area != area)

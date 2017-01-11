@@ -45,10 +45,8 @@ namespace Misana.Controls
                 Debug.WriteLine(set.Key);
                 int[] buffer = new int[text.Width * text.Height];
                 text.GetData(buffer);
-                for (int i = 0; i < buffer.Length; i++)
-                {
-                    //buffer[i] = -1;
-                }
+
+
                 int curColumn=0;
                 for (int currentTile=0;currentTile<set.Value.Tilecount;currentTile++)
                 {
