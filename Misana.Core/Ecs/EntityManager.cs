@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 
@@ -37,10 +38,56 @@ namespace Misana.Core.Ecs
             return new EntityManager(systems);
         }
 
+        public static readonly int ComponentCount;
+
         static EntityManager()
         {
-            var foo = ComponentInitializer.ComponentCount;
-        }
+            var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
+            var concreteTypes = assemblies.SelectMany(a => a.GetTypes()).Where(t => !t.IsAbstract).ToList();
+
+            var baseComponentType = typeof(Component);
+            var componentTypes = concreteTypes
+                .Where(t => baseComponentType.IsAssignableFrom(t))
+                .ToList();
+
+            var registryType = typeof(ComponentRegistry<>);
+
+            ComponentCount = componentTypes.Count;
+            ComponentArrayPool.Initialize(ComponentCount);
+            ComponentRegistry.Release = new Action<Component>[ComponentCount];
+
+            for (var i = 0; i < componentTypes.Count; i++)
+            {
+                var componentType = componentTypes[i];
+                var rType = registryType.MakeGenericType(componentType);
+
+                var attr = componentType.GetCustomAttributes(typeof(ComponentConfigAttribute), false);
+
+                var prefill = 16;
+                if (attr.Length > 0)
+                {
+                    var a = (ComponentConfigAttribute)attr[0];
+                    prefill = a.Prefill;
+                }
+
+                rType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public).Invoke(
+                    null,
+                    new object[] {
+                        i,
+                        prefill
+                    });
+
+                var genericRelease = rType.GetMethod("Release", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                var cParam = Expression.Parameter(baseComponentType);
+                ComponentRegistry.Release[i] =
+                    Expression.Lambda<Action<Component>>(Expression.Call(null, genericRelease, Expression.Convert(cParam, componentType)), false, cParam)
+                        .Compile();
+
+                componentType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)?.Invoke(null, null);
+                var onmt = rType.GetMethod("OnNewManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+
+                EntityManager.OnNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
+            }
 
         public GameTime GameTime;
         public void ApplyChanges()
