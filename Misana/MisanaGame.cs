@@ -48,6 +48,7 @@ namespace Misana
         {
             
             TestMap = MapLoader.Load("Lobby");
+            
 
             base.LoadContent();
             

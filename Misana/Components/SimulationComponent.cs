@@ -1,5 +1,8 @@
 ﻿using engenious;
+using Misana.Controls;
 using Misana.Core;
+using Misana.Core.Ecs;
+using Misana.Core.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +17,10 @@ namespace Misana.Components
 
         public new MisanaGame Game;
 
+        public EntityManager Entities { get; private set; }
+
+        public CharacterRenderSystem CharacterRender { get; private set; }
+
         public SimulationComponent(MisanaGame game) : base(game)
         {
             Game = game;
@@ -22,11 +29,22 @@ namespace Misana.Components
         protected override void LoadContent()
         {
             base.LoadContent();
+            var foo = EntityManager.ComponentCount;
+            CharacterRender = new CharacterRenderSystem();
 
-            World = new World();
+            Entities = EntityManager.Create("LocalEntities",
+                new List<BaseSystem> {
+                                new InputSystem(),
+                                new BlockCollidingMoverSystem(),
+                                new NonCollidingMoverSystem(),
+                                CharacterRender,
+                }
+            );
+
+            World = new World(Entities);
             World.ChangeMap(Game.TestMap);
 
-            Game.Player.Player = World.CreatePlayer();
+            Game.Player.PlayerId =  World.CreatePlayer(Game.Player.Input,Game.Player.Position);
         }
 
         public override void Update(engenious.GameTime gameTime)

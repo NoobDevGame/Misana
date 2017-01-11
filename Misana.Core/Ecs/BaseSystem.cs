@@ -6,11 +6,7 @@ namespace Misana.Core.Ecs
     {
         protected const int InitialSize = 16;
 
-        protected readonly EntityManager Manager;
-        protected BaseSystem(EntityManager manager)
-        {
-            Manager = manager;
-        }
+        internal EntityManager Manager;
 
         protected GameTime GameTime => Manager.GameTime;
 
@@ -23,6 +19,13 @@ namespace Misana.Core.Ecs
         protected List<int> RequiredIndexes;
         protected List<int> OptionalIndexes;
         protected List<int> NegativeIndexes;
+
+        internal void Initialize(EntityManager em)
+        {
+            Manager = em;
+            Initialize();
+        }
+        protected abstract void Initialize();
 
         public void EntityAdded(Entity e)
         {
@@ -193,10 +196,14 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1);
 
-        protected BaseSystemR1(EntityManager manager) : base(manager)
+        protected BaseSystemR1()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index };
+        }
+
+        protected override void Initialize()
+        {
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
         }
     }
 
@@ -248,10 +255,14 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2);
 
-        protected BaseSystemR2(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR2()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index };
         }
 
@@ -313,11 +324,16 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2, TR3 r3);
 
-        protected BaseSystemR3(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR3>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR3>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR3()
+        {
+           
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, ComponentRegistry<TR3>.Index };
         }
 
@@ -372,11 +388,16 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2);
 
-        protected BaseSystemR2N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR2N1()
+        {
+           
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index };
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
@@ -386,10 +407,14 @@ namespace Misana.Core.Ecs
         where TR1 : Component, new()
         where TN1 : Component, new()
     {
-
-        protected BaseSystemR1N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1N1()
+        {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
 
@@ -400,10 +425,15 @@ namespace Misana.Core.Ecs
        where TN1 : Component, new()
        where TN2 : Component, new()
     {
-        protected BaseSystemR1N2(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TN2>.InterestedSystems[manager.Index].Add(this);
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TN2>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1N2()
+        {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index, ComponentRegistry<TN2>.Index };
         }
     }
@@ -457,11 +487,14 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TO1 o1);
 
-
-        protected BaseSystemR1O1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO1>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1O1()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index };
             OptionalIndexes = new List<int> { ComponentRegistry<TO1>.Index };
         }
@@ -477,12 +510,16 @@ namespace Misana.Core.Ecs
        where TO1 : Component, new()
        where TN1 : Component, new()
     {
-        protected BaseSystemR1O1N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
-            NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
         }
 
+        protected BaseSystemR1O1N1()
+        {
+            NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
+        }
     }
 
     public abstract class BaseSystemR2O1N1<TR1, TR2, TO1, TN1> : BaseSystemR2O1<TR1, TR2, TO1>
@@ -491,12 +528,17 @@ namespace Misana.Core.Ecs
        where TO1 : Component, new()
        where TN1 : Component, new()
     {
-        protected BaseSystemR2O1N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
-            NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
+            base.Initialize();
+
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
         }
 
+        protected BaseSystemR2O1N1()
+        {
+            NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
+        }
     }
 
     public abstract class BaseSystemR1O2<TR1, TO1, TO2> : BaseSystem
@@ -557,13 +599,15 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TO1 o1, TO2 o2);
 
-
-        protected BaseSystemR1O2(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO2>.InterestedSystems[manager.Index].Add(this);
-            
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO2>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1O2()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index };
             OptionalIndexes = new List<int> { ComponentRegistry<TO1>.Index, ComponentRegistry<TO2>.Index };
         }
@@ -632,12 +676,15 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2, TO1 o1);
 
-
-        protected BaseSystemR2O1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO1>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR2O1()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, };
             OptionalIndexes = new List<int> { ComponentRegistry<TO1>.Index };
         }
@@ -713,14 +760,16 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2, TR3 r3, TO1 o1);
 
-
-        protected BaseSystemR3O1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR3>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO1>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR3>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO1>.InterestedSystems[Manager.Index].Add(this);
+        }
 
+        protected BaseSystemR3O1()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, };
             OptionalIndexes = new List<int> { ComponentRegistry<TO1>.Index };
         }
@@ -797,14 +846,16 @@ namespace Misana.Core.Ecs
 
         protected abstract void Update(Entity e, TR1 r1, TR2 r2, TO1 o1, TO2 o2);
 
-
-        protected BaseSystemR2O2(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TR1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TR2>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TO2>.InterestedSystems[manager.Index].Add(this);
+            ComponentRegistry<TR1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TR2>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TO2>.InterestedSystems[Manager.Index].Add(this);
+        }
 
+        protected BaseSystemR2O2()
+        {
             RequiredIndexes = new List<int> { ComponentRegistry<TR1>.Index, ComponentRegistry<TR2>.Index, };
             OptionalIndexes = new List<int> { ComponentRegistry<TO1>.Index, ComponentRegistry<TO2>.Index };
         }
@@ -822,9 +873,14 @@ namespace Misana.Core.Ecs
        where TR3 : Component, new()
        where TN1 : Component, new()
     {
-        protected BaseSystemR3N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR3N1()
+        {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
     }
@@ -836,9 +892,14 @@ namespace Misana.Core.Ecs
         where TO2 : Component, new()
         where TN1 : Component, new()
     {
-        protected BaseSystemR1O2N1(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1O2N1()
+        {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index };
         }
     }
@@ -850,10 +911,15 @@ namespace Misana.Core.Ecs
        where TN1 : Component, new()
        where TN2 : Component, new()
     {
-        protected BaseSystemR1O2N2(EntityManager manager) : base(manager)
+        protected override void Initialize()
         {
-            ComponentRegistry<TN1>.InterestedSystems[manager.Index].Add(this);
-            ComponentRegistry<TN2>.InterestedSystems[manager.Index].Add(this);
+            base.Initialize();
+            ComponentRegistry<TN1>.InterestedSystems[Manager.Index].Add(this);
+            ComponentRegistry<TN2>.InterestedSystems[Manager.Index].Add(this);
+        }
+
+        protected BaseSystemR1O2N2()
+        {
             NegativeIndexes = new List<int> { ComponentRegistry<TN1>.Index, ComponentRegistry<TN2>.Index };
         }
     }

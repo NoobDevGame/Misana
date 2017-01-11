@@ -8,29 +8,9 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    [SystemConfiguration]
-    public class NonCollidingMoverSystem : BaseSystemR2N1<MotionComponent, PositionComponent, BlockCollisionComponent>
-    {
-        public NonCollidingMoverSystem(EntityManager manager) : base(manager)
-        {
-        }
-
-        protected override void Update(Entity e, MotionComponent r1, PositionComponent r2)
-        {
-            r2.Position += r1.Move;
-        }
-    }
-
-    [SystemConfiguration]
     public class BlockCollidingMoverSystem : BaseSystemR3O1<MotionComponent, PositionComponent, BlockCollisionComponent, DimensionComponent>
     {
         private readonly float gap = 0.00001f;
-
-        public BlockCollidingMoverSystem(EntityManager manager) : base(manager)
-        {
-        }
-
-        
 
         protected override void Update(Entity e, MotionComponent r1, PositionComponent r2, BlockCollisionComponent _, DimensionComponent o1)
         {

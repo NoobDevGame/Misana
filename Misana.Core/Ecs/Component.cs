@@ -4,6 +4,7 @@ namespace Misana.Core.Ecs
 {
     public abstract class Component
     {
+        public bool Unmanaged;
         public virtual void Reset() { }
         public abstract void CopyTo(Component other);
         //public abstract void Serialize(Entity e, BinaryWriter writer);
