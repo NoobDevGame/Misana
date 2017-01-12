@@ -183,11 +183,12 @@ namespace Misana.Core.Maps
 
             }
 
-            area.Layers = layers.ToArray();
+            area.LayerList = layers;
 
             return area;
         }
 
+        #region Old (for "direct" Tiled Conversion)
         //private static Area Convert(FileArea fa,int id, string name)
         //{
 
@@ -229,9 +230,10 @@ namespace Misana.Core.Maps
         //    Area area = new Area(name,id,fa.Width,fa.Height,Vector2.Zero,layers.ToArray() );
 
 
-            
+
 
         //    return area;
         //}
+        #endregion
     }
 }

@@ -24,11 +24,11 @@ namespace Misana.Controls
 
         private void RebuildTiles()
         {
-            if (Area.MapTextures.Count == 0)
+            if (Area.Tilesheets.Count == 0)
                 return;
             int tileCount = 0;
-            int width = Area.MapTextures.First().Value.Tilewidth, height = Area.MapTextures.First().Value.Tileheight;
-            foreach (var set in Area.MapTextures)
+            int width = 17, height = 17;
+            foreach (var set in Area.Tilesheets)
             {
                 if (set.Value.Tilewidth != width || set.Value.Tileheight != height)
                     throw new NotSupportedException("non uniform tile sizes not supported");

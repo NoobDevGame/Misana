@@ -82,11 +82,11 @@
     <Compile Include="Forms\TiledMapConverterForm.Designer.cs">
       <DependentUpon>TiledMapConverterForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="IconHelper.cs" />
+    <Compile Include="Helper\IconHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TileClass.cs" />
-    <Compile Include="TileHelper.cs" />
+    <Compile Include="Helper\TileHelper.cs" />
     <EmbeddedResource Include="Editor.resx">
       <DependentUpon>Editor.cs</DependentUpon>
     </EmbeddedResource>

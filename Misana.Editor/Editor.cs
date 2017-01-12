@@ -124,14 +124,7 @@ namespace Misana.Editor
             for (int i = 0; i < Map.Areas.Length; i++)
             {
                 var areaNode = new TreeNode(Map.Areas[i].Name) { Tag = i, ImageKey = "Area", SelectedImageKey = "Area" };
-
-                for (int y = 0; y < Map.Areas[i].Layers.Length; y++)
-                {
-                    areaNode.Nodes.Add(new TreeNode(Map.Areas[i].Layers[y].ToString()) { Tag = y, ImageKey = "Layer", SelectedImageKey = "Layer" });
-                }
-
                 rootNode.Nodes.Add(areaNode);
-
             }
 
             treeView_maps.Nodes.Clear();

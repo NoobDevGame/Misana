@@ -1,5 +1,6 @@
 ﻿using System;
 using System.CodeDom;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -7,97 +8,95 @@ namespace Misana.Core.Maps.MapSerializers
 {
     internal class MapSerializer_0_1 : MapSerializer
     {
-        public override Version MapVersion  => new Version(0,1);
+        public override Version MapVersion => new Version(0,1);
 
         protected override Map Deserialize(BinaryReader br)
         {
             var name = br.ReadString();
-            var firstAreaId = br.ReadInt32();
-            var firstAreaName = br.ReadString();
+            var startAreaId = br.ReadInt32();
 
-            var areaLength = br.ReadInt32();
-            Area[] areas = new Area[areaLength];
-            for (int i = 0; i < areaLength; i++)
+            var length = br.ReadInt32();
+
+            var areas = new Area[length];
+
+            for (int i = 0; i < length; i++)
             {
                 areas[i] = DeserializeArea(br);
             }
 
-            return  new Map(name,areas[firstAreaId -1],areas);
+            var startIndex = areas.ToList().FindIndex(t => t.Id == startAreaId);
+
+            return new Map(name, areas[startIndex], areas);
         }
 
         private Area DeserializeArea(BinaryReader br)
         {
             var id = br.ReadInt32();
             var name = br.ReadString();
-            var width = br.ReadInt32();
+
             var height = br.ReadInt32();
+            var width = br.ReadInt32();
 
-            Vector2 spawnpoint = new Vector2(br.ReadSingle(),br.ReadSingle());
+            var spawnX = br.ReadInt32();
+            var spawnY = br.ReadInt32();
 
-            var layerlenght = br.ReadInt32();
-            Layer[] layers = new Layer[layerlenght];
+            var layerLength = br.ReadInt32();
 
-            for (int i = 0; i < layerlenght; i++)
+            var layers = new Layer[layerLength];
+
+            for (int i = 0; i < layerLength; i++)
             {
-                layers[i] = DeserializeLayer(br);
+                var l = DeserializeLayer(br);
+                layers[i] = l;
             }
 
-            Area area = new Area(name,id,width,height,spawnpoint,layers);
+            var tilesheetLength = br.ReadInt32();
 
-            var texturecount = br.ReadInt32();
-            for (int i = 0; i < texturecount; i++)
+            var tilesheets = new Dictionary<int, string>();
+
+            for (int b = 0; b < tilesheetLength; b++)
             {
-                MapTexture texture = DeserializeTexture(br);
-                //area.MapTextures.Add(texture.Key,texture);
+                var tId = br.ReadInt32();
+                var tName = br.ReadString();
+
+                tilesheets.Add(tId, tName);
             }
 
-            return area;
-
+            Area a = new Area(name, id, width, height, new Vector2(spawnX, spawnY), layers.ToList<Layer>());
+            a.Tilesheets = tilesheets;
+            return a;
         }
 
         private Layer DeserializeLayer(BinaryReader br)
         {
             var id = br.ReadInt32();
 
-            var lenght = br.ReadInt32();
-            Tile[] tiles = new Tile[lenght];
-            //for (int i = 0; i < lenght; i++)
-            //{
-            //    tiles[i] = br.ReadInt32();
-            //}
+            var length = br.ReadInt32();
 
-            return new Layer(id,tiles);
-        }
+            var tiles = new Tile[length];
 
-        private MapTexture DeserializeTexture(BinaryReader br)
-        {
-            var key = br.ReadString();
-            var firstid = br.ReadInt32();
-            var tilecount = br.ReadInt32();
-            var spacing = br.ReadInt32();
-            var tileheight = br.ReadInt32();
-            var tilewidth = br.ReadInt32();
-            var columns = br.ReadInt32();
-
-            var texture = new MapTexture(key,firstid,tilecount,spacing,tileheight,tilewidth,columns);
-
-            for (int i = 0; i < tilecount; i++)
+            for (int i = 0; i < length; i++)
             {
-                TileProperty tile = new TileProperty();
-                tile.Blocked = br.ReadBoolean();
-                texture.SetTileProperty(i,tile);
+                var t = DeserializeTile(br);
+                tiles[i] = t;
             }
 
-            return texture;
+            return new Layer(id, tiles);
         }
 
-        protected override void Serialize(Map map,BinaryWriter bw)
+        private Tile DeserializeTile(BinaryReader br)
+        {
+            var tId = br.ReadInt32();
+            var sId = br.ReadInt32();
+            var blocked = br.ReadBoolean();
+            return new Tile(tId, sId, blocked);
+        }
+
+        protected override void Serialize(Map map, BinaryWriter bw)
         {
             bw.Write(map.Name);
             bw.Write(map.StartArea.Id);
-            bw.Write(map.StartArea.Name);
 
-            //Areas
             bw.Write(map.Areas.Length);
             foreach (var area in map.Areas)
             {
@@ -107,13 +106,15 @@ namespace Misana.Core.Maps.MapSerializers
 
         private void SerializeArea(Area area, BinaryWriter bw)
         {
-            //Info
+            //General Information
             bw.Write(area.Id);
             bw.Write(area.Name);
+
+            //Dimensions
             bw.Write(area.Width);
             bw.Write(area.Height);
 
-            //SpwanPoint
+            //SpawnPoint
             bw.Write(area.SpawnPoint.X);
             bw.Write(area.SpawnPoint.Y);
 
@@ -124,34 +125,30 @@ namespace Misana.Core.Maps.MapSerializers
                 SerializeLayer(layer, bw);
             }
 
-
-            //Textures
-            //bw.Write((area.MapTextures.Count));
-            //foreach (var texture in area.MapTextures.Select(i => i.Value))
-            //{
-            //    bw.Write(texture.Key);
-            //    bw.Write(texture.Firstgid);
-            //    bw.Write(texture.Tilecount);
-            //    bw.Write(texture.Spacing);
-            //    bw.Write(texture.Tileheight);
-            //    bw.Write(texture.Tilewidth);
-            //    bw.Write(texture.Columns);
-
-            //    for (int i = 0; i < texture.Tilecount; i++)
-            //    {
-            //        var property = texture.GetTileProperty(i);
-            //        bw.Write(property.Blocked);
-            //    }
-            //}
+            bw.Write(area.Tilesheets.Count);
+            foreach (var tilesheet in area.Tilesheets)
+            {
+                bw.Write(tilesheet.Key);
+                bw.Write(tilesheet.Value);
+            }
         }
 
         private void SerializeLayer(Layer layer, BinaryWriter bw)
         {
             bw.Write(layer.Id);
-            
+
             bw.Write(layer.Tiles.Length);
-            //for (int i = 0; i < layer.Tiles.Length; i++)
-                //bw.Write(layer.Tiles[i]);
+            foreach (var tile in layer.Tiles)
+            {
+                SerializeTile(tile, bw);
+            }
+        }
+
+        private void SerializeTile(Tile tile, BinaryWriter bw)
+        {
+            bw.Write(tile.TextureID);
+            bw.Write(tile.TilesheetID);
+            bw.Write(tile.Blocked);
         }
     }
 }

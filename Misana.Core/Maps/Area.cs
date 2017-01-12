@@ -18,16 +18,18 @@ namespace Misana.Core.Maps
 
         public Dictionary<int,string> Tilesheets { get; set; }
 
-        public Layer[] Layers { get; set; }
+        public List<Layer> LayerList { get; set; }
 
-        public Area(string name, int id, int width, int height, Vector2 spawnPoint, Layer[] layers)
+        public Layer[] Layers { get { return LayerList.ToArray(); } }
+
+        public Area(string name, int id, int width, int height, Vector2 spawnPoint, List<Layer> layers)
         {
             Name = name;
             Id = id;
             Width = width;
             Height = height;
             SpawnPoint = spawnPoint;
-            Layers = layers;
+            LayerList= layers;
 
             Tilesheets = new Dictionary<int, string>();
         }

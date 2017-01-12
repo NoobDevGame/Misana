@@ -23,13 +23,13 @@ namespace Misana.Controls
                 {
                     var tile = layer.Tiles[x + y * width];
 
-                    if (tile == 0)
+                    if (tile.TextureID == 0 || tile.TilesheetID == 0)
                         continue;
 
-                    vertices.Add(new MapVertex(new Vector2(x, y), new Vector2(0, 0), (byte) tile));
-                    vertices.Add(new MapVertex(new Vector2(x + 1, y), new Vector2(1, 0), (byte) tile));
-                    vertices.Add(new MapVertex(new Vector2(x, y + 1), new Vector2(0, 1), (byte) tile));
-                    vertices.Add(new MapVertex(new Vector2(x + 1, y + 1), new Vector2(1, 1), (byte) tile));
+                    vertices.Add(new MapVertex(new Vector2(x, y), new Vector2(0, 0), (byte)tile.TextureID));
+                    vertices.Add(new MapVertex(new Vector2(x + 1, y), new Vector2(1, 0), (byte)tile.TextureID));
+                    vertices.Add(new MapVertex(new Vector2(x, y + 1), new Vector2(0, 1), (byte)tile.TextureID));
+                    vertices.Add(new MapVertex(new Vector2(x + 1, y + 1), new Vector2(1, 1), (byte)tile.TextureID));
                 }
             }
             vb = new VertexBuffer(screen.GraphicsDevice, MapVertex.VertexDeclaration, vertices.Count);

@@ -8,6 +8,8 @@ namespace Misana.Core.Maps
 {
     public class Tilesheet
     {
-
+        public string TextureName { get; set; }
+        public int TileCount { get; set; }
+        public int Spacing { get; set; }
     }
 }
