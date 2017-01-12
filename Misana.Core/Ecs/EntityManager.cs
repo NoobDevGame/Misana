@@ -184,6 +184,10 @@ namespace Misana.Core.Ecs
             {
                 throw new InvalidOperationException($"{typeof(T)} exists on entity");
             }
+            else
+            {
+                action(existing);
+            }
 
             return this;
         }

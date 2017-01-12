@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Systems.StatusSystem;
 
 namespace Misana.Components
 {
@@ -43,9 +44,10 @@ namespace Misana.Components
                     new MoverSystem(), // <- Last
 
                     // Collision Resolution
-                    new VelocityApplicatorSystem(),
+                    new CollisionApplicatorSystem(),
                     new EntityCollisionRemoverSystem(), // <- Last
 
+                    new TimeDamageSystem(),
                     // Renderer
                     CharacterRender,
                 }

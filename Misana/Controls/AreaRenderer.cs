@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using engenious;
 using engenious.Graphics;
 using Misana.Components;
 using Misana.Core.Maps;
@@ -106,7 +107,7 @@ namespace Misana.Controls
         public void Render(Effect effect)
         {
             effect.Parameters["TileTextures"].SetValue(_tiles);
-            _tiles.SamplerState = SamplerState.LinearClamp;
+            _tiles.SamplerState = new SamplerState() { TextureFilter = TextureFilter.Nearest };
             for (int index = 0; index < _layerRenderer.Length; index++)
             {
                 _layerRenderer[index].Render();
