@@ -6,6 +6,7 @@ using engenious.Graphics;
 using Misana.Components;
 using MonoGameUi;
 using Misana.Core.Components;
+using Misana.Core.Maps;
 
 namespace Misana.Controls
 {
@@ -17,6 +18,8 @@ namespace Misana.Controls
         private Effect effect;
         private AreaRenderer _renderer;
 
+        public Dictionary<string, Tilesheet> Tilesheets { get; private set; }
+
         public RenderControl(ScreenComponent manager, string style = "") : base(manager, style)
         {
             this.manager = manager;
@@ -26,6 +29,25 @@ namespace Misana.Controls
 
             effect = manager.Content.Load<Effect>("simple");
             CreateIndexBuffer();
+            LoadTilesheets();
+
+        }
+
+        public void LoadTilesheets()
+        {
+            Tilesheets = new Dictionary<string, Tilesheet>();
+            foreach (var tf in Directory.GetFiles("Content/Tilesheets/", "*.json"))
+            {
+                try
+                {
+                    var ts = Tilesheet.LoadTilesheet("Content/Tilesheets/", Path.GetFileNameWithoutExtension(tf));
+                    Tilesheets.Add(ts.Name, ts);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("Could not load tilesheet " + Path.GetFileNameWithoutExtension(tf));
+                }
+            }
         }
 
         public override void OnResolutionChanged()
@@ -84,7 +106,7 @@ namespace Misana.Controls
             if (_renderer?.Area != area)
             {
                 _renderer?.Dispose();
-                _renderer = new AreaRenderer(manager,area);
+                _renderer = new AreaRenderer(manager,area, Tilesheets);
             }
             manager.GraphicsDevice.IndexBuffer = ib;
             foreach (var pass in effect.CurrentTechnique.Passes)

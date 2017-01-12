@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -68,8 +69,10 @@
     <Compile Include="Maps\MapSerializers\MapSerializer.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer_0_1.cs" />
     <Compile Include="Maps\MapTexture.cs" />
+    <Compile Include="Maps\Tile.cs" />
     <Compile Include="Maps\TiledMapConverter.cs" />
     <Compile Include="Maps\TileProperty.cs" />
+    <Compile Include="Maps\Tilesheet.cs" />
     <Compile Include="MessageManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation.cs" />

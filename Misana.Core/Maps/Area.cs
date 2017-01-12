@@ -5,19 +5,6 @@ namespace Misana.Core.Maps
 {
     public class Area
     {
-        public Area(string name, int id, int width, int height, Vector2 spawnPoint, Layer[] layers)
-        {
-            Name = name;
-            Id = id;
-            Width = width;
-            Height = height;
-            SpawnPoint = spawnPoint;
-            Layers = layers;
-
-            MapTextures = new Dictionary<string, MapTexture>();
-
-        }
-
         public string Name { get; }
 
         public int Id { get; }
@@ -25,15 +12,36 @@ namespace Misana.Core.Maps
         public int Width { get; }
         public int Height { get; }
 
-        public Vector2 SpawnPoint { get; }
+        public string TilesheetName(int id) => Tilesheets[id];
 
-        public Dictionary<string, MapTexture> MapTextures { get; }
+        public Vector2 SpawnPoint { get; set; }
 
-        public Layer[] Layers { get; }
+        public Dictionary<int,string> Tilesheets { get; set; }
 
-        public MapTexture GetMapTextures(int id)
+        public List<Layer> LayerList { get; set; }
+
+        public Layer[] Layers { get { return LayerList.ToArray(); } }
+
+        public Area(string name, int id, int width, int height, Vector2 spawnPoint, List<Layer> layers)
         {
-            return MapTextures.Values.First(m => m.Firstgid <= id && id <= m.Firstgid + m.Tilecount);
+            Name = name;
+            Id = id;
+            Width = width;
+            Height = height;
+            SpawnPoint = spawnPoint;
+            LayerList= layers;
+
+            Tilesheets = new Dictionary<int, string>();
+        }
+
+        public Area(string name, int id, int width, int height)
+        {
+            Name = name;
+            Id = id;
+            Width = width;
+            Height = height;
+
+            Tilesheets = new Dictionary<int, string>();
         }
 
         public bool IsCellBlocked(int x, int y)
@@ -44,24 +52,33 @@ namespace Misana.Core.Maps
             if (x >= Width || y >= Height)
                 return true;
 
-            var index = x + Width * y;
+            var index = GetTileIndex(x, y);
 
             foreach (var layer in Layers)
             {
-                var id = layer.Tiles[index];
-
-                if (id == 0)
-                    continue;
-
-                var mapTexture = GetMapTextures(id);
-
-                var property = mapTexture.GetTileProperty(id - mapTexture.Firstgid);
-
-                if (property.Blocked)
+                if (layer.Tiles[index].Blocked)
                     return true;
             }
 
             return false;
+        }
+
+        public int GetTileIndex(int x, int y)
+        {
+            return x + Width * y;
+        }
+
+        public int AddTilesheet(string tilesheet)
+        {
+            var index = Tilesheets.Count + 1;
+
+            if (Tilesheets.ContainsValue(tilesheet))
+                return Tilesheets.Where(t => t.Value == tilesheet).First().Key;
+
+            Tilesheets.Add(index, tilesheet);
+
+            return index;
+
         }
 
     }

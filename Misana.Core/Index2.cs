@@ -17,5 +17,15 @@
             X = (int)vec.X;
             Y = (int)vec.Y;
         }
+
+        public static bool operator ==(Index2 obj1, Index2 obj2)
+        {
+            return obj1.X == obj2.X && obj1.Y == obj2.Y;
+        }
+
+        public static bool operator !=(Index2 obj1, Index2 obj2)
+        {
+            return !(obj1.X == obj2.X && obj1.Y == obj2.Y);
+        }
     }
 }

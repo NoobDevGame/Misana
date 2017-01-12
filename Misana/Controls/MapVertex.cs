@@ -14,9 +14,9 @@ namespace Misana.Controls
         }
         VertexDeclaration IVertexType.VertexDeclaration => VertexDeclaration;
 
-        public MapVertex(Vector2 position, Vector2 texturePosition, byte textureId)
+        public MapVertex(Vector2 position, Vector2 texturePosition, int textureId)
         {
-            PackedData = (uint)(((uint) position.X & 0xFF) << 24 | ((uint) position.Y & 0xFF) << 16 | textureId << 8 |
+            PackedData = (uint)(((uint) position.X & 0xFF) << 24 | ((uint) position.Y & 0xFF) << 16 | (textureId & 0x3FFF) << 2 |
                          ((uint) texturePosition.X & 0x1)<<1 | ((uint) texturePosition.Y & 0x1));
         }
         public uint PackedData { get; private set; }

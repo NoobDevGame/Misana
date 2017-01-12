@@ -86,21 +86,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Content\Maps\map.mm">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Tilesheets\TileSheetCharacters.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Tilesheets\TileSheetDungeon.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Tilesheets\TileSheetIndoor.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Content\Tilesheets\TileSheetOutdoor.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="Content\TileSheetCharacters.png" />
-    <None Include="Content\TileSheetDungeon.png" />
-    <None Include="Content\TileSheetIndoor.png" />
-    <None Include="Content\TileSheetOutdoor.png" />
     <None Include="Content\Maps\Tiled\TileSheetOutdoor.tsx" />
     <None Include="Content\Maps\Tiled\Lobby\main.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="libs\MonoGameUi.dll" />
     <None Include="Content\BoldFont.spritefont" />
-    <None Include="Content\Content.ecp" />
+    <EngeniousContentReference Include="Content\Content.ecp" />
     <None Include="Content\GameFont.spritefont" />
     <None Include="Content\HeadlineFont.spritefont" />
     <None Include="Content\Hud.spritefont" />
@@ -187,5 +198,19 @@
       <Project>{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}</Project>
       <Name>Misana.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\Tilesheets\TileSheetCharacters.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tilesheets\TileSheetDungeon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tilesheets\TileSheetIndoor.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Content\Tilesheets\TileSheetOutdoor.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 </Project>

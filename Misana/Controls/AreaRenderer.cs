@@ -5,6 +5,7 @@ using System.Linq;
 using engenious.Graphics;
 using Misana.Components;
 using Misana.Core.Maps;
+using System.Collections.Generic;
 
 namespace Misana.Controls
 {
@@ -14,8 +15,14 @@ namespace Misana.Controls
         public Area Area { get; private set; }
         private ScreenComponent _screen;
         private Texture2DArray _tiles;
-        public AreaRenderer(ScreenComponent screen,Area area)
+
+        private Dictionary<string, Tilesheet> tilesheets;
+
+        Dictionary<int, int> offsets = new Dictionary<int, int>();
+
+        public AreaRenderer(ScreenComponent screen,Area area, Dictionary<string,Tilesheet> tilesheets)
         {
+            this.tilesheets = tilesheets;
             Area = area;
             _screen = screen;
             RebuildTiles();
@@ -24,31 +31,41 @@ namespace Misana.Controls
 
         private void RebuildTiles()
         {
-            if (Area.MapTextures.Count == 0)
+            if (Area.Tilesheets.Count == 0)
                 return;
+
+            offsets.Clear();
+
+
             int tileCount = 0;
-            int width = Area.MapTextures.First().Value.Tilewidth, height = Area.MapTextures.First().Value.Tileheight;
-            foreach (var set in Area.MapTextures)
+            int width =-1, height = -1;
+            foreach (var set in Area.Tilesheets)
             {
-                if (set.Value.Tilewidth != width || set.Value.Tileheight != height)
+                var tile = tilesheets[set.Value];
+                if (width != -1 && (tile.TileWidth != width || tile.TileHeight != height))
                     throw new NotSupportedException("non uniform tile sizes not supported");
-                tileCount += set.Value.Tilecount;
+                width = tile.TileWidth;
+                height = tile.TileHeight;
+                offsets.Add(set.Key, tileCount);
+                tileCount += tile.TileCount;
             }
             _tiles = new Texture2DArray(_screen.GraphicsDevice, 1, width, height, tileCount);
             int tileIndex = 0;
 
+
             int[] tileBuffer = new int[width * height];
-            foreach (var set in Area.MapTextures)
+            foreach (var set in Area.Tilesheets)
             {
+                var tile = tilesheets[set.Value];
                 int x = 0, y = 0;
-                var text = _screen.Content.Load<Texture2D>(set.Key);
+                var text = _screen.Content.Load<Texture2D>(tile.TextureName);
                 Debug.WriteLine(set.Key);
                 int[] buffer = new int[text.Width * text.Height];
                 text.GetData(buffer);
 
 
                 int curColumn=0;
-                for (int currentTile=0;currentTile<set.Value.Tilecount;currentTile++)
+                for (int currentTile=0;currentTile<tile.TileCount;currentTile++)
                 {
                     int yOffset = 0;
                     int curWidth = Math.Min(text.Width - x, width);
@@ -63,11 +80,11 @@ namespace Misana.Controls
 
                     _tiles.SetData(tileBuffer, tileIndex++);
 
-                    x += width + set.Value.Spacing;
+                    x += width + tile.Spacing;
                     curColumn++;
-                    if (x >= text.Width || curColumn >= set.Value.Columns)
+                    if (x >= text.Width/* || curColumn >= tile.Columns*/)
                     {
-                        y += height + set.Value.Spacing;
+                        y += height + tile.Spacing;
                         x = 0;
                         curColumn = 0;
                     }
@@ -82,7 +99,7 @@ namespace Misana.Controls
             _layerRenderer = new LayerRenderer[layers.Length];
             for (int index = 0; index < layers.Length; index++)
             {
-                _layerRenderer[index] = new LayerRenderer(_screen,Area.Width, Area.Height, layers[index],_tiles);
+                _layerRenderer[index] = new LayerRenderer(_screen,Area.Width, Area.Height, layers[index],_tiles,offsets);
             }
         }
 
