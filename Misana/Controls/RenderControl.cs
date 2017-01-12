@@ -78,7 +78,7 @@ namespace Misana.Controls
             Matrix projection = Matrix.CreateOrthographicOffCenter(0, manager.GraphicsDevice.Viewport.Width, 0, manager.GraphicsDevice.Viewport.Height, 0, -1);
             Matrix view = Matrix.CreateLookAt(new Vector3(0,0,1),Vector3.Zero,Vector3.UnitY);
             Matrix world =Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0);
-            world.M11 = world.M22=world.M33 = manager.Game.CameraComponent.TileSize;
+            world.M11 = world.M22=world.M33 = manager.Game.CameraComponent.TileSize*manager.Game.CameraComponent.Zoom;
             effect.Parameters["WorldViewProj"].SetValue(projection *world);
 
             if (_renderer?.Area != area)

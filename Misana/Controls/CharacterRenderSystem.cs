@@ -26,10 +26,12 @@ namespace Misana.Controls
             _font = game.Content.Load<SpriteFont>("Hud");
 
             _characterTexture = game.Content.Load<Texture2D>("TileSheetCharacters");
+            _characterTexture.SamplerState = new SamplerState() {TextureFilter = TextureFilter.Nearest};
         }
 
         public void Draw(MisanaGame game,GameTime gameTime,SpriteBatch batch)
         {
+
             var area = game.Player.Position.CurrentArea;
             var camera = game.CameraComponent;
 
@@ -49,11 +51,11 @@ namespace Misana.Controls
                 if (dimensionComponent != null)
                     dimension = new Vector2(dimensionComponent.HalfSize.X, dimensionComponent.HalfSize.Y);
 
-                dimension *= camera.TileSize;
+                dimension *= camera.TileSize * camera.Zoom;
 
                 var source = new Rectangle(renderComponent.TilePosition.X * 17, renderComponent.TilePosition.Y * 17, 16, 16);
 
-                Vector2 position = new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize + camera.CameraOffset ;
+                Vector2 position = (new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize * camera.Zoom + camera.CameraOffset) ;
 
                 var health = entity.Get<HealthComponent>();
                 if (entity.Id == game.Player.PlayerId)
@@ -62,18 +64,18 @@ namespace Misana.Controls
                     var drawHealth = health != null && health.Current < health.Max;
                     if (drawHealth)
                     {
-                        var len = 50;
+                        var len = 50 * camera.Zoom; 
 
                         var pos = position + new Vector2(-len / 2f, -dimension.Y - 5);
 
                         batch.Draw(_pixel, new Rectangle(
                             (int)pos.X, (int)pos.Y,
-                            (int)(len * camera.Zoom), (int)(5 * camera.Zoom)
+                            (int)(len ), (int)(5 * camera.Zoom)
                         ), Color.LightGray);
 
                         batch.Draw(_pixel, new Rectangle(
                             (int)pos.X, (int)pos.Y,
-                            (int)(len * health.Ratio * camera.Zoom), (int)(5 * camera.Zoom)
+                            (int)(len * health.Ratio ), (int)(5 * camera.Zoom)
                         ), Color.Red);
                     }
                 }
@@ -98,24 +100,24 @@ namespace Misana.Controls
                     
                     if (drawHealth)
                     {
-                        var len = 50;
+                        var len = 50 * camera.Zoom;
 
                         var pos = position + new Vector2(-len / 2f, -dimension.Y - 5);
 
                         batch.Draw(_pixel, new Rectangle(
-                            (int)pos.X, (int)pos.Y, 
-                            (int)(len * camera.Zoom), (int)(5 * camera.Zoom)
+                            (int)pos.X, (int)pos.Y,
+                            (int)(len), (int)(5 * camera.Zoom)
                         ), Color.LightGray);
 
                         batch.Draw(_pixel, new Rectangle(
                             (int)pos.X, (int)pos.Y,
-                            (int)(len * health.Ratio * camera.Zoom), (int)(5 * camera.Zoom)
+                            (int)(len * health.Ratio), (int)(5 * camera.Zoom)
                         ), Color.Red);
                     }
                 }
                 
                 position -= dimension;
-                batch.Draw(_characterTexture, new Rectangle((int)position.X, (int)position.Y, (int)(dimension.X * 2 * camera.Zoom), (int)(dimension.Y * 2 * camera.Zoom)),source, Color.White);
+                batch.Draw(_characterTexture, new Rectangle((int)position.X, (int)position.Y, (int)(dimension.X * 2 ), (int)(dimension.Y * 2)),source, Color.White);
             }
         }
     }
