@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Components
 {
-    public class BlockCollisionComponent : Component<BlockCollisionComponent>
+    public class BlockColliderComponent : Component<BlockColliderComponent>
     {
     }
 }

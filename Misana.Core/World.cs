@@ -30,7 +30,7 @@ namespace Misana.Core
                 .Add<PositionComponent>(p =>
                 {
                     p.CurrentArea = CurrentMap.StartArea;
-                    p.Position = new Vector2(3, 3
+                    p.Position = new Vector2(2, 3
                         );  
                 })
                 .Add<DimensionComponent>(p =>
@@ -38,7 +38,8 @@ namespace Misana.Core
                     p.Radius = 0.5f;
                 })
                 .Add<MotionComponent>()
-                .Add<BlockCollisionComponent>()
+                .Add<BlockColliderComponent>()
+                .Add<EntityCollider>()
                 .Add<CharacterRenderComponent>(p =>
                 {
                     p.TilePosition = new Index2(0, 9);
@@ -49,7 +50,7 @@ namespace Misana.Core
         public int CreatePlayer(PlayerInputComponent input,PositionComponent position)
         {
             position.CurrentArea = CurrentMap.StartArea;
-            position.Position = new Vector2(3, 3);
+            position.Position = new Vector2(4, 3);
 
             var entity =  Entities.NewEntity()
                 .Add(position)
@@ -59,7 +60,8 @@ namespace Misana.Core
                     p.Radius = 0.5f;
                 })
                 .Add<MotionComponent>()
-                .Add<BlockCollisionComponent>()
+                .Add<BlockColliderComponent>()
+                .Add<EntityCollider>()
                 .Add<CharacterRenderComponent>(p => 
                 {
                     p.TilePosition = new Index2(1, 9);
