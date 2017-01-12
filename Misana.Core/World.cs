@@ -42,13 +42,13 @@ namespace Misana.Core
                 {
                     p.Action += (e) => e.Add<TimeDamageComponent>(t =>
                     {
-                        t.DamagePerSeconds = 5;
+                        t.DamagePerSeconds = -5;
                         t.EffectTime = TimeSpan.FromMilliseconds(10000);
                     }, false);
                 })
                 .Commit();
 
-
+            
             Entities.NewEntity()
                .Add<PositionComponent>(p =>
                {
@@ -93,9 +93,17 @@ namespace Misana.Core
                     h.Max = 100;
                     h.Current = 50;
                 })
+                .Add<EntityCollider>(e => { e.AppliesSideEffect = true; e.Blocked = true; })
+                .Add<CollisionApplicator>(p =>
+                {
+                    p.Action += (e) => e.Add<TimeDamageComponent>(t =>
+                    {
+                        t.DamagePerSeconds = 5;
+                        t.EffectTime = TimeSpan.FromMilliseconds(10000);
+                    }, false);
+                })
                 .Add<MotionComponent>()
                 .Add<BlockColliderComponent>()
-                .Add<EntityCollider>(e => { e.Blocked = true; })
                 .Add<CharacterRenderComponent>(p => 
                 {
                     p.TilePosition = new Index2(1, 9);

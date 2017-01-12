@@ -9,6 +9,9 @@ namespace Misana.Core.Systems
         {
             foreach (var entityId in r1.OtherEntityIds)
             {
+                if(entityId == e.Id)
+                    continue;
+
                 var otherEntity = Manager.GetEntityById(entityId);
                 if (otherEntity != null)
                     r2.Action?.Invoke(otherEntity);
