@@ -11,6 +11,7 @@ using Misana.Core.Maps;
 using Misana.Core.Maps.MapSerializers;
 using Misana.Editor.Forms;
 using Misana.Editor.Controls;
+using System.IO;
 
 namespace Misana.Editor
 {
@@ -44,13 +45,13 @@ namespace Misana.Editor
 
         private Area currenArea;
 
-        public Dictionary<string,Image> TileSheets { get; private set; }
+        public Dictionary<string,Tilesheet> TileSheets { get; private set; }
 
         internal RenderControl MapRenderer { get; private set; }
 
         public Editor()
         {
-            TileSheets = new Dictionary<string, Image>();
+            TileSheets = new Dictionary<string, Tilesheet>();
 
             MapRenderer = new RenderControl(this);
             MapRenderer.Dock = DockStyle.Fill;
@@ -65,9 +66,36 @@ namespace Misana.Editor
 
             MapRenderer.OnSelectionChanged += (s, e) =>
             {
-                propertyGrid_tile.SelectedObject = TileClass.FromStruct(CurrentArea.Layers[0].Tiles[CurrentArea.GetTileIndex(MapRenderer.SelectedTile.X, MapRenderer.SelectedTile.Y)]);
+                //propertyGrid_tile.SelectedObject = TileClass.FromStruct(CurrentArea.Layers[0].Tiles[CurrentArea.GetTileIndex(MapRenderer.SelectedTile.X, MapRenderer.SelectedTile.Y)]);
             };
 
+        }
+
+        private void LoadTilesheets() //TODO auslagern
+        {
+            foreach (var tf in Directory.GetFiles("Content/Tilesheets/", "*.json"))
+            {
+                try
+                {
+                    var ts = Tilesheet.LoadTilesheet("Content/Tilesheets/", Path.GetFileNameWithoutExtension(tf));
+                    TileSheets.Add(ts.Name, ts);
+                }catch(Exception e)
+                {
+                    MessageBox.Show("Could not load tilesheet " + Path.GetFileNameWithoutExtension(tf), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+
+            foreach(var tilesheet in TileSheets)
+            {
+                TabPage tp = new TabPage(tilesheet.Value.Name);
+
+                TileSelect ts = new TileSelect(tilesheet.Value.Texture);
+                ts.Dock = DockStyle.Fill;
+
+                tp.Controls.Add(ts);
+
+                tabControl_tileset.TabPages.Add(tp);
+            }
         }
 
         protected override void OnLoad(EventArgs e)
@@ -75,28 +103,7 @@ namespace Misana.Editor
             base.OnLoad(e);
 
 
-            TileSheets.Add("TileSheetDungeon",Bitmap.FromFile("Content/TileSheetDungeon.png"));
-            TileSheets.Add("TileSheetOutdoor",Bitmap.FromFile("Content/TileSheetOutdoor.png"));
-            TileSheets.Add("TileSheetIndoor",Bitmap.FromFile("Content/TileSheetIndoor.png"));
-
-            foreach(var TileSheet in TileSheets)
-            {
-                TabPage p = new TabPage(TileSheet.Key);
-                p.Controls.Add(new TileSelect(new Bitmap(TileSheet.Value)) { Dock = DockStyle.Fill });
-                tabControl_tileset.TabPages.Add(p);
-                
-            }
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            var about = new About();
-            about.ShowDialog();
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            this.Close();
+            LoadTilesheets();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -132,16 +139,6 @@ namespace Misana.Editor
             treeView_maps.ExpandAll();
         }
 
-        private void creditsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            new CreditsForm().ShowDialog();
-        }
-
-        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e)
-        {
-            new About().ShowDialog();
-        }
-
         private void treeView_maps_AfterSelect(object sender, TreeViewEventArgs e)
         {
             if (e.Node.ImageKey == "Map")
@@ -160,7 +157,7 @@ namespace Misana.Editor
             }
         }
 
-        private void ShowSaveDialog()
+        private void ShowSaveDialog(bool save = false)
         {
             SaveFileDialog sfd = new SaveFileDialog();
             sfd.DefaultExt = "mm";
@@ -168,6 +165,9 @@ namespace Misana.Editor
 
             if (sfd.ShowDialog() == DialogResult.OK)
                 savePath = sfd.FileName;
+
+            if (save)
+                Save(true);
         }
 
         private void Save(bool diaShown = false)
@@ -189,15 +189,14 @@ namespace Misana.Editor
             }
         }
 
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Save();
-        }
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) => this.Close();
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            ShowSaveDialog();
-            Save(true);
-        }
+        private void creditsToolStripMenuItem_Click(object sender, EventArgs e) => new CreditsForm().ShowDialog();
+
+        private void aboutToolStripMenuItem1_Click(object sender, EventArgs e) => new About().ShowDialog();
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e) => Save();
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) => ShowSaveDialog(true);
     }
 }

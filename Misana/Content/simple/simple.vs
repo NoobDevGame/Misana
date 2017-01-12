@@ -11,7 +11,7 @@ void main()
 	
 
 	vec4 position = vec4(float(inputData >> 24),float((inputData >> 16) & 0xFF),0.0,1.0);
-	psTexIndex = (inputData>>8) & 0xFF;
+	psTexIndex = (inputData>>2) & 0x3FFF;
 	psTexcoord = uvLookup[(inputData) & 0x3];
 	
 

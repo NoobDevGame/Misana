@@ -634,45 +634,9 @@
       <Processor>EffectProcessor</Processor>
       <Importer>Effect Importer</Importer>
     </ContentFile>
-    <ContentFile>
-      <Name>TileSheetCharacters.png</Name>
-      <Processor>BitmapProcessor</Processor>
-      <Importer>Bitmap Importer</Importer>
-      <Settings>
-        <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
-        <MipMapCount>1</MipMapCount>
-        <Format>0</Format>
-      </Settings>
-    </ContentFile>
-    <ContentFile>
-      <Name>TileSheetDungeon.png</Name>
-      <Processor>BitmapProcessor</Processor>
-      <Importer>Bitmap Importer</Importer>
-      <Settings>
-        <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
-        <MipMapCount>1</MipMapCount>
-        <Format>0</Format>
-      </Settings>
-    </ContentFile>
-    <ContentFile>
-      <Name>TileSheetIndoor.png</Name>
-      <Processor>BitmapProcessor</Processor>
-      <Importer>Bitmap Importer</Importer>
-      <Settings>
-        <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
-        <MipMapCount>1</MipMapCount>
-        <Format>0</Format>
-      </Settings>
-    </ContentFile>
-    <ContentFile>
-      <Name>TileSheetOutdoor.png</Name>
-      <Processor>BitmapProcessor</Processor>
-      <Importer>Bitmap Importer</Importer>
-      <Settings>
-        <AutoGenerateMipMaps>False</AutoGenerateMipMaps>
-        <MipMapCount>1</MipMapCount>
-        <Format>0</Format>
-      </Settings>
-    </ContentFile>
+    <ContentFolder>
+      <Name>Tilesheets</Name>
+      <Contents />
+    </ContentFolder>
   </Contents>
 </Content>

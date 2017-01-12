@@ -12,7 +12,7 @@ namespace Misana.Controls
         private VertexBuffer vb;
         private ScreenComponent _screen;
         private Texture2DArray _tiles;
-        public LayerRenderer(ScreenComponent screen, int width, int height, Layer layer,Texture2DArray tiles)
+        public LayerRenderer(ScreenComponent screen, int width, int height, Layer layer,Texture2DArray tiles, Dictionary<int,int> offsets)
         {
             _tiles = tiles;
             _screen = screen;
@@ -23,13 +23,13 @@ namespace Misana.Controls
                 {
                     var tile = layer.Tiles[x + y * width];
 
-                    if (tile.TextureID == 0 || tile.TilesheetID == 0)
+                    if (tile.TextureID == 0 || tile.TilesheetID == 0 )
                         continue;
-
-                    vertices.Add(new MapVertex(new Vector2(x, y), new Vector2(0, 0), (byte)tile.TextureID));
-                    vertices.Add(new MapVertex(new Vector2(x + 1, y), new Vector2(1, 0), (byte)tile.TextureID));
-                    vertices.Add(new MapVertex(new Vector2(x, y + 1), new Vector2(0, 1), (byte)tile.TextureID));
-                    vertices.Add(new MapVertex(new Vector2(x + 1, y + 1), new Vector2(1, 1), (byte)tile.TextureID));
+                    int offset = offsets[tile.TilesheetID];
+                    vertices.Add(new MapVertex(new Vector2(x, y), new Vector2(0, 0), tile.TextureID+offset));
+                    vertices.Add(new MapVertex(new Vector2(x + 1, y), new Vector2(1, 0), tile.TextureID + offset));
+                    vertices.Add(new MapVertex(new Vector2(x, y + 1), new Vector2(0, 1), tile.TextureID + offset));
+                    vertices.Add(new MapVertex(new Vector2(x + 1, y + 1), new Vector2(1, 1), tile.TextureID + offset));
                 }
             }
             vb = new VertexBuffer(screen.GraphicsDevice, MapVertex.VertexDeclaration, vertices.Count);

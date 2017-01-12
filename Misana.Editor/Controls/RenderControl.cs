@@ -79,10 +79,12 @@ namespace Misana.Editor.Controls
                                 var tilesheetName = editor.CurrentArea.TilesheetName(tile.TilesheetID);
                                 var tileID = tile.TextureID -1;
 
-                                var image = editor.TileSheets[tilesheetName];
+                                var sheet = editor.TileSheets[tilesheetName];
 
-                                var tHeight = (image.Height+1) / 17;
-                                var tWidth = (image.Width+1) / 17;
+                                var image = sheet.Texture;
+
+                                var tHeight = (image.Height+1) / (sheet.TileHeight+sheet.Spacing);
+                                var tWidth = (image.Width+1) / (sheet.TileWidth + sheet.Spacing);
                                 var tx = (tileID) % tWidth;
                                 var ty = (tileID) / tWidth;
 

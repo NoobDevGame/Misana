@@ -109,6 +109,22 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="..\Misana\Content\Tilesheets\TileSheetCharacters.json">
+      <Link>Content\Tilesheets\TileSheetCharacters.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Misana\Content\Tilesheets\TileSheetDungeon.json">
+      <Link>Content\Tilesheets\TileSheetDungeon.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Misana\Content\Tilesheets\TileSheetIndoor.json">
+      <Link>Content\Tilesheets\TileSheetIndoor.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="..\Misana\Content\Tilesheets\TileSheetOutdoor.json">
+      <Link>Content\Tilesheets\TileSheetOutdoor.json</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -129,16 +145,20 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\Misana\Content\TileSheetDungeon.png">
-      <Link>Content\TileSheetDungeon.png</Link>
+    <Content Include="..\Misana\Content\Tilesheets\TileSheetCharacters.png">
+      <Link>Content\Tilesheets\TileSheetCharacters.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\Misana\Content\TileSheetIndoor.png">
-      <Link>Content\TileSheetIndoor.png</Link>
+    <Content Include="..\Misana\Content\Tilesheets\TileSheetDungeon.png">
+      <Link>Content\Tilesheets\TileSheetDungeon.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\Misana\Content\TileSheetOutdoor.png">
-      <Link>Content\TileSheetOutdoor.png</Link>
+    <Content Include="..\Misana\Content\Tilesheets\TileSheetIndoor.png">
+      <Link>Content\Tilesheets\TileSheetIndoor.png</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Misana\Content\Tilesheets\TileSheetOutdoor.png">
+      <Link>Content\Tilesheets\TileSheetOutdoor.png</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\IconMap.png" />
