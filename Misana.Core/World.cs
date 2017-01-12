@@ -15,40 +15,65 @@ namespace Misana.Core
 
         public Map CurrentMap { get; private set; }
 
-        public World()
-        {
+        public EntityManager Entities { get; }
 
+        public World(EntityManager manager)
+        {
+            Entities = manager;
         }
 
         public void ChangeMap(Map map)
         {
             CurrentMap = map;
 
-        }
-
-        public Entity CreatePlayer()
-        {
-            var entity =  CurrentMap.Entities.NewEntity()
+            Entities.NewEntity()
                 .Add<PositionComponent>(p =>
                 {
                     p.CurrentArea = CurrentMap.StartArea;
-                    p.Position = new Vector2(3, 3);
+                    p.Position = new Vector2(2, 3
+                        );  
                 })
+                .Add<DimensionComponent>(p =>
+                {
+                    p.Radius = 0.5f;
+                })
+                .Add<MotionComponent>()
+                .Add<BlockColliderComponent>()
+                .Add<EntityCollider>()
+                .Add<CharacterRenderComponent>(p =>
+                {
+                    p.TilePosition = new Index2(0, 9);
+                })
+                .Commit();
+        }
+
+        public int CreatePlayer(PlayerInputComponent input,PositionComponent position)
+        {
+            position.CurrentArea = CurrentMap.StartArea;
+            position.Position = new Vector2(4, 3);
+
+            var entity =  Entities.NewEntity()
+                .Add(position)
+                .Add(input)
                 .Add<DimensionComponent>(p => 
                 {
                     p.Radius = 0.5f;
                 })
-                .Add<PlayerInputComponent>()
                 .Add<MotionComponent>()
-                .Add<BlockCollisionComponent>()
+                .Add<BlockColliderComponent>()
+                .Add<EntityCollider>()
+                .Add<CharacterRenderComponent>(p => 
+                {
+                    p.TilePosition = new Index2(1, 9);
+                })
                 .Commit();
 
-            return entity;
+            return entity.Id;
         }
 
         public void Update(GameTime gameTime)
         {
-            CurrentMap.Entities.Update(gameTime);
+            Entities.Update(gameTime);
         }
     }
 }

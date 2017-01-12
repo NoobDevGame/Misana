@@ -14,7 +14,6 @@ namespace Misana.Controls
     {
         ScreenComponent manager;
 
-        private Texture2D _pixel;
         private IndexBuffer ib;
         private Effect effect;
         private AreaRenderer _renderer;
@@ -24,8 +23,10 @@ namespace Misana.Controls
         public RenderControl(ScreenComponent manager, string style = "") : base(manager, style)
         {
             this.manager = manager;
-            _pixel = new Texture2D(manager.GraphicsDevice, 1, 1);
-            _pixel.SetData<Color>(new Color[] { Color.White });
+            
+
+            manager.Game.Simulation.CharacterRender.LoadContent(manager.Game);
+
             effect = manager.Content.Load<Effect>("simple");
             CreateIndexBuffer();
             LoadTilesheets();
@@ -100,8 +101,8 @@ namespace Misana.Controls
             Matrix view = Matrix.CreateLookAt(new Vector3(0,0,1),Vector3.Zero,Vector3.UnitY);
             Matrix world =Matrix.CreateTranslation(cameraOffset.X,cameraOffset.Y,0);
             world.M11 = world.M22=world.M33 = manager.Game.CameraComponent.TileSize;
-            effect.Parameters["WorldViewProj"].SetValue(projection*world);
-            //effect.Parameters["offset"].SetValue(new Vector2(cOffset.X+player.Radius * 70, cOffset.Y+player.Height * 70));
+            effect.Parameters["WorldViewProj"].SetValue(projection *world);
+
             if (_renderer?.Area != area)
             {
                 _renderer?.Dispose();
@@ -121,15 +122,9 @@ namespace Misana.Controls
         {
             base.OnDraw(batch, controlArea, gameTime);
 
-
-
-            var player = manager.Game.Player.Player;
-            var area = manager.Game.TestMap.StartArea;
+            var area = manager.Game.Player.Position.CurrentArea;
 
             if (area == null)
-                return;
-
-            if (player == null)
                 return;
 
             if (ControlTexture != null)
@@ -137,40 +132,7 @@ namespace Misana.Controls
                 batch.Draw(ControlTexture,new Vector2(0,0),Color.White);
             }
 
-            var camera = manager.Game.CameraComponent;
-
-            var dimensioncomp = player.Get<DimensionComponent>();
-            var positioncomp = player.Get<PositionComponent>();
-
-            Vector2 dimension = new Vector2(1, 1);
-
-            if (dimensioncomp != null)
-                dimension = new Vector2(dimensioncomp.HalfSize.X, dimensioncomp.HalfSize.Y);
-
-            dimension *= camera.TileSize;
-
-            var position = camera.PlayerPosition - dimension;
-
-            batch.Draw(_pixel, new Rectangle((int)position.X,(int)position.Y,(int)(dimension.X * 2), (int)(dimension.Y * 2)), Color.Red);
-
-
-            /*
-            foreach (var entity in area.Entities)
-            {
-                Vector2 position = new Vector2((entity.Position.X) * 70 + cOffset.X, (entity.Position.Y) * 70 + cOffset.Y  );
-
-                if (entity == manager.Game.SimulationComponent.Player)
-                {
-                    position = manager.Game.CameraComponent.HalfViewport - new Vector2(entity.Radius, entity.Height);
-                }
-                var pathName = entity.TextureName;
-                if (entity is ICharacter)
-                    pathName = Path.Combine("player" , pathName);
-                Rectangle destination = new Rectangle((int)(position.X), (int)(position.Y), (int)(entity.Radius * 2 * 70), (int)(entity.Height * 70));
-                batch.Draw(manager.Content.Load<Texture2D>(pathName), destination, Color.White);
-            }
-            */
-
+            manager.Game.Simulation.CharacterRender.Draw(manager.Game,gameTime, batch);
         }
 
         public void Dispose()

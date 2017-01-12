@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Components
 {
-    public class BlockCollisionComponent : Component<BlockCollisionComponent>
+    public class CharacterRenderComponent : Component<CharacterRenderComponent>
     {
+        public Index2 TilePosition { get; set; }
     }
 }
