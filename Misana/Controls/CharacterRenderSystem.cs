@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Controls
 {
-    internal class CharacterRenderSystem : BaseSystemR2O1<CharacterRenderComponent,PositionComponent,DimensionComponent>
+    internal class CharacterRenderSystem : BaseSystemR2O1<CharacterRenderComponent, PositionComponent, DimensionComponent>
     {
         private Texture2D _pixel;
         private Texture2D _characterTexture;
@@ -54,29 +54,49 @@ namespace Misana.Controls
                 var source = new Rectangle(renderComponent.TilePosition.X * 17, renderComponent.TilePosition.Y * 17, 16, 16);
 
                 Vector2 position = new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize + camera.CameraOffset ;
-
-                bool drawname = (positionComponent.Position - game.Player.Position.Position).LengthSquared() < 9;
-
+                
                 if (entity.Id == game.Player.PlayerId)
                 {
                     position = camera.PlayerPosition;
-                    drawname = false;
                 }
-
-                
-
-                var characterInfo = entity.Get<CharacterComponent>();
-
-                if (drawname && characterInfo != null && !string.IsNullOrEmpty(characterInfo.Name))
+                else
                 {
-                    var length = _font.MeasureString(characterInfo.Name);
-                    var textposition = position + new Vector2(-length.X / 2f, -dimension.Y - length.Y);
+                    var characterInfo = entity.Get<CharacterComponent>();
+                    var distance = (positionComponent.Position - game.Player.Position.Position).LengthSquared();
 
-                    batch.DrawString(_font, characterInfo.Name, textposition, Color.LightGray);
+
+                    var drawname = distance < 9;
+
+                    var health = entity.Get<HealthComponent>();
+                    var drawHealth = distance < 9 && health != null && health.Current < health.Max;
+
+                    if (drawname && !string.IsNullOrEmpty(characterInfo?.Name))
+                    {
+                        var length = _font.MeasureString(characterInfo.Name);
+                        var textposition = position + new Vector2(-length.X / 2f, -dimension.Y - length.Y - (drawHealth ? 3 : 0));
+
+                        batch.DrawString(_font, characterInfo.Name, textposition, Color.LightGray);
+                    }
+                    
+                    if (drawHealth)
+                    {
+                        var len = 50;
+
+                        var pos = position + new Vector2(-len / 2f, -dimension.Y - 5);
+
+                        batch.Draw(_pixel, new Rectangle(
+                            (int)pos.X, (int)pos.Y, 
+                            (int)(len * camera.Zoom), (int)(5 * camera.Zoom)
+                        ), Color.LightGray);
+
+                        batch.Draw(_pixel, new Rectangle(
+                            (int)pos.X, (int)pos.Y,
+                            (int)(len * health.Ratio * camera.Zoom), (int)(5 * camera.Zoom)
+                        ), Color.Red);
+                    }
                 }
-
+                
                 position -= dimension;
-
                 batch.Draw(_characterTexture, new Rectangle((int)position.X, (int)position.Y, (int)(dimension.X * 2 * camera.Zoom), (int)(dimension.Y * 2 * camera.Zoom)),source, Color.White);
             }
         }

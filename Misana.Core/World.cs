@@ -38,6 +38,9 @@ namespace Misana.Core
                 })
                 .Add<MotionComponent>()
                 .Add<BlockColliderComponent>()
+                .Add<HealthComponent>(h => { h.Max = 500;
+                    h.Current = 250;
+                })
                 .Add<EntityCollider>(ec => { ec.AppliesSideEffect = true; })
                 .Add<VelocityApplicator>(va => { va.Force = new Vector2(2.5f,0);})
                 .Add<CharacterComponent>(p => {p.Name = "Heidi";})
@@ -59,6 +62,10 @@ namespace Misana.Core
                })
                .Add<MotionComponent>()
                .Add<BlockColliderComponent>()
+               .Add<HealthComponent>(h => {
+                   h.Max = 500;
+                   h.Current = 500;
+               })
                .Add<EntityCollider>()
                .Add<CharacterComponent>(p =>
                {

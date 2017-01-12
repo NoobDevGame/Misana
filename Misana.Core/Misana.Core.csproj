@@ -49,6 +49,7 @@
     <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\EntityCollider.cs" />
     <Compile Include="Components\EntityCollision.cs" />
+    <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Components\VelocityApplicator.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
