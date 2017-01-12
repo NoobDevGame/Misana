@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Maps;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponent;
 
 namespace Misana.Core
 {
@@ -30,25 +31,23 @@ namespace Misana.Core
                 .Add<PositionComponent>(p =>
                 {
                     p.CurrentArea = CurrentMap.StartArea;
-                    p.Position = new Vector2(2, 3);  
+                    p.Position = new Vector2(1, 1);
                 })
                 .Add<DimensionComponent>(p =>
                 {
                     p.Radius = 0.5f;
                 })
-                .Add<MotionComponent>()
-                .Add<BlockColliderComponent>()
-                .Add<HealthComponent>(h => { h.Max = 500;
-                    h.Current = 250;
-                })
-                .Add<EntityCollider>(ec => { ec.AppliesSideEffect = true; })
-                .Add<VelocityApplicator>(va => { va.Force = new Vector2(2.5f,0);})
-                .Add<CharacterComponent>(p => {p.Name = "Heidi";})
-                .Add<CharacterRenderComponent>(p =>
+                .Add<EntityCollider>(e => { e.AppliesSideEffect = true; })
+                .Add<CollisionApplicator>(p =>
                 {
-                    p.TilePosition = new Index2(0, 9);
+                    p.Action += (e) => e.Add<TimeDamageComponent>(t =>
+                    {
+                        t.DamagePerSeconds = 1;
+                        t.EffectTime = TimeSpan.FromMilliseconds(10000);
+                    });
                 })
                 .Commit();
+
 
             Entities.NewEntity()
                .Add<PositionComponent>(p =>
