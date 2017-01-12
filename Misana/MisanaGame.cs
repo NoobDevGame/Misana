@@ -47,7 +47,7 @@ namespace Misana
         public override void LoadContent()
         {
             
-            TestMap = MapLoader.LoadPath(@"C:\Users\Fabian\Desktop\misana.mm");
+            TestMap = MapLoader.LoadPath(@"Content/Maps/map.mm");
 
             base.LoadContent();
             
