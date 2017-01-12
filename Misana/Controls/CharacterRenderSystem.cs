@@ -54,10 +54,28 @@ namespace Misana.Controls
                 var source = new Rectangle(renderComponent.TilePosition.X * 17, renderComponent.TilePosition.Y * 17, 16, 16);
 
                 Vector2 position = new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize + camera.CameraOffset ;
-                
+
+                var health = entity.Get<HealthComponent>();
                 if (entity.Id == game.Player.PlayerId)
                 {
                     position = camera.PlayerPosition;
+                    var drawHealth = health != null && health.Current < health.Max;
+                    if (drawHealth)
+                    {
+                        var len = 50;
+
+                        var pos = position + new Vector2(-len / 2f, -dimension.Y - 5);
+
+                        batch.Draw(_pixel, new Rectangle(
+                            (int)pos.X, (int)pos.Y,
+                            (int)(len * camera.Zoom), (int)(5 * camera.Zoom)
+                        ), Color.LightGray);
+
+                        batch.Draw(_pixel, new Rectangle(
+                            (int)pos.X, (int)pos.Y,
+                            (int)(len * health.Ratio * camera.Zoom), (int)(5 * camera.Zoom)
+                        ), Color.Red);
+                    }
                 }
                 else
                 {
@@ -67,7 +85,7 @@ namespace Misana.Controls
 
                     var drawname = distance < 9;
 
-                    var health = entity.Get<HealthComponent>();
+                    
                     var drawHealth = distance < 9 && health != null && health.Current < health.Max;
 
                     if (drawname && !string.IsNullOrEmpty(characterInfo?.Name))

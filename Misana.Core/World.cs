@@ -42,9 +42,9 @@ namespace Misana.Core
                 {
                     p.Action += (e) => e.Add<TimeDamageComponent>(t =>
                     {
-                        t.DamagePerSeconds = 1;
+                        t.DamagePerSeconds = 5;
                         t.EffectTime = TimeSpan.FromMilliseconds(10000);
-                    });
+                    }, false);
                 })
                 .Commit();
 
@@ -65,7 +65,7 @@ namespace Misana.Core
                    h.Max = 500;
                    h.Current = 500;
                })
-               .Add<EntityCollider>()
+               .Add<EntityCollider>(e => { e.Blocked = true; })
                .Add<CharacterComponent>(p =>
                {
                    p.Name = "Heidi";
@@ -89,9 +89,13 @@ namespace Misana.Core
                 {
                     p.Radius = 0.5f;
                 })
+                .Add<HealthComponent>(h => {
+                    h.Max = 100;
+                    h.Current = 50;
+                })
                 .Add<MotionComponent>()
                 .Add<BlockColliderComponent>()
-                .Add<EntityCollider>()
+                .Add<EntityCollider>(e => { e.Blocked = true; })
                 .Add<CharacterRenderComponent>(p => 
                 {
                     p.TilePosition = new Index2(1, 9);
