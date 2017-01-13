@@ -37,8 +37,8 @@ namespace Misana.Core.Maps.MapSerializers
             var height = br.ReadInt32();
             var width = br.ReadInt32();
 
-            var spawnX = br.ReadInt32();
-            var spawnY = br.ReadInt32();
+            var spawnX = br.ReadSingle();
+            var spawnY = br.ReadSingle();
 
             var layerLength = br.ReadInt32();
 
@@ -88,6 +88,12 @@ namespace Misana.Core.Maps.MapSerializers
         {
             var tId = br.ReadInt32();
             var sId = br.ReadInt32();
+
+            if (sId == 2)
+            {
+
+            }
+
             var blocked = br.ReadBoolean();
             return new Tile(tId, sId, blocked);
         }
