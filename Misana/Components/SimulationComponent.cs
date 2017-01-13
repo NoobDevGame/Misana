@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Systems.StatusSystem;
+using Misana.Core.Maps;
 
 namespace Misana.Components
 {
@@ -53,17 +54,23 @@ namespace Misana.Components
                 }
             );
 
+            
+        }
+
+        public void StartMap(Map m)
+        {
             World = new World(Entities);
             World.ChangeMap(Game.TestMap);
+            Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Position);
 
-            Game.Player.PlayerId =  World.CreatePlayer(Game.Player.Input,Game.Player.Position);
         }
 
         public override void Update(engenious.GameTime gameTime)
         {
             base.Update(gameTime);
 
-            World.Update(new Core.GameTime(gameTime.ElapsedGameTime,gameTime.TotalGameTime));
+            if(World != null && World.CurrentMap != null)
+                World.Update(new Core.GameTime(gameTime.ElapsedGameTime,gameTime.TotalGameTime));
         }
     }
 }

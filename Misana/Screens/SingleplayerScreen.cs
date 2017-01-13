@@ -1,7 +1,11 @@
 ﻿using System;
 using Misana.Components;
 using MonoGameUi;
+using System.IO;
 using NoobFight.Screens;
+using System.Collections.Generic;
+using Misana.Core.Maps;
+using System.Linq;
 
 namespace Misana.Screens
 {
@@ -50,10 +54,20 @@ namespace Misana.Screens
                 p.Controls.Add(new Label(manager) { Text = s });
                 return p;
             };
-            mapList.Items.Add("Testmap"); //TODO: Make dynamic!
+            //mapList.Items.Add("Testmap"); //TODO: Make dynamic!
+
+            var maps = new List<string>();
+
+            foreach (var f in Directory.EnumerateFiles("Content/Maps/", "*.mm"))
+            {
+                mapList.Items.Add(Path.GetFileNameWithoutExtension(f));
+                maps.Add(f);
+            };
+
             mapList.HorizontalAlignment = HorizontalAlignment.Stretch;
             mapList.VerticalAlignment = VerticalAlignment.Stretch;
             mapList.Margin = new Border(10, 20, 10, 10);
+            mapList.SelectFirst();
             grid.AddControl(mapList, 0, 1);
 
             Button playButton = Button.TextButton(manager, "Play!");
@@ -62,6 +76,8 @@ namespace Misana.Screens
             playButton.LeftMouseClick += (s, e) =>
             {
                 //manager.Game.SimulationComponent.CreateSinglePlayerSimulation((GameMode)Enum.Parse(typeof(GameMode), (string)gamemodeSelect.SelectedItem),manager.Game.PlayerComponent.PlayerTexture,manager.Game.PlayerComponent.PlayerName);
+                var path = maps.FirstOrDefault(t => Path.GetFileNameWithoutExtension(t) == mapList.SelectedItem);
+                manager.Game.Simulation.StartMap(MapLoader.LoadPath(path));
                 manager.NavigateToScreen(new GameScreen(manager));
             };
             grid.AddControl(playButton, 0, 2);
@@ -73,7 +89,6 @@ namespace Misana.Screens
             backButton.LeftMouseClick += (s, e) => { manager.NavigateBack(); };
             Controls.Add(backButton);
         }
-
         
     }
 }

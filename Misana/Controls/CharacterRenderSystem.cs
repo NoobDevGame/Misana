@@ -25,7 +25,7 @@ namespace Misana.Controls
 
             _font = game.Content.Load<SpriteFont>("Hud");
 
-            _characterTexture = game.Content.Load<Texture2D>("TileSheetCharacters");
+            _characterTexture = game.Content.Load<Texture2D>("Tilesheets/TileSheetCharacters");
             _characterTexture.SamplerState = new SamplerState() {TextureFilter = TextureFilter.Nearest};
         }
 

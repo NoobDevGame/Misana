@@ -59,7 +59,7 @@ namespace Misana.Controls
             {
                 var tile = tilesheets[set.Value];
                 int x = 0, y = 0;
-                var text = _screen.Content.Load<Texture2D>(tile.TextureName);
+                var text = _screen.Content.Load<Texture2D>("Tilesheets/"+tile.TextureName);
                 Debug.WriteLine(set.Key);
                 int[] buffer = new int[text.Width * text.Height];
                 text.GetData(buffer);
