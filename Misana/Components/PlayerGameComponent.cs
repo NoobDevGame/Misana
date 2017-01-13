@@ -14,7 +14,7 @@ namespace Misana.Components
     {
         public PlayerInputComponent Input { get; private set; }
 
-        public PositionComponent Position { get; private set; }
+        public TransformComponent Transform { get; private set; }
 
         public int PlayerId { get; set; }
 
@@ -28,7 +28,7 @@ namespace Misana.Components
                 Unmanaged = true,
             };
 
-            Position = new PositionComponent()
+            Transform = new TransformComponent()
             {
                 Unmanaged = true,
             };

@@ -70,9 +70,36 @@ namespace Misana.Core
 
             EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition);
 
+            
+            Entities.NewEntity()
+               .Add<PositionComponent>(p =>
+               {
+                   p.CurrentArea = CurrentMap.StartArea;
+                   p.Position = new Vector2(4, 3);
+               })
+               .Add<DimensionComponent>(p =>
+               {
+                   p.Radius = 0.5f;
+               })
+               .Add<MotionComponent>()
+               .Add<BlockColliderComponent>()
+               .Add<HealthComponent>(h => {
+                   h.Max = 500;
+                   h.Current = 500;
+               })
+               .Add<EntityCollider>(e => { e.Blocked = true; })
+               .Add<CharacterComponent>(p =>
+               {
+                   p.Name = "Heidi";
+               })
+               .Add<CharacterRenderComponent>(p =>
+               {
+                   p.TilePosition = new Index2(0, 9);
+               })
+               .Commit();
         }
 
-        public int CreatePlayer(PlayerInputComponent input,PositionComponent position)
+        public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
             EntityDefinition playerDefinition = new EntityDefinition();
             playerDefinition.Definitions.Add(new DimensionDefinition());

@@ -8,18 +8,16 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class BlockCollidingMoverSystem : BaseSystemR3O1<MotionComponent, PositionComponent, BlockColliderComponent, DimensionComponent>
+    public class BlockCollidingMoverSystem : BaseSystemR2O1<MotionComponent, TransformComponent, BlockColliderComponent>
     {
         private readonly float gap = 0.00001f;
 
-        protected override void Update(Entity e, MotionComponent r1, PositionComponent r2, BlockColliderComponent _, DimensionComponent o1)
+        protected override void Update(Entity e, MotionComponent r1, TransformComponent r2, BlockColliderComponent _)
         {
             bool collision = false;
             int loops = 0;
 
-            Vector2 size = Vector2.Zero;
-            if (o1 != null)
-                size = o1.HalfSize;
+            Vector2 size = r2.HalfSize;
 
             var area = r2.CurrentArea;
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class EntityCollidingMoverSystem : BaseSystemR3O1<EntityColliderComponent, PositionComponent, DimensionComponent,MotionComponent>
+    public class EntityCollidingMover : BaseSystemR2O1<EntityCollider, TransformComponent, MotionComponent>
     {
         public override void Tick()
         {
@@ -16,7 +16,6 @@ namespace Misana.Core.Systems
             {
                 var entityCollider = R1S[i];
                 var positionComponent = R2S[i];
-                var dimensionComponent = R3S[i];
                 var motionComponent = O1S[i];
 
                 if (positionComponent.CurrentArea == null)
@@ -33,12 +32,11 @@ namespace Misana.Core.Systems
                         continue;
 
                     var entity2Collider = R1S[j];
-                    var dimension2Component = R3S[j];
                     var motion2Component = O1S[j];
 
                     var vecDistance = positionComponent.Position - position2Component.Position;
 
-                    var distance = vecDistance.Length() - dimensionComponent.Radius - dimension2Component.Radius;
+                    var distance = vecDistance.Length() - positionComponent.Radius - position2Component.Radius;
 
                     if (distance > 0)
                         continue;

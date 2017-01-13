@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Controls
 {
-    internal class CharacterRenderSystem : BaseSystemR2O1<CharacterRenderComponent, PositionComponent, DimensionComponent>
+    internal class CharacterRenderSystem : BaseSystemR2<CharacterRenderComponent, TransformComponent>
     {
         private Texture2D _pixel;
         private Texture2D _characterTexture;
@@ -32,7 +32,7 @@ namespace Misana.Controls
         public void Draw(MisanaGame game,GameTime gameTime,SpriteBatch batch)
         {
 
-            var area = game.Player.Position.CurrentArea;
+            var area = game.Player.Transform.CurrentArea;
             var camera = game.CameraComponent;
 
 
@@ -40,16 +40,13 @@ namespace Misana.Controls
             {
                 var renderComponent = R1S[i];
                 var positionComponent = R2S[i];
-                var dimensionComponent = O1S[i];
 
                 if (positionComponent.CurrentArea.Id != area.Id)
                     continue;
 
                 var entity = Entities[i];
 
-                Vector2 dimension = new Vector2(0.5f, 0.5f);
-                if (dimensionComponent != null)
-                    dimension = new Vector2(dimensionComponent.HalfSize.X, dimensionComponent.HalfSize.Y);
+                Vector2 dimension = new Vector2(positionComponent.HalfSize.X, positionComponent.HalfSize.Y);
 
                 dimension *= camera.TileSize * camera.Zoom;
 
@@ -82,7 +79,7 @@ namespace Misana.Controls
                 else
                 {
                     var characterInfo = entity.Get<CharacterComponent>();
-                    var distance = (positionComponent.Position - game.Player.Position.Position).LengthSquared();
+                    var distance = (positionComponent.Position - game.Player.Transform.Position).LengthSquared();
 
 
                     var drawname = distance < 9;

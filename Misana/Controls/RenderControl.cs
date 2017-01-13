@@ -122,7 +122,7 @@ namespace Misana.Controls
         {
             base.OnDraw(batch, controlArea, gameTime);
 
-            var area = manager.Game.Player.Position.CurrentArea;
+            var area = manager.Game.Player.Transform.CurrentArea;
 
             if (area == null)
                 return;

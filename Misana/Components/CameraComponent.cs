@@ -53,7 +53,7 @@ namespace Misana.Components
         {
             base.Draw(gameTime);
 
-            var position = Game.Player.Position;
+            var position = Game.Player.Transform;
 
             Vector2 viewportHalf = new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height) / 2;
 
