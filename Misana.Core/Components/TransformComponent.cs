@@ -8,7 +8,7 @@ namespace Misana.Core.Components
         public Area CurrentArea;
         public Vector2 Position;
 
-        public float Radius;
+        public float Radius = 0.5f;
 
         public Vector2 Size => new Vector2(2 * Radius, 2 * Radius);
         public Vector2 HalfSize => new Vector2(Radius, Radius);
