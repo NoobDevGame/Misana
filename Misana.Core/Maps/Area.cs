@@ -20,6 +20,8 @@ namespace Misana.Core.Maps
 
         public List<Layer> Layers { get; set; }
 
+        public List<AreaEntity> Entities { get; private set; } = new List<AreaEntity>();
+
         public Area(string name, int id, int width, int height, Vector2 spawnPoint, List<Layer> layers)
         {
             Name = name;

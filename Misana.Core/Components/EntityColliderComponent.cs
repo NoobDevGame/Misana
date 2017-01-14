@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Components
 {
-    public class EntityCollider : Component<EntityCollider>
+    public class EntityColliderComponent : Component<EntityColliderComponent>
     {
         public float Mass { get; set; }
         public bool Fixed { get; set; }
@@ -15,7 +15,7 @@ namespace Misana.Core.Components
         public bool AppliesSideEffect { get; set; }
         public bool Blocked { get; set; }
 
-        public EntityCollider()
+        public EntityColliderComponent()
         {
             Mass = 50f;
         }

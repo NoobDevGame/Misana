@@ -3,9 +3,9 @@ using Misana.Core.Ecs;
 
 namespace Misana.Core.Systems
 {
-    public class CollisionApplicatorSystem : BaseSystemR2<EntityCollision,CollisionApplicator>
+    public class CollisionApplicatorSystem : BaseSystemR2<EntityCollisionComponent,CollisionApplicator>
     {
-        protected override void Update(Entity e, EntityCollision r1, CollisionApplicator r2)
+        protected override void Update(Entity e, EntityCollisionComponent r1, CollisionApplicator r2)
         {
             foreach (var entityId in r1.OtherEntityIds)
             {
