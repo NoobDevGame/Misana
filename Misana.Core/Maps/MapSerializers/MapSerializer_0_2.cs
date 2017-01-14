@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Misana.Core.Entities;
 
 namespace Misana.Core.Maps.MapSerializers
 {
@@ -62,8 +63,37 @@ namespace Misana.Core.Maps.MapSerializers
             }
 
             Area a = new Area(name, id, width, height, new Vector2(spawnX, spawnY), layers.ToList<Layer>());
-            a.Tilesheets = tilesheets;
+
+            var entityCount = br.ReadInt32();
+            for (int i = 0; i < entityCount; i++)
+            {
+                AreaEntity entity = new AreaEntity();
+                entity.Name = br.ReadString();
+                entity.Definition = DeserializeEntityDefinition(br);
+                a.Entities.Add(entity);
+            }
+
+
+            a.Tilesheets = tilesheets;;
             return a;
+        }
+
+        private EntityDefinition DeserializeEntityDefinition(BinaryReader br)
+        {
+            EntityDefinition definition = new EntityDefinition();
+
+            definition.Name =  br.ReadString();
+
+            var definitionCount = br.ReadInt32();
+
+            for (int i = 0; i < definitionCount; i++)
+            {
+                var componentType = br.ReadString();
+                var componentDefinition = (ComponentDefinition)Activator.CreateInstance(Type.GetType( componentType));
+                componentDefinition.Deserialize(MapVersion,br);
+            }
+
+            return definition;
         }
 
         private Layer DeserializeLayer(BinaryReader br)
@@ -130,11 +160,31 @@ namespace Misana.Core.Maps.MapSerializers
                 SerializeLayer(layer, bw);
             }
 
+            //Tilesets
             bw.Write(area.Tilesheets.Count);
             foreach (var tilesheet in area.Tilesheets)
             {
                 bw.Write(tilesheet.Key);
                 bw.Write(tilesheet.Value);
+            }
+
+            //Entities
+            bw.Write(area.Entities.Count);
+            foreach (var entity in area.Entities)
+            {
+                bw.Write(entity.Name);
+                SerializeEntityDefinition(entity.Definition,bw);
+            }
+        }
+
+        private void SerializeEntityDefinition(EntityDefinition entityDefinition, BinaryWriter bw)
+        {
+            bw.Write(entityDefinition.Name);
+            bw.Write(entityDefinition.Definitions.Count);
+            foreach (var definition in entityDefinition.Definitions)
+            {
+                bw.Write(definition.GetType().AssemblyQualifiedName);
+                definition.Serialize(MapVersion,bw);
             }
         }
 

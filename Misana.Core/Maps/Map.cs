@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Systems;
 
@@ -34,5 +36,10 @@ namespace Misana.Core.Maps
         }
 
         private Map() {}
+
+        public Area GetAreaById(int areaId)
+        {
+            return Areas.First(i => i.Id == areaId);
+        }
     }
 }

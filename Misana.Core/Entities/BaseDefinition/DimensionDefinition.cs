@@ -2,6 +2,7 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
@@ -19,7 +20,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Radius = radius;
         }
 
-        public override void OnApplyDefinition(Entity entity, DimensionComponent component)
+        public override void OnApplyDefinition(Entity entity, Map map, DimensionComponent component)
         {
             component.Radius = Radius;
         }

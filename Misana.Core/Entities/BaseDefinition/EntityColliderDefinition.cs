@@ -2,6 +2,7 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
@@ -12,7 +13,7 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public float Mass { get; set; } = 50f;
 
-        public override void OnApplyDefinition(Entity entity, EntityColliderComponent component)
+        public override void OnApplyDefinition(Entity entity, Map map, EntityColliderComponent component)
         {
             component.Blocked = Blocked;
             component.Fixed = Fixed;

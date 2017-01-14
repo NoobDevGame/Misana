@@ -62,11 +62,13 @@
     <Compile Include="Ecs\Entity.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\DimensionDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealtDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\PositionDefinition.cs" />
     <Compile Include="Entities\ComponentDefinition.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
@@ -75,6 +77,7 @@
     <Compile Include="Maps\Area.cs" />
     <Compile Include="Maps\Layer.cs" />
     <Compile Include="Maps\Map.cs" />
+    <Compile Include="Maps\AreaEntity.cs" />
     <Compile Include="Maps\MapLoader.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer_0_1.cs" />

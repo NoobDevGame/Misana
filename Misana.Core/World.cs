@@ -28,6 +28,15 @@ namespace Misana.Core
         public void ChangeMap(Map map)
         {
             CurrentMap = map;
+
+            foreach (var area in CurrentMap.Areas)
+            {
+                foreach (var entity in area.Entities)
+                {
+                    EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition);
+                }
+            }
+
         }
 
         public int CreatePlayer(PlayerInputComponent input,PositionComponent position)
@@ -48,7 +57,7 @@ namespace Misana.Core
                 .Add(input);
 
 
-            EntityCreator.CreateEntity(playerDefinition, playerEntity);
+            EntityCreator.CreateEntity(playerDefinition, CurrentMap, playerEntity);
 
             return playerEntity.Id;
         }

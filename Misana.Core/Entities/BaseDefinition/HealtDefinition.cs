@@ -2,6 +2,7 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
@@ -26,7 +27,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Max = max;
         }
 
-        public override void OnApplyDefinition(Entity entity, HealthComponent component)
+        public override void OnApplyDefinition(Entity entity, Map map, HealthComponent component)
         {
             component.Current = Current;
             component.Max = Max;
