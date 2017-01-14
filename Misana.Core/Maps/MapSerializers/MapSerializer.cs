@@ -9,6 +9,7 @@ namespace Misana.Core.Maps.MapSerializers
         private static Dictionary<Version, Type> serializers = new Dictionary<Version, Type>
         {
             [new Version(0,1)] = typeof(MapSerializer_0_1)  ,
+            [new Version(0,2)] = typeof(MapSerializer_0_2)  ,
         };
 
         public abstract Version MapVersion { get; }

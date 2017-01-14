@@ -78,6 +78,7 @@
     <Compile Include="Maps\MapLoader.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer_0_1.cs" />
+    <Compile Include="Maps\MapSerializers\MapSerializer_0_2.cs" />
     <Compile Include="Maps\MapTexture.cs" />
     <Compile Include="Maps\Tile.cs" />
     <Compile Include="Maps\TiledMapConverter.cs" />
