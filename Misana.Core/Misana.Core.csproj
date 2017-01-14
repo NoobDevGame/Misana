@@ -67,7 +67,7 @@
     <Compile Include="Entities\BaseDefinition\CollisionDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\DimensionDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
-    <Compile Include="Entities\BaseDefinition\HealtDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />
     <Compile Include="Entities\ComponentDefinition.cs" />

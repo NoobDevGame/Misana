@@ -6,22 +6,22 @@ using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
-    public class HealtDefinition : ComponentDefinition<HealthComponent>
+    public class HealthDefinition : ComponentDefinition<HealthComponent>
     {
         public float Current { get; set; }
         public float Max { get; set; }
 
-        public HealtDefinition()
+        public HealthDefinition()
         {
             Current = Max = 100;
         }
 
-        public HealtDefinition(float max)
+        public HealthDefinition(float max)
         {
             Current = Max = max;
         }
 
-        public HealtDefinition(float current, float max)
+        public HealthDefinition(float current, float max)
         {
             Current = current;
             Max = max;

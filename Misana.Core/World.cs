@@ -99,7 +99,7 @@ namespace Misana.Core
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
             EntityDefinition playerDefinition = new EntityDefinition();
-            playerDefinition.Definitions.Add(new HealtDefinition());
+            playerDefinition.Definitions.Add(new HealthDefinition());
             playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
             playerDefinition.Definitions.Add(new MotionComponentDefinition());
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
