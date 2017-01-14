@@ -72,13 +72,10 @@ namespace Misana.Core
 
             
             Entities.NewEntity()
-               .Add<PositionComponent>(p =>
+               .Add<TransformComponent>(p =>
                {
                    p.CurrentArea = CurrentMap.StartArea;
                    p.Position = new Vector2(4, 3);
-               })
-               .Add<DimensionComponent>(p =>
-               {
                    p.Radius = 0.5f;
                })
                .Add<MotionComponent>()

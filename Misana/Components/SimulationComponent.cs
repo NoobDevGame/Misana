@@ -31,6 +31,24 @@ namespace Misana.Components
             base.LoadContent();
             var foo = EntityManager.ComponentCount;
             CharacterRender = new CharacterRenderSystem();
+
+            Entities = EntityManager.Create("LocalEntities",
+                new List<BaseSystem> {
+                    // Input
+                    new InputSystem(),
+
+                    // Movement
+                    new EntityCollidingMover(),
+                    new BlockCollidingMoverSystem(),
+                    new MoverSystem(), // <- Last
+                    
+                    new TimeDamageSystem(),
+                    // Renderer
+                    CharacterRender,
+                }
+            );
+
+            
         }
 
         public void StartMap(Map m)

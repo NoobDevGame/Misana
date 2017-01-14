@@ -54,7 +54,6 @@
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Components\StatusComponent\TimeDamageComponent.cs" />
-    <Compile Include="Components\CollisionApplicator.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
     <Compile Include="Ecs\Component.cs" />
     <Compile Include="Ecs\ComponentArrayPool.cs" />

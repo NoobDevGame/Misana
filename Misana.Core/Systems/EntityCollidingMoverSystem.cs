@@ -40,16 +40,12 @@ namespace Misana.Core.Systems
 
                     if (distance > 0)
                         continue;
+                    
+                    foreach(var e in entityCollider.CollisionEffects)
+                        e.Apply(Manager, Entities[i], Entities[j]);
 
-                    if(entityCollider.AppliesSideEffect)
-                        Entities[i].Add<EntityCollisionComponent>(ec => {
-                            ec.OtherEntityIds.Add(Entities[j].Id);
-                        },false);
-
-                    if (entity2Collider.AppliesSideEffect)
-                        Entities[j].Add<EntityCollisionComponent>(ec => {
-                            ec.OtherEntityIds.Add(Entities[i].Id);
-                        },false);
+                    foreach (var e in entity2Collider.CollisionEffects)
+                        e.Apply(Manager, Entities[j], Entities[i]);
 
                     if(!entityCollider.Blocked || !entity2Collider.Blocked)
                         continue;
