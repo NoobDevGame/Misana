@@ -103,6 +103,7 @@ namespace Misana.Core.Ecs
                 if (idx == Count - 1)
                 {
                     Entities[idx] = null;
+                    IndexMap.Remove(e);
                     Remove(idx, null);
                 }
                 else

@@ -10,8 +10,15 @@ namespace Misana.Core.Components.StatusComponent
             CurrentTime = TimeSpan.Zero;
         }
 
-        public float DamagePerSeconds { get; set; }
-        public TimeSpan EffectTime { get; set; }
-        public TimeSpan CurrentTime { get; set; }
+        public override void CopyTo(TimeDamageComponent other)
+        {
+            other.EffectTime = EffectTime;
+            other.DamagePerSeconds = DamagePerSeconds;
+            other.CurrentTime = CurrentTime;
+        }
+
+        public float DamagePerSeconds;
+        public TimeSpan EffectTime;
+        public TimeSpan CurrentTime;
     }
 }

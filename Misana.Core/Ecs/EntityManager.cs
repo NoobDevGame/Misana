@@ -148,7 +148,15 @@ namespace Misana.Core.Ecs
                 throw new InvalidOperationException();
 
             var idx = ComponentRegistry<T>.Index;
-            e.Components[idx] = component;
+
+            if (e.Components[idx] != null)
+            {
+                // Todo :(
+            }
+            else
+            {
+                e.Components[idx] = component;
+            }
 
             if (e.Complete)
             {
