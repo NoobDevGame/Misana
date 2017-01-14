@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class EntityCollidingMover : BaseSystemR3O1<EntityCollider, PositionComponent, DimensionComponent,MotionComponent>
+    public class EntityCollidingMover : BaseSystemR3O1<EntityColliderComponent, PositionComponent, DimensionComponent,MotionComponent>
     {
         public override void Tick()
         {
@@ -44,12 +44,12 @@ namespace Misana.Core.Systems
                         continue;
 
                     if(entityCollider.AppliesSideEffect)
-                        Entities[i].Add<EntityCollision>(ec => {
+                        Entities[i].Add<EntityCollisionComponent>(ec => {
                             ec.OtherEntityIds.Add(Entities[j].Id);
                         },false);
 
                     if (entity2Collider.AppliesSideEffect)
-                        Entities[j].Add<EntityCollision>(ec => {
+                        Entities[j].Add<EntityCollisionComponent>(ec => {
                             ec.OtherEntityIds.Add(Entities[i].Id);
                         },false);
 

@@ -48,8 +48,8 @@
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\DimensionComponent.cs" />
-    <Compile Include="Components\EntityCollider.cs" />
-    <Compile Include="Components\EntityCollision.cs" />
+    <Compile Include="Components\EntityColliderComponent.cs" />
+    <Compile Include="Components\EntityCollisionComponent.cs" />
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Components\StatusComponent\TimeDamageComponent.cs" />
@@ -61,6 +61,15 @@
     <Compile Include="Ecs\ComponentRegistry.cs" />
     <Compile Include="Ecs\Entity.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\DimensionDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\HealtDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
+    <Compile Include="Entities\ComponentDefinition.cs" />
+    <Compile Include="Entities\EntityCreator.cs" />
+    <Compile Include="Entities\EntityDefinition.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Maps\Area.cs" />
