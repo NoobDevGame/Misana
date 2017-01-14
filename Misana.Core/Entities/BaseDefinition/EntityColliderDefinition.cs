@@ -1,4 +1,6 @@
-﻿using Misana.Core.Components;
+﻿using System;
+using System.IO;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Entities.BaseDefinition
@@ -15,6 +17,20 @@ namespace Misana.Core.Entities.BaseDefinition
             component.Blocked = Blocked;
             component.Fixed = Fixed;
             component.Mass = Mass;
+        }
+
+        public override void Serialize(Version version, BinaryWriter bw)
+        {
+            bw.Write(Mass);
+            bw.Write(Blocked);
+            bw.Write(Fixed);
+        }
+
+        public override void Deserialize(Version version, BinaryReader br)
+        {
+            Mass = br.ReadSingle();
+            Blocked = br.ReadBoolean();
+            Fixed = br.ReadBoolean();
         }
     }
 }

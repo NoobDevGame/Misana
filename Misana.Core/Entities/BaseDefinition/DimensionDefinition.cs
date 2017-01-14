@@ -1,4 +1,6 @@
-﻿using Misana.Core.Components;
+﻿using System;
+using System.IO;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Entities.BaseDefinition
@@ -22,5 +24,14 @@ namespace Misana.Core.Entities.BaseDefinition
             component.Radius = Radius;
         }
 
+        public override void Serialize(Version version, BinaryWriter bw)
+        {
+            bw.Write(Radius);
+        }
+
+        public override void Deserialize(Version version, BinaryReader br)
+        {
+            Radius = br.ReadSingle();
+        }
     }
 }

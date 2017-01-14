@@ -1,4 +1,6 @@
-﻿using Misana.Core.Components;
+﻿using System;
+using System.IO;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Entities.BaseDefinition
@@ -20,6 +22,20 @@ namespace Misana.Core.Entities.BaseDefinition
         public override void OnApplyDefinition(Entity entity, CharacterRenderComponent component)
         {
             component.TilePosition = TilePosition;
+        }
+
+        public override void Serialize(Version version, BinaryWriter bw)
+        {
+            bw.Write(TilePosition.X);
+            bw.Write(TilePosition.Y);
+        }
+
+        public override void Deserialize(Version version, BinaryReader br)
+        {
+            var x = br.ReadInt32();
+            var y = br.ReadInt32();
+
+            TilePosition = new Index2(x,y);
         }
     }
 }

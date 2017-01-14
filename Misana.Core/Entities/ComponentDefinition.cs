@@ -1,10 +1,23 @@
-﻿using Misana.Core.Ecs;
+﻿using System;
+using System.IO;
+using Misana.Core.Ecs;
 
 namespace Misana.Core.Entities
 {
     public abstract class ComponentDefinition
     {
         public abstract void ApplyDefinition(Entity entity);
+
+        public virtual void Serialize(Version version,BinaryWriter bw)
+        {
+
+        }
+
+        public virtual void Deserialize(Version version,BinaryReader br)
+        {
+
+        }
+
 
     }
 
