@@ -46,7 +46,7 @@ namespace Misana.Components
 
             _lastScroll = ms.ScrollWheelValue;
 
-            Zoom = ((float) Math.Cos(value * MathHelper.Pi) + 1.1f) * 4f;
+            Zoom = ((float) Math.Cos(value * MathHelper.Pi +  MathHelper.PiOver2) + 1.1f) * 4f;
         }
 
         public override void Draw(GameTime gameTime)
