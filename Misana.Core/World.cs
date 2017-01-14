@@ -84,7 +84,7 @@ namespace Misana.Core
                    h.Max = 500;
                    h.Current = 500;
                })
-               .Add<EntityCollider>(e => { e.Blocked = true; })
+               .Add<EntityColliderComponent>(e => { e.Blocked = true; })
                .Add<CharacterComponent>(p =>
                {
                    p.Name = "Heidi";
@@ -99,18 +99,17 @@ namespace Misana.Core
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
             EntityDefinition playerDefinition = new EntityDefinition();
-            playerDefinition.Definitions.Add(new DimensionDefinition());
             playerDefinition.Definitions.Add(new HealtDefinition());
             playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
             playerDefinition.Definitions.Add(new MotionComponentDefinition());
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
-            playerDefinition.Definitions.Add(new EntityFlagDefintion());
-            position.CurrentArea = CurrentMap.StartArea;
-            position.Position = position.CurrentArea.SpawnPoint;
+
+            transform.CurrentArea = CurrentMap.StartArea;
+            transform.Position = new Vector2(5, 3);
 
             var playerEntity = Entities.NewEntity()
-                .Add(position)
+                .Add(transform)
                 .Add(input);
 
 

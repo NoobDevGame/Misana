@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class EntityCollidingMover : BaseSystemR2O1<EntityCollider, TransformComponent, MotionComponent>
+    public class EntityCollidingMover : BaseSystemR2O1<EntityColliderComponent, TransformComponent, MotionComponent>
     {
         public override void Tick()
         {
