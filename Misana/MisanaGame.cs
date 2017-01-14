@@ -11,7 +11,6 @@ namespace Misana
 {
     internal class MisanaGame : Game
     {
-
         public ScreenComponent ScreenManager { get; private set; }
 
         public CameraComponent CameraComponent { get; set; }
@@ -45,9 +44,7 @@ namespace Misana
 
         public override void LoadContent()
         {
-
             base.LoadContent();
-            
         }
     }
 }
