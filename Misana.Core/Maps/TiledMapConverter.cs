@@ -183,7 +183,7 @@ namespace Misana.Core.Maps
 
             }
 
-            area.LayerList = layers;
+            area.Layers = layers;
 
             return area;
         }

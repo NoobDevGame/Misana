@@ -125,7 +125,7 @@ namespace Misana.Core.Maps.MapSerializers
             bw.Write(area.SpawnPoint.Y);
 
             //Layers
-            bw.Write(area.Layers.Length);
+            bw.Write(area.Layers.Count);
             foreach (var layer in area.Layers)
             {
                 SerializeLayer(layer, bw);

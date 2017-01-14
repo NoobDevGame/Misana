@@ -62,7 +62,7 @@ namespace Misana.Editor.Controls
                 using (Bitmap bitMap = new Bitmap(editor.CurrentArea.Width * 32, editor.CurrentArea.Height * 32))
                 using (Graphics bg = Graphics.FromImage(bitMap))
                 {
-                    for (int l = 0; l < editor.CurrentArea.Layers.Length; l++)
+                    for (int l = 0; l < editor.CurrentArea.Layers.Count; l++)
                     {
                         var layer = editor.CurrentArea.Layers[l];
 

@@ -18,9 +18,7 @@ namespace Misana.Core.Maps
 
         public Dictionary<int,string> Tilesheets { get; set; }
 
-        public List<Layer> LayerList { get; set; }
-
-        public Layer[] Layers { get { return LayerList.ToArray(); } }
+        public List<Layer> Layers { get; set; }
 
         public Area(string name, int id, int width, int height, Vector2 spawnPoint, List<Layer> layers)
         {
@@ -29,7 +27,7 @@ namespace Misana.Core.Maps
             Width = width;
             Height = height;
             SpawnPoint = spawnPoint;
-            LayerList= layers;
+            Layers= layers;
 
             Tilesheets = new Dictionary<int, string>();
         }
