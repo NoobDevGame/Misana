@@ -20,7 +20,7 @@ namespace Misana.Components
         public new MisanaGame Game;
 
         public CharacterRenderSystem CharacterRender { get; private set; }
-
+        public EntityCollidingMover EntityCollidingMover;
         public SimulationComponent(MisanaGame game) : base(game)
         {
             Game = game;
@@ -31,14 +31,14 @@ namespace Misana.Components
             base.LoadContent();
             var foo = EntityManager.ComponentCount;
             CharacterRender = new CharacterRenderSystem();
-
+            EntityCollidingMover = new EntityCollidingMover();
             Entities = EntityManager.Create("LocalEntities",
                 new List<BaseSystem> {
                     // Input
                     new InputSystem(),
 
                     // Movement
-                    new EntityCollidingMover(),
+                    EntityCollidingMover,
                     new BlockCollidingMoverSystem(),
                     new MoverSystem(), // <- Last
                     
@@ -58,7 +58,8 @@ namespace Misana.Components
 
             World = new World(renderSystems);
             World.ChangeMap(m);
-            Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Position);
+            EntityCollidingMover.ChangeWorld(World);
+            Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Transform);
 
         }
 
