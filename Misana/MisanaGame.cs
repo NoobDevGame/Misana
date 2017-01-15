@@ -11,7 +11,6 @@ namespace Misana
 {
     internal class MisanaGame : Game
     {
-        public Map TestMap { get; private set; }
 
         public ScreenComponent ScreenManager { get; private set; }
 
@@ -46,8 +45,6 @@ namespace Misana
 
         public override void LoadContent()
         {
-            
-            TestMap = MapLoader.LoadPath(@"Content/Maps/map.mm");
 
             base.LoadContent();
             

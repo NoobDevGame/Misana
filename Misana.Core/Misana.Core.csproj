@@ -84,6 +84,7 @@
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
+    <Compile Include="Index3.cs" />
     <Compile Include="Maps\Area.cs" />
     <Compile Include="Maps\Layer.cs" />
     <Compile Include="Maps\Map.cs" />

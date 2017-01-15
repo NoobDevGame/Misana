@@ -20,6 +20,7 @@ namespace Misana.Editor
                     _imageList.Images.Add("Map", Properties.Resources.IconGlobe);
                     _imageList.Images.Add("Area", Properties.Resources.IconMap);
                     _imageList.Images.Add("Layer", Properties.Resources.IconLayers);
+                    _imageList.Images.Add("Crosshair", Properties.Resources.IconCrosshair);
                 }
                 return _imageList;
             }

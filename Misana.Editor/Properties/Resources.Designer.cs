@@ -63,6 +63,36 @@ namespace Misana.Editor.Properties {
         /// <summary>
         ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap IconCrosshair {
+            get {
+                object obj = ResourceManager.GetObject("IconCrosshair", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap IconCursorFilled {
+            get {
+                object obj = ResourceManager.GetObject("IconCursorFilled", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap IconFill {
+            get {
+                object obj = ResourceManager.GetObject("IconFill", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap IconGlobe {
             get {
                 object obj = ResourceManager.GetObject("IconGlobe", resourceCulture);
@@ -86,6 +116,16 @@ namespace Misana.Editor.Properties {
         internal static System.Drawing.Bitmap IconMap {
             get {
                 object obj = ResourceManager.GetObject("IconMap", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Sucht eine lokalisierte Ressource vom Typ System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap IconPen {
+            get {
+                object obj = ResourceManager.GetObject("IconPen", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -39,7 +39,7 @@ namespace Misana.Components
             renderSystems.Add(CharacterRender);
 
             World = new World(renderSystems);
-            World.ChangeMap(Game.TestMap);
+            World.ChangeMap(m);
             Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Position);
 
         }

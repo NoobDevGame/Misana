@@ -19,6 +19,8 @@ namespace Misana.Core.Maps
         public int TileHeight { get; set; }
         public Bitmap Texture { get; set; }
 
+        public int Rows { get; set; }
+        public int Columns { get; set; }
 
         private class TilesheetFile
         {
@@ -39,6 +41,9 @@ namespace Misana.Core.Maps
             TileWidth = width;
             TileHeight = height;
             Texture = texture;
+
+            Columns = (Texture.Width + spacing) / (TileWidth + Spacing);
+            Rows = (Texture.Height + spacing) / (TileHeight + Spacing);
         }
 
         public static Tilesheet LoadTilesheet(string path, string name)

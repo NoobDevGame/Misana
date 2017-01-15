@@ -99,7 +99,7 @@ namespace Misana.Core.Maps
 
         #endregion
 
-        public static Area LoadArea(string path,int id)
+        public static Area LoadArea(string path, int id)
         {
             if (File.Exists(path))
             {
@@ -108,7 +108,7 @@ namespace Misana.Core.Maps
                 {
                     var mapjson = sr.ReadToEnd();
                     var mapobject = JsonConvert.DeserializeObject<FileArea>(mapjson);
-                    var map = Convert(mapobject,id, Path.GetFileNameWithoutExtension(path));
+                    var map = Convert(mapobject, id, Path.GetFileNameWithoutExtension(path));
                     return map;
                 }
             }
@@ -121,7 +121,8 @@ namespace Misana.Core.Maps
             var area = new Area(name, id, fa.Width, fa.Height);
 
             List<MapTexture> tilesheets = new List<MapTexture>();
-            foreach(var ts in fa.Tilesets)
+            Dictionary<int, FileTileProperty> tileProperties = new Dictionary<int, FileTileProperty>();
+            foreach (var ts in fa.Tilesets)
             {
                 FileInfo ti = new FileInfo(ts.Image);
 
@@ -131,24 +132,34 @@ namespace Misana.Core.Maps
                 if (index != -1)
                     key = key.Remove(index);
 
+                if (ts.Tileproperties != null)
+                {
+                    foreach (var tProp in ts.Tileproperties)
+                    {
+                        tileProperties.Add(tProp.Key + ts.Firstgid, tProp.Value);
+                    }
+                }
+
+
                 var contenttexture = new MapTexture(key, ts.Firstgid, ts.Tilecount, ts.Spacing, ts.Tileheight, ts.Tilewidth, ts.Columns);
                 tilesheets.Add(contenttexture);
             }
 
             Dictionary<string, int> idLookup = new Dictionary<string, int>();
 
-            foreach(var tilesheet in tilesheets)
+            foreach (var tilesheet in tilesheets)
             {
                 var i = area.AddTilesheet(tilesheet.Key);
                 idLookup.Add(tilesheet.Key, i);
             }
 
             List<Layer> layers = new List<Layer>();
-            foreach(var l in fa.Layers)
+            int count = 0;
+            foreach (var l in fa.Layers)
             {
                 List<Tile> tiles = new List<Tile>();
-                int count = 0;
-                foreach(var t in l.Data)
+
+                foreach (var t in l.Data)
                 {
                     var tilesheetname = "";
                     var tileId = 0;
@@ -159,15 +170,18 @@ namespace Misana.Core.Maps
                         tiles.Add(new Tile(0, 0, false));
                         continue;
                     }
-                        
 
 
-                    foreach(var tilesheet in tilesheets)
+                    if (tileProperties.ContainsKey(t))
+                        blocked = tileProperties[t].Blocked;
+
+
+                    foreach (var tilesheet in tilesheets)
                     {
                         if (t >= tilesheet.Firstgid && t <= tilesheet.Firstgid + tilesheet.Tilecount)
                         {
                             tilesheetname = tilesheet.Key;
-                            tileId = t - tilesheet.Firstgid+1;
+                            tileId = t - tilesheet.Firstgid + 1;
                             break;
                         }
                     }

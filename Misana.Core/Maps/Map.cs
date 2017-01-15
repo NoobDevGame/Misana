@@ -15,13 +15,13 @@ namespace Misana.Core.Maps
     {
         public Area StartArea { get; }
         public string Name { get; }
-        public Area[] Areas { get; }
+        public List<Area> Areas { get; }
 
         public static readonly Version MapVersion = new Version(0,1);
 
         public Dictionary<string,EntityDefinition> GlobalEntityDefinitions { get; set; } = new Dictionary<string, EntityDefinition>();
 
-        public Map(string name, Area startArea, Area[] areas)
+        public Map(string name, Area startArea, List<Area> areas)
         {
             if(startArea == null)
                 throw  new ArgumentNullException(nameof(startArea));
@@ -29,7 +29,7 @@ namespace Misana.Core.Maps
             if (areas == null)
                 throw  new ArgumentNullException(nameof(areas));
 
-            if (areas.Length == 0)
+            if (areas.Count == 0)
                 throw new ArgumentOutOfRangeException(nameof(areas),"area must be greater the 0.");
 
             Name = name;

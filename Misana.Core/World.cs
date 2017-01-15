@@ -83,7 +83,7 @@ namespace Misana.Core
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
             playerDefinition.Definitions.Add(new EntityFlagDefintion());
             position.CurrentArea = CurrentMap.StartArea;
-            position.Position = new Vector2(5, 3);
+            position.Position = position.CurrentArea.SpawnPoint;
 
             var playerEntity = Entities.NewEntity()
                 .Add(position)

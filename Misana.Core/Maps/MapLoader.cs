@@ -70,7 +70,7 @@ namespace Misana.Core.Maps
                 areas[i] = TiledMapConverter.LoadArea(tiledareas[i],i+1);
             }
 
-            return new Map(name,areas.First(),areas);
+            return new Map(name,areas.First(),areas.ToList());
         }
     }
 }

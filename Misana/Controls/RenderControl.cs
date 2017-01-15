@@ -86,7 +86,7 @@ namespace Misana.Controls
                 ControlTexture = new RenderTarget2D(manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
             }
 
-            var area = manager.Game.TestMap.StartArea;
+            var area = manager.Game.Player.Position.CurrentArea;
 
             if (area == null)
                 return;

@@ -42,6 +42,7 @@ namespace Misana.Core.Maps
             Height = height;
 
             Tilesheets = new Dictionary<int, string>();
+            Layers = new List<Layer>();
         }
 
         public bool IsCellBlocked(int x, int y)
