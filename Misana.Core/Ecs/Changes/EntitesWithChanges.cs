@@ -17,37 +17,37 @@ namespace Misana.Core.Ecs.Changes
                 ChangeStack.Push(new List<EntityChange>(16));
             }
         }
-        const int ThreadCount = 0;
+        const int ThreadCount = 3;
         internal EntitesWithChanges(EntityManager manager)
         {
             _manager = manager;
 
-           // _threads = new Thread[ThreadCount];
-           // _workAvailable = new AutoResetEvent[ThreadCount];
+            _threads = new Thread[ThreadCount];
+            _workAvailable = new AutoResetEvent[ThreadCount];
 
 
-           // for (int i = 0; i < ThreadCount; i++)
-           // {
-           //     _threads[i] = new Thread(CommitWorker);
-           //     _workAvailable[i] = new AutoResetEvent(false);
-           //     _threads[i].Start(i);
-           // }
+            for (int i = 0; i < ThreadCount; i++)
+            {
+                _threads[i] = new Thread(CommitWorker) { IsBackground = true };
+                _workAvailable[i] = new AutoResetEvent(false);
+                _threads[i].Start(i);
+            }
 
-           //_workDone = new AutoResetEvent(false);
+            _workDone = new AutoResetEvent(false);
         }
 
-        //private void CommitWorker(object o)
-        //{
-        //    var i = (int) o;
+        private void CommitWorker(object o)
+        {
+            var i = (int)o;
 
-        //    while (true)
-        //    {
-        //        _workAvailable[i].WaitOne();
-        //        CommitWork(i);
-        //        if (Interlocked.Increment(ref _workDoneCounter) >= ThreadCount)
-        //            _workDone.Set();
-        //    }
-        //}
+            while (true)
+            {
+                _workAvailable[i].WaitOne();
+                CommitWork(i);
+                if (Interlocked.Increment(ref _workDoneCounter) >= ThreadCount)
+                    _workDone.Set();
+            }
+        }
 
         private void CommitWork(int number)
         {
@@ -87,11 +87,11 @@ namespace Misana.Core.Ecs.Changes
             }
         }
 
-        //private readonly Thread[] _threads;
-        //private readonly AutoResetEvent[] _workAvailable;
-        //private readonly AutoResetEvent _workDone;
-        //private int _workDoneCounter = 0;
-        
+        private readonly Thread[] _threads;
+        private readonly AutoResetEvent[] _workAvailable;
+        private readonly AutoResetEvent _workDone;
+        private int _workDoneCounter = 0;
+
 
         private readonly Dictionary<int, List<EntityChange>> _changes = new Dictionary<int, List<EntityChange>>(64);
 
@@ -123,15 +123,15 @@ namespace Misana.Core.Ecs.Changes
 
         public void Commit()
         {
-            //for (int i = 0; i < ThreadCount; i++)
-            //{
-            //    _workAvailable[i].Set();
-            //}
+            for (int i = 0; i < ThreadCount; i++)
+            {
+                _workAvailable[i].Set();
+            }
 
             CommitWork(ThreadCount);
 
-            //_workDone.WaitOne();
-            //_workDoneCounter = 0;
+            _workDone.WaitOne();
+            _workDoneCounter = 0;
 
             _changes.Clear();
             HasChanges = false;
