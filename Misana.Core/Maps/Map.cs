@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Entities;
 using Misana.Core.Systems;
 
 namespace Misana.Core.Maps
@@ -18,6 +19,7 @@ namespace Misana.Core.Maps
 
         public static readonly Version MapVersion = new Version(0,1);
 
+        public Dictionary<string,EntityDefinition> GlobalEntityDefinitions { get; set; } = new Dictionary<string, EntityDefinition>();
 
         public Map(string name, Area startArea, Area[] areas)
         {

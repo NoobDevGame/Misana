@@ -12,21 +12,37 @@ namespace Misana.Core.Maps.MapSerializers
 
         protected override Map Deserialize(BinaryReader br)
         {
-            var name = br.ReadString();
+            var mapName = br.ReadString();
             var startAreaId = br.ReadInt32();
 
-            var length = br.ReadInt32();
 
-            var areas = new Area[length];
 
-            for (int i = 0; i < length; i++)
+            //GlobalEntityDefintions
+            var definitionLength = br.ReadInt32();
+            Dictionary<string,EntityDefinition> globalEntityDefinitions = new Dictionary<string, EntityDefinition>();
+
+            for (int i = 0; i < definitionLength; i++)
+            {
+                var definitionName = br.ReadString();
+                var definition = DeserializeEntityDefinition(br);
+                globalEntityDefinitions.Add(definitionName,definition);
+            }
+
+            //Areas
+            var areaLength = br.ReadInt32();
+            var areas = new Area[areaLength];
+            for (int i = 0; i < areaLength; i++)
             {
                 areas[i] = DeserializeArea(br);
             }
 
             var startIndex = areas.ToList().FindIndex(t => t.Id == startAreaId);
 
-            return new Map(name, areas[startIndex], areas);
+            var map = new Map(mapName, areas[startIndex], areas);
+
+            map.GlobalEntityDefinitions = globalEntityDefinitions;
+
+            return map;
         }
 
         private Area DeserializeArea(BinaryReader br)
@@ -132,6 +148,15 @@ namespace Misana.Core.Maps.MapSerializers
             bw.Write(map.Name);
             bw.Write(map.StartArea.Id);
 
+            //GlobalEntityDefintions
+            bw.Write(map.GlobalEntityDefinitions.Count);
+            foreach (var definition in map.GlobalEntityDefinitions)
+            {
+                bw.Write(definition.Key);
+                SerializeEntityDefinition(definition.Value,bw);
+            }
+
+            //Areas
             bw.Write(map.Areas.Length);
             foreach (var area in map.Areas)
             {
@@ -154,7 +179,7 @@ namespace Misana.Core.Maps.MapSerializers
             bw.Write(area.SpawnPoint.Y);
 
             //Layers
-            bw.Write(area.Layers.Length);
+            bw.Write(area.Layers.Count);
             foreach (var layer in area.Layers)
             {
                 SerializeLayer(layer, bw);

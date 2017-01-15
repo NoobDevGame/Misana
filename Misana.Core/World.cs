@@ -41,6 +41,8 @@ namespace Misana.Core
         {
             CurrentMap = map;
 
+            Entities.Clear();
+
             foreach (var area in CurrentMap.Areas)
             {
                 foreach (var entity in area.Entities)
