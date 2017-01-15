@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class BlockCollidingMoverSystem : BaseSystemR2O1<MotionComponent, TransformComponent, BlockColliderComponent>
+    public class BlockCollidingMoverSystem : BaseSystemR3<MotionComponent, TransformComponent, BlockColliderComponent>
     {
         private readonly float gap = 0.00001f;
 

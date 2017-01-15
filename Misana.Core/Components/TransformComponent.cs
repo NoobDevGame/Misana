@@ -13,6 +13,13 @@ namespace Misana.Core.Components
         public Vector2 Size => new Vector2(2 * Radius, 2 * Radius);
         public Vector2 HalfSize => new Vector2(Radius, Radius);
 
+        public override void Reset()
+        {
+            CurrentArea = null;
+            Position = Vector2.Zero;
+            Radius = 0.5f;
+        }
+
         public override void CopyTo(TransformComponent other)
         {
             other.CurrentArea = CurrentArea;
