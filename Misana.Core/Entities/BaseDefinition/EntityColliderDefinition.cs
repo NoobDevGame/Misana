@@ -13,9 +13,7 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public float Mass { get; set; } = 50f;
 
-        public bool ApplySidesEffect { get; set; } = true;
-
-        public override void OnApplyDefinition(Entity entity, Map map, EntityColliderComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityColliderComponent component)
         {
             component.Blocked = Blocked;
             component.Fixed = Fixed;

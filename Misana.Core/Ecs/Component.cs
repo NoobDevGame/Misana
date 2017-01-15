@@ -12,7 +12,7 @@ namespace Misana.Core.Ecs
 
     public abstract class Component<T> : Component where T : Component<T>
     {
-        public virtual void CopyTo(T other) { }
+        public abstract void CopyTo(T other);
         public override void CopyTo(Component other)
         {
             CopyTo((T)other);

@@ -12,12 +12,11 @@ namespace Misana.Core.Systems.StatusSystem
             {
                 var r1 = R1S[i];
                 var r2 = R2S[i];
-
-
+                
                 r2.Current -= r1.DamagePerSeconds * (float)GameTime.ElapsedTime.TotalSeconds;
                 if ((r1.CurrentTime += GameTime.ElapsedTime) > r1.EffectTime)
                 {
-                    Entities[i--].Remove<TimeDamageComponent>();
+                    Entities[i].Remove<TimeDamageComponent>();
                 }
             }
         }

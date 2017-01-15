@@ -10,5 +10,10 @@ namespace Misana.Core.Components
     public class CharacterRenderComponent : Component<CharacterRenderComponent>
     {
         public Index2 TilePosition { get; set; }
+
+        public override void CopyTo(CharacterRenderComponent other)
+        {
+            other.TilePosition = TilePosition;
+        }
     }
 }

@@ -6,7 +6,7 @@ namespace Misana.Core.Entities.BaseDefinition
 {
     public class BlockColliderDefinition : ComponentDefinition<BlockColliderComponent>
     {
-        public override void OnApplyDefinition(Entity entity, Map map, BlockColliderComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, BlockColliderComponent component)
         {
 
         }

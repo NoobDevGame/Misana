@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
+using Misana.Core.Ecs.Changes;
 
 namespace Misana.Core.Ecs
 {
@@ -13,34 +14,20 @@ namespace Misana.Core.Ecs
 
         private static int _entityManagerIndex = -1;
 
-        public IEnumerable<Entity> Entities => _entities;
+        public static readonly int ComponentCount;
+
         private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
+        private readonly EntitiesToRemove _entitiesToRemove = new EntitiesToRemove();
+        private readonly EntitiesToAdd _entitiesToAdd = new EntitiesToAdd();
+        private readonly EntitesWithChanges _entitesWithChanges;
         
-        private readonly List<Entity> _entities = new List<Entity>();
-        
-        private readonly List<Entity> _removedEntities = new List<Entity>();
-        public readonly int Index;
         internal readonly List<BaseSystem> Systems;
 
-        private EntityManager(List<BaseSystem> systems)
-        {
-            Index = Interlocked.Increment(ref _entityManagerIndex);
+        public readonly int Index;
 
-            foreach (var fn in OnNewManager)
-                fn();
+        private int _entityId;
 
-            foreach(var s in systems)
-                s.Initialize(this);
-
-            Systems = systems;
-        }
-
-        public static EntityManager Create(string name, List<BaseSystem> systems)
-        {
-            return new EntityManager(systems);
-        }
-
-        public static readonly int ComponentCount;
+        public GameTime GameTime;
 
         static EntityManager()
         {
@@ -57,6 +44,7 @@ namespace Misana.Core.Ecs
             ComponentCount = componentTypes.Count;
             ComponentArrayPool.Initialize(ComponentCount);
             ComponentRegistry.Release = new Action<Component>[ComponentCount];
+            ComponentRegistry.Take = new Func<Component>[ComponentCount];
 
             for (var i = 0; i < componentTypes.Count; i++)
             {
@@ -85,26 +73,48 @@ namespace Misana.Core.Ecs
                     Expression.Lambda<Action<Component>>(Expression.Call(null, genericRelease, Expression.Convert(cParam, componentType)), false, cParam)
                         .Compile();
 
+                var genericTake = rType.GetMethod("Take", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+                
+                ComponentRegistry.Take[i] =
+                    Expression.Lambda<Func<Component>>(Expression.Call(null, genericTake), false)
+                        .Compile();
+
                 componentType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)?.Invoke(null, null);
                 var onmt = rType.GetMethod("OnNewManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
 
-                EntityManager.OnNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
+                OnNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
             }
         }
 
-        public GameTime GameTime;
+        private EntityManager(List<BaseSystem> systems)
+        {
+            _entitesWithChanges =  new EntitesWithChanges(this);
+            Index = Interlocked.Increment(ref _entityManagerIndex);
+
+            foreach (var fn in OnNewManager)
+                fn();
+
+            foreach (var s in systems)
+                s.Initialize(this);
+
+            Systems = systems;
+        }
+        
+        public static EntityManager Create(string name, List<BaseSystem> systems)
+        {
+            return new EntityManager(systems);
+        }
+
         public void ApplyChanges()
         {
-            foreach (var e in _removedEntities)
-            {
-                foreach (var s in Systems)
-                    s.EntityRemoved(e);
+            if(_entitiesToRemove.HasChanges)
+                _entitiesToRemove.Commit(Systems);
 
-                ComponentArrayPool.Release(e.Components);
+            if(_entitesWithChanges.HasChanges)
+                _entitesWithChanges.Commit();
 
-                e.Components = null;
-                _entities.Remove(e);
-            }
+            if(_entitiesToAdd.HasChanges)
+                _entitiesToAdd.Commit(Systems);
         }
 
         public void Update(GameTime gameTime)
@@ -122,129 +132,62 @@ namespace Misana.Core.Ecs
             }
         }
 
-        public EntityManager Add<T>(Entity e, bool throwOnExists = false) where T : Component, new()
+        public EntityManager Add<T>(Entity e) where T : Component, new()
         {
-            var idx = ComponentRegistry<T>.Index;
-            if (e.Components[idx] == null)
-            {
-                e.Components[idx] = ComponentRegistry<T>.Take();
+            var a = ComponentRegistry<T>.TakeManagedAddition();
+            a.EntityId = e.Id;
+            _entitesWithChanges.Add(a);
+            return this;
+        }
 
-                if (e.Complete)
-                {
-                    foreach (var s in ComponentRegistry<T>.InterestedSystems[Index])
-                        s.EntityChanged(e);
-                }
-            }
-            else if (throwOnExists)
-            {
-                throw new InvalidOperationException($"{typeof(T)} exists on entity");
-            }
+        internal EntityManager Add(EntityChange change)
+        {
+            _entitesWithChanges.Add(change);
             return this;
         }
 
         public EntityManager Add<T>(Entity e, T component, bool expectedUnmanaged = true) where T : Component, new()
         {
-            if(expectedUnmanaged && !component.Unmanaged)
-                throw new InvalidOperationException();
-
-            var idx = ComponentRegistry<T>.Index;
-
-            if (e.Components[idx] != null)
+            if (component.Unmanaged)
             {
-                // Todo :(
+                _entitesWithChanges.Add(new UnmanagedComponentAddition<T>(e.Id, component));
             }
             else
             {
-                e.Components[idx] = component;
+                if(expectedUnmanaged)
+                    throw new InvalidOperationException();
+                var a = ComponentRegistry<T>.TakeManagedAddition();
+                a.EntityId = e.Id;
+                a.Component = component;
+                _entitesWithChanges.Add(a);
             }
-
-            if (e.Complete)
-            {
-                foreach (var s in ComponentRegistry<T>.InterestedSystems[Index])
-                    s.EntityChanged(e);
-            }
-
+            
             return this;
         }
 
-        public EntityManager Add<T>(Entity e, Action<T> action, bool throwOnExists = true) where T : Component, new()
+        public EntityManager AddViaTemplate<T>(Entity e, T template) where T : Component, new()
         {
-            if (action == null)
-                return Add<T>(e);
-
-            var idx = ComponentRegistry<T>.Index;
-
-            var existing = e.Get<T>();
-
-            if (existing == null)
-            {
-                var item = ComponentRegistry<T>.Take();
-                action(item);
-                e.Components[idx] = item;
-
-                if (e.Complete)
-                {
-                    foreach (var s in ComponentRegistry<T>.InterestedSystems[Index])
-                        s.EntityAdded(e);
-                }
-            }
-            else if (throwOnExists)
-            {
-                throw new InvalidOperationException($"{typeof(T)} exists on entity");
-            }
-            else
-            {
-                action(existing);
-            }
-
+            var a = ComponentRegistry<T>.TakeManagedAddition();
+            a.EntityId = e.Id;
+            a.Component = ComponentRegistry<T>.Take();
+            template.CopyTo(a.Component);
+            _entitesWithChanges.Add(a);
             return this;
         }
 
         public EntityManager Remove<T>(Entity e) where T : Component, new()
         {
-            var cmp = e.Get<T>();
-
-            if (cmp == null)
-                return this;
-
-            if(!cmp.Unmanaged)
-                ComponentRegistry<T>.Release(cmp);
-
-            e.Components[ComponentRegistry<T>.Index] = null;
-
-            if (e.Complete)
-            {
-                foreach (var s in ComponentRegistry<T>.InterestedSystems[Index])
-                    s.EntityChanged(e);
-            }
-
+            _entitesWithChanges.Add(new ComponentRemoval<T>(e.Id));
             return this;
         }
 
-        public Entity NewEntity()
+        public Entity AddEntity(Entity e)
         {
-            var e = new Entity(Interlocked.Increment(ref _entityId)) {
-                Components = ComponentArrayPool.Take(),
-                Manager = this
-            };
-
-            return e;
-        }
-
-        private int _entityId = 0;
-
-        public Entity Add(Entity e)
-        {
-            if(e.Manager != this)
+            if (e.Manager != this)
                 throw new ArgumentException("Entity Manager mismatch on Entity addition", nameof(e));
-
-            _entities.Add(e);
+            
             _entityMap[e.Id] = e;
-
-            e.Complete = true;
-
-            foreach (var s in Systems)
-                s.EntityAdded(e);
+            _entitiesToAdd.Add(e);
 
             return e;
         }
@@ -266,7 +209,7 @@ namespace Misana.Core.Ecs
             if (_entityMap.TryGetValue(id, out e))
             {
                 _entityMap.Remove(id);
-                RemoveEntity(e);
+                _entitiesToRemove.Add(e);
             }
 
             return e;
@@ -280,10 +223,6 @@ namespace Misana.Core.Ecs
             return e;
         }
 
-        public void RemoveEntity(Entity entity)
-        {
-            _entityMap.Remove(entity.Id);
-            _removedEntities.Add(entity);
-        }
+        public int NextId() => Interlocked.Increment(ref _entityId);
     }
 }

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Concurrent;
+using Misana.Core.Ecs.Changes;
 
 namespace Misana.Core.Ecs
 {
     internal static class ComponentArrayPool
     {
         private static ConcurrentStack<Component[]> _freeList;
-
+        
         public static void Initialize(int componentCount)
         {
             const int prefill = 2000;
@@ -27,21 +28,17 @@ namespace Misana.Core.Ecs
             return item;
         }
 
-        public static void Release(Component[] arr, bool clear = true)
+        public static void Release(Component[] arr)
         {
-            if (clear)
+            for (int i = 0; i < EntityManager.ComponentCount; i++)
             {
-                for (int i = 0; i < EntityManager.ComponentCount; i++)
+                if (arr[i] != null && !arr[i].Unmanaged)
                 {
-                    if (arr[i] != null && !arr[i].Unmanaged)
-                    {
-                        ComponentRegistry.Release[i](arr[i]);
-                    }
-
-                    arr[i] = null;
+                    ComponentRegistry.Release[i](arr[i]);
                 }
-            }
 
+                arr[i] = null;
+            }
             _freeList.Push(arr);
         }
     }

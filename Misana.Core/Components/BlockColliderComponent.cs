@@ -9,5 +9,6 @@ namespace Misana.Core.Components
 {
     public class BlockColliderComponent : Component<BlockColliderComponent>
     {
+        public override void CopyTo(BlockColliderComponent other) { }
     }
 }

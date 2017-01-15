@@ -7,5 +7,11 @@ namespace Misana.Core.Components
         public float Current;
         public float Max;
         public float Ratio => Current / Max;
+
+        public override void CopyTo(HealthComponent other)
+        {
+            other.Current = Current;
+            other.Max = Max;
+        }
     }
 }

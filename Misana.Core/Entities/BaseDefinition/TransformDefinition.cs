@@ -38,7 +38,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Radius = radius;
         }
 
-        public override void OnApplyDefinition(Entity entity, Map map, TransformComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, TransformComponent component)
         {
             component.CurrentArea = map.GetAreaById(AreaId);
             component.Position = Position;

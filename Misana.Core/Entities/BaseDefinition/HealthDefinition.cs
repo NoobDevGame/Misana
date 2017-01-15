@@ -27,7 +27,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Max = max;
         }
 
-        public override void OnApplyDefinition(Entity entity, Map map, HealthComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, HealthComponent component)
         {
             component.Current = Current;
             component.Max = Max;

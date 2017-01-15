@@ -7,7 +7,7 @@ namespace Misana.Core.Entities.BaseDefinition
     public class MotionComponentDefinition : ComponentDefinition<MotionComponent>
     {
 
-        public override void OnApplyDefinition(Entity entity, Map map, MotionComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, MotionComponent component)
         {
         }
     }

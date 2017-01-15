@@ -4,7 +4,6 @@ namespace Misana.Core.Ecs
 {
     public class Entity
     {
-        public bool Complete;
         public EntityManager Manager;
         public Component[] Components;
         public readonly int Id;
@@ -23,23 +22,17 @@ namespace Misana.Core.Ecs
             return this;
         }
 
-        public Entity Add<T>(Action<T> action, bool throwOnExists = true) where T : Component, new()
-        {
-            Manager.Add(this, action, throwOnExists);
-            return this;
-        }
-
         public Entity Remove<T>() where T : Component, new()
         {
             Manager.Remove<T>(this);
             return this;
         }
-
-        public Entity Commit() => Complete ? this : Manager.Add(this);
-
-        internal Entity(int id)
+        
+        internal Entity(int id, Component[] components, EntityManager manager)
         {
             Id = id;
+            Components = components;
+            Manager = manager;
         }
     }
 }

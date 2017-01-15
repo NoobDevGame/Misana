@@ -9,6 +9,11 @@ namespace Misana.Core.Components
 {
     public class PlayerInputComponent : Component<PlayerInputComponent>
     {
-        public Vector2 Move { get; set; }
+        public Vector2 Move;
+
+        public override void CopyTo(PlayerInputComponent other)
+        {
+            other.Move = Move;
+        }
     }
 }

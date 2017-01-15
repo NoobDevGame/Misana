@@ -20,7 +20,7 @@ namespace Misana.Core.Entities.BaseDefinition
             TilePosition = tilePosition;
         }
 
-        public override void OnApplyDefinition(Entity entity, Map map, CharacterRenderComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, CharacterRenderComponent component)
         {
             component.TilePosition = TilePosition;
         }

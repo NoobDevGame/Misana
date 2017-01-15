@@ -10,5 +10,10 @@ namespace Misana.Core.Components
     public class CharacterComponent : Component<CharacterComponent>
     {
         public string Name { get; set; }
+
+        public override void CopyTo(CharacterComponent other)
+        {
+            other.Name = Name;
+        }
     }
 }

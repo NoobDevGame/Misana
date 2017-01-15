@@ -9,6 +9,11 @@ namespace Misana.Core.Components
 {
     public class MotionComponent : Component<MotionComponent>
     {
-        public Vector2 Move { get; set; }
+        public Vector2 Move;
+
+        public override void CopyTo(MotionComponent other)
+        {
+            other.Move = Move;
+        }
     }
 }

@@ -20,7 +20,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Name = name;
         }
 
-        public override void OnApplyDefinition(Entity entity, Map map, CharacterComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, CharacterComponent component)
         {
             component.Name = Name;
         }

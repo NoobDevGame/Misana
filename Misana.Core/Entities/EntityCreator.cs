@@ -5,23 +5,19 @@ namespace Misana.Core.Entities
 {
     public static class EntityCreator
     {
-        public static int CreateEntity(EntityManager manager,Map map,EntityDefinition definition)
+        public static EntityBuilder CreateEntity(EntityManager manager,Map map,EntityDefinition definition)
         {
-            var entity = manager.NewEntity();
-
-            return CreateEntity(definition, map,entity);
+            return CreateEntity(definition, map, new EntityBuilder());
         }
 
-        public static int CreateEntity(EntityDefinition definition,Map map, Entity entity)
+        public static EntityBuilder CreateEntity(EntityDefinition definition,Map map, EntityBuilder entity)
         {
             foreach (var componentDefinition in definition.Definitions)
             {
                 componentDefinition.ApplyDefinition(entity, map);
             }
 
-            entity.Commit();
-
-            return entity.Id;
+            return entity;
         }
     }
 }
