@@ -20,7 +20,10 @@ namespace Misana.Core.Systems
                     continue;
 
                 var otherEntity = Manager.GetEntityById(entityId);
-                if (otherEntity != null)
+
+                var result = r2.Condition?.Invoke(otherEntity, world) ?? true;
+
+                if ( result &&otherEntity != null)
                     r2.Action?.Invoke(otherEntity,world);
 
             }

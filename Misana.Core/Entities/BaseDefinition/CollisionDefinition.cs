@@ -10,11 +10,27 @@ namespace Misana.Core.Entities.BaseDefinition
 {
     public class CollisionDefinition :ComponentDefinition<CollisionApplicator>
     {
+        public EventCondition Condition { get; set; }
+
         public List<EventDefinition> EventsActions { get; set; } = new List<EventDefinition>();
+
+        public CollisionDefinition()
+        {
+
+        }
+
+        public CollisionDefinition(EventCondition condition)
+        {
+            Condition = condition;
+        }
 
         public override void OnApplyDefinition(Entity entity, Map map, CollisionApplicator component)
         {
-            if (EventsActions.Count > 0)
+            if (Condition != null)
+            {
+                component.Condition = Condition.Test;
+            }
+
 
             foreach (var @event in EventsActions)
             {
@@ -24,6 +40,14 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
+
+            bw.Write(Condition != null);
+            if (Condition != null)
+            {
+                bw.Write(Condition.GetType().AssemblyQualifiedName);
+                Condition.Serialize(version,bw);
+            }
+
             bw.Write(EventsActions.Count);
 
             foreach (var @event in EventsActions)
@@ -35,6 +59,15 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public override void Deserialize(Version version, BinaryReader br)
         {
+            var conditionExist = br.ReadBoolean();
+            if (conditionExist)
+            {
+                var typeName = br.ReadString();
+                var condition = (EventCondition)Activator.CreateInstance(Type.GetType(typeName));
+                condition.Deserialize(version,br);
+                Condition = condition;
+            }
+
             var count = br.ReadInt32();
             for (int i = 0; i < count; i++)
             {

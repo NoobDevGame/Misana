@@ -12,6 +12,7 @@ using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
 using Misana.Core.Events.BaseEvents;
+using Misana.Core.Events.Conditions;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
 
@@ -61,7 +62,7 @@ namespace Misana.Core
             testDefinition.Definitions.Add(new EntityColliderDefinition());
             testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
 
-            CollisionDefinition collision = new CollisionDefinition();
+            CollisionDefinition collision = new CollisionDefinition(new FlagCondition("DamageDealer_Flag",true));
             collision.EventsActions.Add(new DamageEvent(20f));
             collision.EventsActions.Add(new TeleportEvent(5,5,CurrentMap.StartArea.Id));
             collision.EventsActions.Add(new SetEntityFlagEvent("DamageDealer_Flag"));
