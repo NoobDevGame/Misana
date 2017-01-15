@@ -41,6 +41,9 @@ namespace Misana.Editor.Helper
             EntityExplorer ex = new EntityExplorer(mainForm);
             AddWindow(ex);
 
+            EntityComponentToolbox ect = new EntityComponentToolbox(mainForm);
+            AddWindow(ect);
+
             if (File.Exists("layout.xml"))
             {
                 using (FileStream fs = File.Open("layout.xml", FileMode.Open))
@@ -59,7 +62,8 @@ namespace Misana.Editor.Helper
                             return pv;
                         else if (s == typeof(EntityExplorer).ToString())
                             return ex;
-
+                        else if (s == typeof(EntityComponentToolbox).ToString())
+                            return ect;
                         return null;
                     });
                 }
@@ -71,9 +75,8 @@ namespace Misana.Editor.Helper
                 ShowWindow(lv);
                 ShowWindow(pv);
                 ShowWindow(ex);
+                ShowWindow(ect);
             }
-
-
         }
 
         public void SaveLayout()
