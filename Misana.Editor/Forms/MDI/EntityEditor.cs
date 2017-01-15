@@ -33,6 +33,13 @@ namespace Misana.Editor.Forms.MDI
                 ListViewItem lvi = new ListViewItem(cdef.GetType().ToString());
                 listView.Items.Add(lvi);
             }
+
+            mainForm.EventBus.Subscribe<EntityDefinitionChangedEvent>((ev) =>
+            {
+                if(ev.EntityDefinition == entityDefinition)
+                {
+                }
+            });
         }
 
         private void button_save_Click(object sender, EventArgs e)
@@ -44,6 +51,34 @@ namespace Misana.Editor.Forms.MDI
         private void EntityEditor_Load(object sender, EventArgs e)
         {
 
+        }
+
+        private void listView_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void listView_DragDrop(object sender, DragEventArgs e)
+        {
+            var ecf = (Type) e.Data.GetData("System.RuntimeType");
+            var def = (ComponentDefinition)Activator.CreateInstance(ecf);
+
+            if (entityDefinition.Definitions.FirstOrDefault(t => t.GetType() == def.GetType()) != null)
+                return;
+            entityDefinition.Definitions.Add(def);
+            listView.Items.Add(new ListViewItem(def.GetType().Name) { Tag = def });
+            mainForm.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
+        }
+
+        private void listView_Click(object sender, EventArgs e)
+        {
+            if(listView.SelectedItems.Count != null)
+            {
+                var def = entityDefinition.Definitions.FirstOrDefault(t => t.GetType() == listView.SelectedItems[0].Tag.GetType());
+
+                if(def != null)
+                    mainForm.WindowManager.GetWindow<PropertyView>().SelectObject(def);
+            }
         }
     }
 }

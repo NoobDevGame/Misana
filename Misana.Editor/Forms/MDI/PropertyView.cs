@@ -32,5 +32,10 @@ namespace Misana.Editor.Forms.MDI
         {
             propertyGrid.SelectedObjects = objects;
         }
+
+        public void SelectObject<T>(T objectT) where T : class
+        {
+            propertyGrid.SelectedObject = objectT;
+        }
     }
 }

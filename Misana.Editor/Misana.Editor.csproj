@@ -84,6 +84,12 @@
     <Compile Include="Forms\MDI\AreaRenderer.Designer.cs">
       <DependentUpon>AreaRenderer.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\MDI\EntityComponentToolbox.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MDI\EntityComponentToolbox.Designer.cs">
+      <DependentUpon>EntityComponentToolbox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\MDI\EntityEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -173,6 +179,9 @@
     <Compile Include="Helper\TileHelper.cs" />
     <EmbeddedResource Include="Forms\MDI\AreaRenderer.resx">
       <DependentUpon>AreaRenderer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MDI\EntityComponentToolbox.resx">
+      <DependentUpon>EntityComponentToolbox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDI\EntityEditor.resx">
       <DependentUpon>EntityEditor.cs</DependentUpon>
