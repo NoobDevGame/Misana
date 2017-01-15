@@ -6,9 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Maps;
 using Misana.Core.Components;
+using Misana.Core.Components.Events;
 using Misana.Core.Components.StatusComponent;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
+using Misana.Core.Entities.Events;
 using Misana.Core.Events.BaseEvents;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
@@ -62,6 +64,7 @@ namespace Misana.Core
             CollisionDefinition collision = new CollisionDefinition();
             collision.EventsActions.Add(new DamageEvent(20f));
             collision.EventsActions.Add(new TeleportEvent(5,5,CurrentMap.StartArea.Id));
+            collision.EventsActions.Add(new SetEntityFlagEvent("DamageDealer_Flag"));
             testDefinition.Definitions.Add(collision);
 
             EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition);
@@ -77,7 +80,7 @@ namespace Misana.Core
             playerDefinition.Definitions.Add(new MotionComponentDefinition());
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
-
+            playerDefinition.Definitions.Add(new EntityFlagDefintion());
             position.CurrentArea = CurrentMap.StartArea;
             position.Position = new Vector2(5, 3);
 

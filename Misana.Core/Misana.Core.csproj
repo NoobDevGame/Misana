@@ -50,6 +50,7 @@
     <Compile Include="Components\DimensionComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityCollisionComponent.cs" />
+    <Compile Include="Components\Events\EntityFlagComponent.cs" />
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Components\StatusComponent\TimeDamageComponent.cs" />
@@ -73,7 +74,9 @@
     <Compile Include="Entities\ComponentDefinition.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
+    <Compile Include="Entities\Events\EntityFlagDefintion.cs" />
     <Compile Include="Events\BaseEvents\DamageEvent.cs" />
+    <Compile Include="Events\BaseEvents\SetEntityFlagEvent.cs" />
     <Compile Include="Events\BaseEvents\TeleportEvent.cs" />
     <Compile Include="Events\BaseEvents\TimeDamageEvent.cs" />
     <Compile Include="Events\EventDefinition.cs" />
