@@ -42,6 +42,8 @@ namespace Misana.Core
             Entities = EntityManager.Create("LocalWorld",systems);
         }
 
+        private Random Random = new Random();
+        private static int foo;
         public void ChangeMap(Map map)
         {
             CurrentMap = map;
@@ -52,7 +54,7 @@ namespace Misana.Core
             {
                 foreach (var entity in area.Entities)
                 {
-                    EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition);
+                    EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition).Commit(Entities);
                 }
             }
 
@@ -71,29 +73,85 @@ namespace Misana.Core
             EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition);
 
             
-            Entities.NewEntity()
-               .Add<TransformComponent>(p =>
-               {
-                   p.CurrentArea = CurrentMap.StartArea;
-                   p.Position = new Vector2(4, 3);
-                   p.Radius = 0.5f;
-               })
-               .Add<MotionComponent>()
-               .Add<BlockColliderComponent>()
-               .Add<HealthComponent>(h => {
-                   h.Max = 500;
-                   h.Current = 500;
-               })
-               .Add<EntityColliderComponent>(e => { e.Blocked = true; })
-               .Add<CharacterComponent>(p =>
-               {
-                   p.Name = "Heidi";
-               })
-               .Add<CharacterRenderComponent>(p =>
-               {
-                   p.TilePosition = new Index2(0, 9);
-               })
-               .Commit();
+                new EntityBuilder()
+                    .Add<TransformComponent>(
+                        p => {
+                            p.CurrentArea = CurrentMap.StartArea;
+                            p.Position = new Vector2(4, 3);
+                            p.Radius = 0.5f;
+                        })
+                    .Add<MotionComponent>()
+                    .Add<BlockColliderComponent>()
+                    .Add<HealthComponent>(
+                        h => {
+                            h.Max = 500;
+                            h.Current = 500;
+                        })
+                    .Add<EntityColliderComponent>(e => { e.Blocked = true; })
+                    .Add<CharacterComponent>(
+                        p => {
+                            p.Name = "Heidi";
+                        })
+                    .Add<CharacterRenderComponent>(
+                        p => {
+                            p.TilePosition = new Index2(0, 9);
+                        })
+                    .CommitAndReturnCopy(Entities)
+                    .Add<TransformComponent>(p => {
+                        p.CurrentArea = CurrentMap.StartArea;
+                        p.Position = new Vector2(2, 3);
+                        p.Radius = 0.5f;
+                    })
+                    .Add<CharacterComponent>(p => {
+                        p.Name = "Heidi 2";
+                    })
+                    .Add<EntityColliderComponent>(
+                        e => {
+                            e.Blocked = true;
+                            e.CollisionEffects.Add(new SimpleAddComponentCollisionEffect<TimeDamageComponent>(
+                                new TimeDamageComponent {
+                                    DamagePerSeconds = 5,
+                                    EffectTime = TimeSpan.FromSeconds(10)
+                                }) {
+                                ApplyTo = CollisionEffect.ApplicableTo.Both,
+                                Debounce = TimeSpan.FromMilliseconds(100)
+                            });
+
+                            e.CollisionEffects.Add(new CustomCodeCollisionEffect(
+                                (em, self, other) =>
+                                {
+                                    new EntityBuilder()
+                                        .Add<TransformComponent>(
+                                            tf =>
+                                            {
+                                                var otf = self.Get<TransformComponent>();
+                                                tf.CurrentArea = otf.CurrentArea;
+                                                tf.Position = new Vector2(Random.Next(0, 101), Random.Next(0, 101));
+                                            })
+                                        .Add<MotionComponent>()
+                                        .Add<EntityColliderComponent>(
+                                            ec =>
+                                            {
+                                                ec.Blocked = false;
+                                                ec.CollisionEffects.Add(
+                                                    new SimpleAddComponentCollisionEffect<TimeDamageComponent>(
+                                                        new TimeDamageComponent
+                                                        {
+                                                            DamagePerSeconds = Random.Next(-11, 15),
+                                                            EffectTime = TimeSpan.FromSeconds(1)
+                                                        })
+                                                    {
+                                                        ApplyTo = CollisionEffect.ApplicableTo.Other,
+                                                        Debounce = TimeSpan.FromMilliseconds(100)
+                                                    });
+                                            })
+                                            .Commit(em);
+                                })
+                            {
+                                Debounce = TimeSpan.FromMilliseconds(5)
+                            });
+                        })
+                    .Commit(Entities);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
@@ -108,14 +166,11 @@ namespace Misana.Core
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
 
-            var playerEntity = Entities.NewEntity()
+            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
                 .Add(transform)
-                .Add(input);
+                .Add(input));
 
-
-            EntityCreator.CreateEntity(playerDefinition, CurrentMap, playerEntity);
-
-            return playerEntity.Id;
+            return playerBuilder.Commit(Entities).Id;
         }
 
         public void Update(GameTime gameTime)
