@@ -16,13 +16,15 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class MapView : DockContent
+    public partial class MapView : SingleInstanceDockWindow, IMDIForm
     {
+        public DockState DefaultDockState => DockState.DockLeft;
+
         private MainForm mainForm;
 
         private List<SubscriptionToken> subscriptionTokens = new List<SubscriptionToken>();
 
-        public MapView(MainForm mainForm)
+        public MapView(MainForm mainForm) : base()
         {
             InitializeComponent();
 
@@ -36,8 +38,8 @@ namespace Misana.Editor.Forms.MDI
             treeView.ImageList = IconHelper.ImageList;
 
             treeView.MouseDoubleClick += TreeView_MouseDoubleClick;
-            
 
+            mainForm.VSToolStripExtender.SetStyle(toolStrip1, VisualStudioToolStripExtender.VsVersion.Vs2015, mainForm.Theme);
         }
 
         private void TreeView_MouseDoubleClick(object sender, MouseEventArgs e)

@@ -1,4 +1,5 @@
-﻿using Misana.Editor.Forms.MDI;
+﻿using Misana.Core.Maps;
+using Misana.Editor.Forms.MDI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,6 +18,12 @@ namespace Misana.Editor.Commands
         }
 
         #region File Menu
+
+        public void CreateMap()
+        {
+            var map = new Map("Map", null, new List<Area>());
+            mainForm.SetMap(map);
+        }
 
         public void OpenMap()
         {

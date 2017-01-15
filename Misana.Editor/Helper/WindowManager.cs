@@ -1,6 +1,7 @@
 ﻿using Misana.Editor.Forms.MDI;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -27,11 +28,69 @@ namespace Misana.Editor.Helper
         {
             MapView mapView = new MapView(mainForm);
             AddWindow(mapView);
-            mapView.Show(dockPanel, DockState.DockLeft);
 
             TilesheetWindow ts = new TilesheetWindow(mainForm);
             AddWindow(ts);
-            ShowWindow(ts,DockState.DockRight);
+
+            LayerView lv = new LayerView(mainForm);
+            AddWindow(lv);
+
+            PropertyView pv = new PropertyView(mainForm);
+            AddWindow(pv);
+
+            EntityExplorer ex = new EntityExplorer(mainForm);
+            AddWindow(ex);
+
+            if (File.Exists("layout.xml"))
+            {
+                using (FileStream fs = File.Open("layout.xml", FileMode.Open))
+                {
+                    dockPanel.LoadFromXml(fs, (s) =>
+                    {
+                        if (s == typeof(MapView).ToString())
+                            return mapView;
+                        else if (s == typeof(TilesheetWindow).ToString())
+                            return ts;
+                        else if (s == typeof(LayerView).ToString())
+                            return lv;
+                        else if (s == typeof(PropertyView).ToString())
+                            return pv;
+                        else if (s == typeof(PropertyView).ToString())
+                            return pv;
+                        else if (s == typeof(EntityExplorer).ToString())
+                            return ex;
+
+                        return null;
+                    });
+                }
+            }
+            else
+            {
+                ShowWindow(mapView);
+                ShowWindow(ts);
+                ShowWindow(lv);
+                ShowWindow(pv);
+                ShowWindow(ex);
+            }
+
+
+        }
+
+        public void SaveLayout()
+        {
+            dockPanel.SaveAsXml("layout.xml");
+        }
+
+        public void AddShowWindow(DockContent dockContent)
+        {
+            AddWindow(dockContent);
+            ShowWindow(dockContent);
+        }
+
+        public void AddShowWindow(DockContent dockContent, DockState dockState)
+        {
+            AddWindow(dockContent);
+            ShowWindow(dockContent, dockState);
         }
 
         public void AddWindow(DockContent dockContent)
@@ -44,9 +103,36 @@ namespace Misana.Editor.Helper
             };
         }
 
+        public void ShowWindow(DockContent window)
+        {
+            window.Show(dockPanel, ((IMDIForm)window).DefaultDockState);
+        }
+
         public void ShowWindow(DockContent window, DockState dockstate)
         {
             window.Show(dockPanel, dockstate);
+        }
+
+        public void ToggleWindow<T>() where T : DockContent
+        {
+            var window = GetWindow<T>();
+            ToggleWindow<T>(window.IsHidden);
+        }
+
+        public void ToggleWindow<T>(bool show) where T : DockContent
+        {
+            if (typeof(T) != typeof(SingleInstanceDockWindow) && typeof(T).IsSubclassOf(typeof(SingleInstanceDockWindow)) == false)
+                throw new NotSupportedException();
+
+            var window = GetWindow<T>();
+
+            if (window != null)
+            {
+                if (show && window.IsHidden)
+                    window.Show();
+                else if (!show && !window.IsHidden)
+                    window.Hide();
+            }
         }
 
         public T GetWindow<T>() where T : DockContent

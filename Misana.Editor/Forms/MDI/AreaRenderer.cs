@@ -14,12 +14,14 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class AreaRenderer : DockContent
+    public partial class AreaRenderer : DockContent, IMDIForm
     {
+        public DockState DefaultDockState => DockState.Document;
+
         public Area Area { get { return areaRenderControl.Area; } }
 
-        public Index3 SelectionStart { get { return areaRenderControl.SelectionStart; } set { areaRenderControl.SelectionStart = value; } }
-        public Index3 SelectionEnd { get { return areaRenderControl.SelectionEnd; } set { areaRenderControl.SelectionEnd = value; } }
+        public Index2[] SelectedTiles { get { return areaRenderControl.SelectedTiles; }}
+        public int SelectedLayer { get { return areaRenderControl.SelectedLayer; } }
 
         public bool IsSingleTileSelected { get { return areaRenderControl.IsSingleTileSelected; } }
 
@@ -39,7 +41,6 @@ namespace Misana.Editor.Forms.MDI
             control_panel.AutoScroll = true;
             control_panel.Controls.Add(areaRenderControl);
         }
-
         internal void ModeSelectionChanged(object sender, EventArgs e)
         {
             if(button_mode_select.Checked == true)

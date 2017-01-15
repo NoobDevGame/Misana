@@ -28,12 +28,14 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItem_file = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_new = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_open = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_import = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_file_import_tiled = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_save = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_saveas = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_file_divider1 = new System.Windows.Forms.ToolStripSeparator();
@@ -45,13 +47,23 @@
             this.menuItem_map_importArea = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_map_importArea_tiled = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_view = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_view_map = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_view_log = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_view_tilesheets = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_view_layerView = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuItem_view_properties = new System.Windows.Forms.ToolStripMenuItem();
+            this.menu_view_entityexplorer = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
+            this.saveLayoutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about_about = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about_credits = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about_help = new System.Windows.Forms.ToolStripMenuItem();
             this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.menuItem_view_mapTree = new System.Windows.Forms.ToolStripMenuItem();
+            this.vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
+            this.vS2015BlueTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
+            this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
             this.menuStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -105,9 +117,18 @@
             // 
             // menuItem_file_import
             // 
+            this.menuItem_file_import.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItem_file_import_tiled});
             this.menuItem_file_import.Name = "menuItem_file_import";
             this.menuItem_file_import.Size = new System.Drawing.Size(112, 22);
             this.menuItem_file_import.Text = "Import";
+            // 
+            // menuItem_file_import_tiled
+            // 
+            this.menuItem_file_import_tiled.Name = "menuItem_file_import_tiled";
+            this.menuItem_file_import_tiled.Size = new System.Drawing.Size(127, 22);
+            this.menuItem_file_import_tiled.Text = "Tiled map";
+            this.menuItem_file_import_tiled.Click += new System.EventHandler(this.menuItem_file_import_tiled_Click);
             // 
             // menuItem_file_save
             // 
@@ -180,19 +201,85 @@
             // menuItem_view
             // 
             this.menuItem_view.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItem_view_mapTree,
-            this.menuItem_view_log});
+            this.menuItem_view_map,
+            this.menuItem_view_log,
+            this.menuItem_view_tilesheets,
+            this.menuItem_view_layerView,
+            this.menuItem_view_properties,
+            this.menu_view_entityexplorer,
+            this.toolStripMenuItem2,
+            this.saveLayoutToolStripMenuItem});
             this.menuItem_view.Name = "menuItem_view";
             this.menuItem_view.Size = new System.Drawing.Size(44, 20);
             this.menuItem_view.Text = "View";
+            // 
+            // menuItem_view_map
+            // 
+            this.menuItem_view_map.Checked = true;
+            this.menuItem_view_map.CheckOnClick = true;
+            this.menuItem_view_map.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItem_view_map.Name = "menuItem_view_map";
+            this.menuItem_view_map.Size = new System.Drawing.Size(149, 22);
+            this.menuItem_view_map.Text = "Map";
+            this.menuItem_view_map.CheckedChanged += new System.EventHandler(this.menuItem_view_map_CheckedChanged);
             // 
             // menuItem_view_log
             // 
             this.menuItem_view_log.CheckOnClick = true;
             this.menuItem_view_log.Name = "menuItem_view_log";
-            this.menuItem_view_log.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_view_log.Size = new System.Drawing.Size(149, 22);
             this.menuItem_view_log.Text = "Log";
             this.menuItem_view_log.CheckStateChanged += new System.EventHandler(this.menuItem_view_log_CheckStateChanged);
+            // 
+            // menuItem_view_tilesheets
+            // 
+            this.menuItem_view_tilesheets.Checked = true;
+            this.menuItem_view_tilesheets.CheckOnClick = true;
+            this.menuItem_view_tilesheets.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItem_view_tilesheets.Name = "menuItem_view_tilesheets";
+            this.menuItem_view_tilesheets.Size = new System.Drawing.Size(149, 22);
+            this.menuItem_view_tilesheets.Text = "Tilesheets";
+            this.menuItem_view_tilesheets.CheckedChanged += new System.EventHandler(this.menuItem_view_tilesheets_CheckedChanged);
+            // 
+            // menuItem_view_layerView
+            // 
+            this.menuItem_view_layerView.Checked = true;
+            this.menuItem_view_layerView.CheckOnClick = true;
+            this.menuItem_view_layerView.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItem_view_layerView.Name = "menuItem_view_layerView";
+            this.menuItem_view_layerView.Size = new System.Drawing.Size(149, 22);
+            this.menuItem_view_layerView.Text = "Layer View";
+            this.menuItem_view_layerView.CheckedChanged += new System.EventHandler(this.menuItem_view_layerView_CheckedChanged);
+            // 
+            // menuItem_view_properties
+            // 
+            this.menuItem_view_properties.Checked = true;
+            this.menuItem_view_properties.CheckOnClick = true;
+            this.menuItem_view_properties.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.menuItem_view_properties.Name = "menuItem_view_properties";
+            this.menuItem_view_properties.Size = new System.Drawing.Size(149, 22);
+            this.menuItem_view_properties.Text = "Properties";
+            this.menuItem_view_properties.CheckedChanged += new System.EventHandler(this.menuItem_view_properties_CheckedChanged);
+            // 
+            // menu_view_entityexplorer
+            // 
+            this.menu_view_entityexplorer.CheckOnClick = true;
+            this.menu_view_entityexplorer.Name = "menu_view_entityexplorer";
+            this.menu_view_entityexplorer.Size = new System.Drawing.Size(149, 22);
+            this.menu_view_entityexplorer.Text = "Entity Explorer";
+            this.menu_view_entityexplorer.CheckedChanged += new System.EventHandler(this.menu_view_entityexplorer_CheckedChanged);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(146, 6);
+            // 
+            // saveLayoutToolStripMenuItem
+            // 
+            this.saveLayoutToolStripMenuItem.Name = "saveLayoutToolStripMenuItem";
+            this.saveLayoutToolStripMenuItem.Size = new System.Drawing.Size(149, 22);
+            this.saveLayoutToolStripMenuItem.Text = "Save Layout";
+            this.saveLayoutToolStripMenuItem.Click += new System.EventHandler(this.saveLayoutToolStripMenuItem_Click);
             // 
             // menuItem_about
             // 
@@ -230,11 +317,9 @@
             this.dockPanel.Size = new System.Drawing.Size(1251, 495);
             this.dockPanel.TabIndex = 2;
             // 
-            // menuItem_view_mapTree
+            // visualStudioToolStripExtender1
             // 
-            this.menuItem_view_mapTree.Name = "menuItem_view_mapTree";
-            this.menuItem_view_mapTree.Size = new System.Drawing.Size(152, 22);
-            this.menuItem_view_mapTree.Text = "MapTree";
+            this.visualStudioToolStripExtender1.DefaultRenderer = null;
             // 
             // MainForm
             // 
@@ -280,6 +365,17 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_about_credits;
         private System.Windows.Forms.ToolStripMenuItem menuItem_about_help;
         private System.Windows.Forms.ToolStripMenuItem menuItem_view_log;
-        private System.Windows.Forms.ToolStripMenuItem menuItem_view_mapTree;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_view_map;
+        private WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme vS2015DarkTheme1;
+        private WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme vS2015BlueTheme1;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_view_tilesheets;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_view_layerView;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_view_properties;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem saveLayoutToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem menu_view_entityexplorer;
+        private System.Windows.Forms.ToolStripMenuItem menuItem_file_import_tiled;
+        private WeifenLuo.WinFormsUI.Docking.VS2015LightTheme vS2015LightTheme1;
     }
 }

@@ -13,9 +13,9 @@ namespace Misana.Core.Maps
 {
     public class Map
     {
-        public Area StartArea { get; }
-        public string Name { get; }
-        public List<Area> Areas { get; }
+        public Area StartArea { get; set; }
+        public string Name { get; set; }
+        public List<Area> Areas { get; set; }
 
         public static readonly Version MapVersion = new Version(0,1);
 
@@ -23,9 +23,6 @@ namespace Misana.Core.Maps
 
         public Map(string name, Area startArea, List<Area> areas)
         {
-            if(startArea == null)
-                throw  new ArgumentNullException(nameof(startArea));
-
             if (areas == null)
                 throw  new ArgumentNullException(nameof(areas));
 

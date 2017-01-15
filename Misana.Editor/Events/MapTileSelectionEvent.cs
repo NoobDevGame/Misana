@@ -1,10 +1,6 @@
 ﻿using Misana.Core;
+using Misana.Core.Maps;
 using Redbus.Events;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Misana.Editor.Events
 {
@@ -13,17 +9,20 @@ namespace Misana.Editor.Events
         public bool IsSingleTile {
             get
             {
-                return (SelectionStart == SelectionEnd);
+                return SelectedTilesIndices.Length == 1;
             }
         }
 
-        public Index3 SelectionStart { get; set; }
-        public Index3 SelectionEnd { get; set; }
+        public Index2[] SelectedTilesIndices { get; set; }
+        public int SelectedLayer { get; set; }
+             
+        public Tile[] SelectedTiles { get; set; }
 
-        public MapTileSelectionEvent(Index3 selectionStart, Index3 selectionEnd)
+        public MapTileSelectionEvent(int selectedLayer, Tile[] selectedTiles, Index2[] selectedTileIndices)
         {
-            SelectionStart = selectionStart;
-            SelectionEnd = selectionEnd;
+            SelectedLayer = selectedLayer;
+            SelectedTilesIndices = selectedTileIndices;
+            SelectedTiles = selectedTiles;
         }
     }
 }

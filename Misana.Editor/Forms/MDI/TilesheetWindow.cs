@@ -13,8 +13,10 @@ using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class TilesheetWindow : DockContent
+    public partial class TilesheetWindow : SingleInstanceDockWindow, IMDIForm
     {
+        public DockState DefaultDockState => DockState.DockRight;
+
         private MainForm mainForm;
 
         public string SelectedTilesheetName { get { return tileSelect.Selection.Key; } }
@@ -25,7 +27,7 @@ namespace Misana.Editor.Forms.MDI
 
         private TileSelect tileSelect;
 
-        public TilesheetWindow(MainForm mainForm)
+        public TilesheetWindow(MainForm mainForm) : base()
         {
             this.mainForm = mainForm;
 

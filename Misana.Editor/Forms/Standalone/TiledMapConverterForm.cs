@@ -30,6 +30,7 @@ namespace Misana.Editor.Forms
         {
             MapName = textBox1.Text;
             Map  =  MapLoader.CreateMapFromTiled(MapName, TiledAreas.ToArray());
+            Map.Name = MapName;
             DialogResult = DialogResult.OK;
             this.Close();
         }
