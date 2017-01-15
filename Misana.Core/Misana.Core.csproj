@@ -74,6 +74,7 @@
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
     <Compile Include="Events\BaseEvents\DamageEvent.cs" />
+    <Compile Include="Events\BaseEvents\TeleportEvent.cs" />
     <Compile Include="Events\BaseEvents\TimeDamageEvent.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="GameTime.cs" />

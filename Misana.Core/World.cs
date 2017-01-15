@@ -61,6 +61,7 @@ namespace Misana.Core
 
             CollisionDefinition collision = new CollisionDefinition();
             collision.EventsActions.Add(new DamageEvent(20f));
+            collision.EventsActions.Add(new TeleportEvent(5,5,CurrentMap.StartArea.Id));
             testDefinition.Definitions.Add(collision);
 
             EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition);
