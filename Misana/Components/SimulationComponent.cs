@@ -19,8 +19,6 @@ namespace Misana.Components
 
         public new MisanaGame Game;
 
-        public EntityManager Entities { get; private set; }
-
         public CharacterRenderSystem CharacterRender { get; private set; }
 
         public SimulationComponent(MisanaGame game) : base(game)
@@ -33,33 +31,14 @@ namespace Misana.Components
             base.LoadContent();
             var foo = EntityManager.ComponentCount;
             CharacterRender = new CharacterRenderSystem();
-
-            Entities = EntityManager.Create("LocalEntities",
-                new List<BaseSystem> {
-                    // Input
-                    new InputSystem(),
-
-                    // Movement
-                    new EntityCollidingMover(),
-                    new BlockCollidingMoverSystem(),
-                    new MoverSystem(), // <- Last
-
-                    // Collision Resolution
-                    new CollisionApplicatorSystem(),
-                    new EntityCollisionRemoverSystem(), // <- Last
-
-                    new TimeDamageSystem(),
-                    // Renderer
-                    CharacterRender,
-                }
-            );
-
-            
         }
 
         public void StartMap(Map m)
         {
-            World = new World(Entities);
+            List<BaseSystem> renderSystems = new List<BaseSystem>();
+            renderSystems.Add(CharacterRender);
+
+            World = new World(renderSystems);
             World.ChangeMap(Game.TestMap);
             Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Position);
 

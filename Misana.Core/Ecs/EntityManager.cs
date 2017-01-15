@@ -241,6 +241,16 @@ namespace Misana.Core.Ecs
             return e;
         }
 
+        public void Clear()
+        {
+            while (_entities.Count > 0)
+            {
+                RemoveEntity(_entities[0]);
+            }
+
+            _entityId = 0;
+        }
+
         public Entity RemoveEntity(int id)
         {
             Entity e;
