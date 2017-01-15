@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Misana.Core.Maps;
 using Misana.Core.Components;
 using Misana.Core.Components.StatusComponent;
+using Misana.Core.Systems;
+using Misana.Core.Systems.StatusSystem;
 
 namespace Misana.Core
 {
@@ -18,9 +20,19 @@ namespace Misana.Core
 
         public EntityManager Entities { get; }
 
-        public World(EntityManager manager)
+        public World(List<BaseSystem> afterSystems)
         {
-            Entities = manager;
+            List<BaseSystem> systems = new List<BaseSystem>();
+            systems.Add(new InputSystem());
+            systems.Add(new BlockCollidingMoverSystem());
+            systems.Add(new MoverSystem());
+            systems.Add(new CollisionApplicatorSystem());
+            systems.Add(new EntityCollisionRemoverSystem());
+            systems.Add(new TimeDamageSystem());
+            systems.AddRange(afterSystems);
+
+
+            Entities = EntityManager.Create("LocalWorld",systems);
         }
 
         public void ChangeMap(Map map)
