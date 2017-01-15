@@ -3,18 +3,18 @@ using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Events.BaseEvents
+namespace Misana.Core.Effects.BaseEffects
 {
-    public class DamageEvent : EventDefinition
+    public class DamageEffect : EffectDefinition
     {
         public float Damage { get; set; }
 
-        public DamageEvent()
+        public DamageEffect()
         {
 
         }
 
-        public DamageEvent(float damage)
+        public DamageEffect(float damage)
         {
             Damage = damage;
         }

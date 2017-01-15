@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class EntityCollidingMover : BaseSystemR2O1<EntityColliderComponent, TransformComponent, MotionComponent>
+    public class EntityCollidingMoverSystem : BaseSystemR2O1<EntityColliderComponent, TransformComponent, MotionComponent>
     {
         private struct CollisionPair
         {
@@ -30,11 +30,11 @@ namespace Misana.Core.Systems
         public void ChangeWorld(World world)
         {
             _world = world;
-            _areas = new List<int>[world.CurrentMap.Areas.Length][];
-            _occupiedTilesPerArea = new HashSet<int>[world.CurrentMap.Areas.Length];
-            _collisionPairsPerArea = new HashSet<CollisionPair>[world.CurrentMap.Areas.Length];
+            _areas = new List<int>[world.CurrentMap.Areas.Count][];
+            _occupiedTilesPerArea = new HashSet<int>[world.CurrentMap.Areas.Count];
+            _collisionPairsPerArea = new HashSet<CollisionPair>[world.CurrentMap.Areas.Count];
 
-            for (int i = 0; i < world.CurrentMap.Areas.Length; i++)
+            for (int i = 0; i < world.CurrentMap.Areas.Count; i++)
             {
                 var area = world.CurrentMap.Areas[i];
 
@@ -146,11 +146,11 @@ namespace Misana.Core.Systems
                                 continue;
                             
 
-                            foreach (var e in entityCollider.CollisionEffects)
-                                e.Apply(Manager, e1, e2);
+                            foreach (var e in entityCollider.OnCollisionEvents)
+                                e.Apply(Manager, e1, e2, _world);
 
-                            foreach (var e in entity2Collider.CollisionEffects)
-                                e.Apply(Manager, e2, e1);
+                            foreach (var e in entity2Collider.OnCollisionEvents)
+                                e.Apply(Manager, e2, e1, _world);
 
                             if (!entityCollider.Blocked || !entity2Collider.Blocked)
                                 continue;

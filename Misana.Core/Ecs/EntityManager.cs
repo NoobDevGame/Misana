@@ -228,9 +228,21 @@ namespace Misana.Core.Ecs
 
         public void Clear()
         {
-            while (_entities.Count > 0)
+            while (true)
             {
-                RemoveEntity(_entities[0]);
+                var ids = _entityMap.Keys.ToList();
+
+                if (ids.Count == 0)
+                {
+                    break;
+                }
+
+                Entity e;
+
+                foreach (var id in ids)
+                    RemoveEntity(id);
+
+                ApplyChanges();
             }
 
             _entityId = 0;

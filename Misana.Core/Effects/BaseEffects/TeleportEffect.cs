@@ -2,11 +2,11 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
-using Misana.Core.Maps;
+using Misana.Core.Events;
 
-namespace Misana.Core.Events.BaseEvents
+namespace Misana.Core.Effects.BaseEffects
 {
-    public class TeleportEvent : EventDefinition
+    public class TeleportEffect : EffectDefinition
     {
         public int X { get; set; }
         public int Y { get; set; }
@@ -14,12 +14,12 @@ namespace Misana.Core.Events.BaseEvents
 
         public bool CenterOfBlock { get; set; } = true;
 
-        public TeleportEvent()
+        public TeleportEffect()
         {
 
         }
 
-        public TeleportEvent(int x, int y , int areaID)
+        public TeleportEffect(int x, int y , int areaID)
         {
             X = x;
             Y = y;
@@ -28,7 +28,7 @@ namespace Misana.Core.Events.BaseEvents
 
         public override void Apply(Entity entity, World world)
         {
-            var positionComponent = entity.Get<PositionComponent>();
+            var positionComponent = entity.Get<TransformComponent>();
 
             if (positionComponent != null)
             {

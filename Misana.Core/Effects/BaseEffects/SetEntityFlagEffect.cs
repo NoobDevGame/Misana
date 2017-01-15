@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Drawing;
 using System.IO;
 using Misana.Core.Components.Events;
 using Misana.Core.Ecs;
+using Misana.Core.Events;
 
-namespace Misana.Core.Events.BaseEvents
+namespace Misana.Core.Effects.BaseEffects
 {
-    public class SetEntityFlagEvent : EventDefinition
+    public class SetEntityFlagEffect : EffectDefinition
     {
 
         public string Name { get; set; } = "Unnamed";
 
-        public SetEntityFlagEvent()
+        public SetEntityFlagEffect()
         {
 
         }
 
-        public SetEntityFlagEvent(string name)
+        public SetEntityFlagEffect(string name)
         {
             Name = name;
         }

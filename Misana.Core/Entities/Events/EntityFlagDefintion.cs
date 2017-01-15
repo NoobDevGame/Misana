@@ -6,7 +6,7 @@ namespace Misana.Core.Entities.Events
 {
     public class EntityFlagDefintion : ComponentDefinition<EntityFlagComponent>
     {
-        public override void OnApplyDefinition(Entity entity, Map map, EntityFlagComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityFlagComponent component)
         {
         }
     }

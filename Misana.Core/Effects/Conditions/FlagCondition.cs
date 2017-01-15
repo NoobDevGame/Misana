@@ -2,10 +2,11 @@
 using System.IO;
 using Misana.Core.Components.Events;
 using Misana.Core.Ecs;
+using Misana.Core.Events;
 
-namespace Misana.Core.Events.Conditions
+namespace Misana.Core.Effects.Conditions
 {
-    public class FlagCondition : EventCondition
+    public class FlagCondition : EffectCondition
     {
         public bool Not { get; set; }
         public string Name { get; set; }
