@@ -70,6 +70,7 @@
     </Compile>
     <Compile Include="Events\AreaAddEvent.cs" />
     <Compile Include="Events\AreaSelectionEvent.cs" />
+    <Compile Include="Events\EntityDefinitionChangedEvent.cs" />
     <Compile Include="Events\ErrorEvent.cs" />
     <Compile Include="Events\ILoggerEvent.cs" />
     <Compile Include="Events\LayerVisibilityChangedEvent.cs" />
@@ -82,6 +83,12 @@
     </Compile>
     <Compile Include="Forms\MDI\AreaRenderer.Designer.cs">
       <DependentUpon>AreaRenderer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MDI\EntityEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MDI\EntityEditor.Designer.cs">
+      <DependentUpon>EntityEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\EntityExplorer.cs">
       <SubType>Form</SubType>
@@ -158,6 +165,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Models\EntityTemplate.cs" />
     <Compile Include="Models\MapModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -165,6 +173,9 @@
     <Compile Include="Helper\TileHelper.cs" />
     <EmbeddedResource Include="Forms\MDI\AreaRenderer.resx">
       <DependentUpon>AreaRenderer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MDI\EntityEditor.resx">
+      <DependentUpon>EntityEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MDI\EntityExplorer.resx">
       <DependentUpon>EntityExplorer.cs</DependentUpon>
