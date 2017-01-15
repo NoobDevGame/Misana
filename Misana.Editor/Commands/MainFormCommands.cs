@@ -1,5 +1,6 @@
 ﻿using Misana.Core.Maps;
 using Misana.Editor.Forms.MDI;
+using Misana.Editor.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace Misana.Editor.Commands
 
         public void CreateMap()
         {
-            var map = new Map("Map", null, new List<Area>());
+            var map = new MapModel("Map");
             mainForm.SetMap(map);
         }
 
@@ -29,14 +30,14 @@ namespace Misana.Editor.Commands
         {
             var map = mainForm.FileManager.OpenMap();
             if (map != null)
-                mainForm.SetMap(map);
+                mainForm.SetMap(new MapModel(map));
         }
 
         public void ImportTiledMap()
         {
             var map = mainForm.FileManager.ImportTiledMap();
             if (map != null)
-                mainForm.SetMap(map);
+                mainForm.SetMap(new MapModel(map));
         }
 
         public void SaveMap()

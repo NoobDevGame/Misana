@@ -17,12 +17,15 @@ namespace Misana.Core.Maps
         public string Name { get; set; }
         public List<Area> Areas { get; set; }
 
-        public static readonly Version MapVersion = new Version(0,1);
+        public static readonly Version MapVersion = new Version(0,2);
 
         public Dictionary<string,EntityDefinition> GlobalEntityDefinitions { get; set; } = new Dictionary<string, EntityDefinition>();
 
         public Map(string name, Area startArea, List<Area> areas)
         {
+            if (startArea == null)
+                throw new ArgumentNullException(nameof(startArea));
+
             if (areas == null)
                 throw  new ArgumentNullException(nameof(areas));
 

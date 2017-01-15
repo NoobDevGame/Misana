@@ -62,6 +62,7 @@
             this.treeView.Name = "treeView";
             this.treeView.Size = new System.Drawing.Size(284, 236);
             this.treeView.TabIndex = 1;
+            this.treeView.AfterLabelEdit += new System.Windows.Forms.NodeLabelEditEventHandler(this.treeView_AfterLabelEdit);
             // 
             // MapView
             // 

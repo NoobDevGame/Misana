@@ -38,7 +38,7 @@ namespace Misana.Core.Maps.MapSerializers
 
             var startIndex = areas.ToList().FindIndex(t => t.Id == startAreaId);
 
-            var map = new Map(mapName, areas[startIndex], areas);
+            var map = new Map(mapName, areas[startIndex], areas.ToList());
 
             map.GlobalEntityDefinitions = globalEntityDefinitions;
 
@@ -157,7 +157,7 @@ namespace Misana.Core.Maps.MapSerializers
             }
 
             //Areas
-            bw.Write(map.Areas.Length);
+            bw.Write(map.Areas.Count);
             foreach (var area in map.Areas)
             {
                 SerializeArea(area, bw);

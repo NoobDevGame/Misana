@@ -1,4 +1,5 @@
 ﻿using Misana.Core.Maps;
+using Misana.Editor.Models;
 using Redbus.Events;
 using System;
 using System.Collections.Generic;
@@ -10,9 +11,9 @@ namespace Misana.Editor.Events
 {
     public class MapChangedEvent : EventBase
     {
-        public Map Map { get; set; }
+        public MapModel Map { get; set; }
 
-        public MapChangedEvent(Map map)
+        public MapChangedEvent(MapModel map)
         {
             Map = map;
         }

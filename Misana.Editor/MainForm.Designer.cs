@@ -105,13 +105,14 @@
             // menuItem_file_new
             // 
             this.menuItem_file_new.Name = "menuItem_file_new";
-            this.menuItem_file_new.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_new.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_new.Text = "New";
+            this.menuItem_file_new.Click += new System.EventHandler(this.menuItem_file_new_Click);
             // 
             // menuItem_file_open
             // 
             this.menuItem_file_open.Name = "menuItem_file_open";
-            this.menuItem_file_open.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_open.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_open.Text = "Open";
             this.menuItem_file_open.Click += new System.EventHandler(this.menuItem_file_open_Click);
             // 
@@ -120,7 +121,7 @@
             this.menuItem_file_import.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItem_file_import_tiled});
             this.menuItem_file_import.Name = "menuItem_file_import";
-            this.menuItem_file_import.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_import.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_import.Text = "Import";
             // 
             // menuItem_file_import_tiled
@@ -133,26 +134,26 @@
             // menuItem_file_save
             // 
             this.menuItem_file_save.Name = "menuItem_file_save";
-            this.menuItem_file_save.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_save.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_save.Text = "Save";
             this.menuItem_file_save.Click += new System.EventHandler(this.menuItem_file_save_Click);
             // 
             // menuItem_file_saveas
             // 
             this.menuItem_file_saveas.Name = "menuItem_file_saveas";
-            this.menuItem_file_saveas.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_saveas.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_saveas.Text = "Save as";
             this.menuItem_file_saveas.Click += new System.EventHandler(this.menuItem_file_saveas_Click);
             // 
             // menuItem_file_divider1
             // 
             this.menuItem_file_divider1.Name = "menuItem_file_divider1";
-            this.menuItem_file_divider1.Size = new System.Drawing.Size(109, 6);
+            this.menuItem_file_divider1.Size = new System.Drawing.Size(149, 6);
             // 
             // menuItem_file_exit
             // 
             this.menuItem_file_exit.Name = "menuItem_file_exit";
-            this.menuItem_file_exit.Size = new System.Drawing.Size(112, 22);
+            this.menuItem_file_exit.Size = new System.Drawing.Size(152, 22);
             this.menuItem_file_exit.Text = "Exit";
             this.menuItem_file_exit.Click += new System.EventHandler(this.menuItem_file_exit_Click);
             // 
@@ -170,18 +171,18 @@
             // menuItem_map_properties
             // 
             this.menuItem_map_properties.Name = "menuItem_map_properties";
-            this.menuItem_map_properties.Size = new System.Drawing.Size(137, 22);
+            this.menuItem_map_properties.Size = new System.Drawing.Size(152, 22);
             this.menuItem_map_properties.Text = "Properties";
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(134, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(149, 6);
             // 
             // menuItem_map_addArea
             // 
             this.menuItem_map_addArea.Name = "menuItem_map_addArea";
-            this.menuItem_map_addArea.Size = new System.Drawing.Size(137, 22);
+            this.menuItem_map_addArea.Size = new System.Drawing.Size(152, 22);
             this.menuItem_map_addArea.Text = "Add Area";
             // 
             // menuItem_map_importArea
@@ -189,7 +190,7 @@
             this.menuItem_map_importArea.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItem_map_importArea_tiled});
             this.menuItem_map_importArea.Name = "menuItem_map_importArea";
-            this.menuItem_map_importArea.Size = new System.Drawing.Size(137, 22);
+            this.menuItem_map_importArea.Size = new System.Drawing.Size(152, 22);
             this.menuItem_map_importArea.Text = "Import Area";
             // 
             // menuItem_map_importArea_tiled
@@ -294,19 +295,19 @@
             // menuItem_about_about
             // 
             this.menuItem_about_about.Name = "menuItem_about_about";
-            this.menuItem_about_about.Size = new System.Drawing.Size(111, 22);
+            this.menuItem_about_about.Size = new System.Drawing.Size(152, 22);
             this.menuItem_about_about.Text = "About";
             // 
             // menuItem_about_credits
             // 
             this.menuItem_about_credits.Name = "menuItem_about_credits";
-            this.menuItem_about_credits.Size = new System.Drawing.Size(111, 22);
+            this.menuItem_about_credits.Size = new System.Drawing.Size(152, 22);
             this.menuItem_about_credits.Text = "Credits";
             // 
             // menuItem_about_help
             // 
             this.menuItem_about_help.Name = "menuItem_about_help";
-            this.menuItem_about_help.Size = new System.Drawing.Size(111, 22);
+            this.menuItem_about_help.Size = new System.Drawing.Size(152, 22);
             this.menuItem_about_help.Text = "Help";
             // 
             // dockPanel

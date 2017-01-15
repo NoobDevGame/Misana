@@ -59,6 +59,7 @@ namespace Misana.Editor.Forms.MDI
             TreeNode mapNode = new TreeNode(mainForm.Map.Name);
             mapNode.ImageKey = "Map";
             mapNode.SelectedImageKey = "Map";
+            mapNode.Tag = mainForm.Map;
             foreach (var area in mainForm.Map.Areas)
             {
                 TreeNode areaNode = new TreeNode(area.Name);
@@ -89,9 +90,18 @@ namespace Misana.Editor.Forms.MDI
                 area.Layers.Add(l);
                 mainForm.Map.Areas.Add(area);
 
+                if (mainForm.Map.StartArea == null)
+                    mainForm.Map.StartArea = area;
+
                 mainForm.EventBus.Publish(new AreaAddEvent(area));
             }
 
+        }
+
+        private void treeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
+        {
+            if (e.Node.Tag is Map)
+                mainForm.Name = e.Label;
         }
     }
 }

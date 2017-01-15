@@ -90,7 +90,7 @@ namespace Misana.Editor.Helper
 
             try
             {
-                MapLoader.Save(mainForm.Map, SavePath);
+                MapLoader.Save(mainForm.Map.ToMap(), SavePath);
             }
             catch(Exception ex)
             {

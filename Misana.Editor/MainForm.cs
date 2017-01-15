@@ -3,6 +3,7 @@ using Misana.Editor.Commands;
 using Misana.Editor.Events;
 using Misana.Editor.Forms.MDI;
 using Misana.Editor.Helper;
+using Misana.Editor.Models;
 using Redbus.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace Misana.Editor
     {
         public Redbus.EventBus EventBus { get; private set; }
 
-        public Map Map { get; private set; }
+        public MapModel Map { get; private set; }
 
         public FileManager FileManager { get; private set; }
 
@@ -74,7 +75,7 @@ namespace Misana.Editor
             base.OnLoad(e);
         }
 
-        public void SetMap(Map map)
+        public void SetMap(MapModel map)
         {
             Map = map;
             EventBus.Publish(new MapChangedEvent(map));
@@ -111,5 +112,7 @@ namespace Misana.Editor
         private void menu_view_entityexplorer_CheckedChanged(object sender, EventArgs e) => WindowManager.ToggleWindow<EntityExplorer>();
 
         private void menuItem_file_import_tiled_Click(object sender, EventArgs e) => commandManager.ImportTiledMap();
+
+        private void menuItem_file_new_Click(object sender, EventArgs e) => commandManager.CreateMap();
     }
 }

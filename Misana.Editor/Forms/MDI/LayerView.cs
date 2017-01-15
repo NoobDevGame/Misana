@@ -68,7 +68,7 @@ namespace Misana.Editor.Forms.MDI
             if (listView.SelectedItems.Count == 0 && listView.Items.Count > 0)
             {
                 listView.Items[0].Selected = true;
-                Invalidate();
+                Select();
             }
 
             if (HiddenLayers.Contains((int)listView.SelectedItems[0].Tag))
