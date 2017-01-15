@@ -24,7 +24,7 @@ namespace Misana.Core.Events.Collision
             
         }
 
-        protected override bool ApplyToEntity(EntityManager manager, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world)
         {
             _action(manager, target, world);
             return true;

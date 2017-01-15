@@ -48,6 +48,7 @@
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
+    <Compile Include="Components\EntityInteractalComponent.cs" />
     <Compile Include="Components\Events\EntityFlagComponent.cs" />
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Events\Collision\ApplicableTo.cs" />
     <Compile Include="Events\Collision\ApplyEffectOnCollisionEvent.cs" />
     <Compile Include="Events\Collision\CustomCodeOnCollisionEvent.cs" />
+    <Compile Include="Events\Collision\MultiOnCollisionEvent.cs" />
     <Compile Include="Events\Collision\OnCollisionEvent.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
@@ -91,6 +93,8 @@
     <Compile Include="Effects\BaseEffects\TeleportEffect.cs" />
     <Compile Include="Effects\BaseEffects\TimeDamageEvent.cs" />
     <Compile Include="Effects\Conditions\FlagCondition.cs" />
+    <Compile Include="Events\Conditions\FlagCondition.cs" />
+    <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
@@ -115,6 +119,7 @@
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMoverSystem.cs" />
+    <Compile Include="Systems\EntityInteractionSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\MoverSystem.cs" />
     <Compile Include="Systems\StatusSystem\TimeDamageSystem.cs" />
@@ -129,9 +134,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Entities\Effects\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

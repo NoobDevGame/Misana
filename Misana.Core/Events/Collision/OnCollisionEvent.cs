@@ -20,7 +20,7 @@ namespace Misana.Core.Events.Collision
 
         private readonly object _lockObj = new object();
 
-        protected abstract bool ApplyToEntity(EntityManager manager, Entity target, World world);
+        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world);
 
         public virtual void Apply(EntityManager manager, Entity self, Entity other, World world)
         {
@@ -58,7 +58,7 @@ namespace Misana.Core.Events.Collision
                     }
 
                     if(apply)
-                        applied = ApplyToEntity(manager, self, world);
+                        applied = ApplyToEntity(manager, true, self, world);
                 }
             }
 
@@ -89,7 +89,7 @@ namespace Misana.Core.Events.Collision
 
                     if (apply)
                     {
-                        applied = ApplyToEntity(manager, other, world) || applied;
+                        applied = ApplyToEntity(manager, false, other, world) || applied;
                     }
                 }
             }

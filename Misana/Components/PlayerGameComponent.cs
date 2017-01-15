@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core;
+using GameTime = engenious.GameTime;
+using Vector2 = Misana.Core.Vector2;
 
 namespace Misana.Components
 {
@@ -39,6 +42,7 @@ namespace Misana.Components
             base.Update(gameTime);
 
             var keyboard = Keyboard.GetState();
+            var mouse = Mouse.GetState();
 
             Misana.Core.Vector2 move = Misana.Core.Vector2.Zero;
 
@@ -53,6 +57,11 @@ namespace Misana.Components
 
             if (keyboard.IsKeyDown(Keys.S))
                 move += new Misana.Core.Vector2(0, 1);
+
+
+            Input.Interact = keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.E);
+
+            Input.MousePosition =new Vector2(mouse.X,mouse.Y);
 
             Input.Move = move;
         }

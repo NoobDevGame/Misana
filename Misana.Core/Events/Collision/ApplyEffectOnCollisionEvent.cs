@@ -54,7 +54,7 @@ namespace Misana.Core.Events.Collision
             return Condition?.Test(target, world) ?? true;
         }
 
-        protected override bool ApplyToEntity(EntityManager manager, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager,bool targetIsSelf,  Entity target, World world)
         {
             Effect.Apply(target, world);
             return true;

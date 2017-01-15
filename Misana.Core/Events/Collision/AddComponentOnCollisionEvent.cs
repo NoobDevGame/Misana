@@ -6,6 +6,11 @@ namespace Misana.Core.Events.Collision
 {
     public class AddComponentOnCollisionEvent<T> : OnCollisionEvent where T : Component, new()
     {
+        public AddComponentOnCollisionEvent()
+        {
+
+        }
+
         public AddComponentOnCollisionEvent(T template)
         {
             Template = template;
@@ -23,7 +28,7 @@ namespace Misana.Core.Events.Collision
             //throw new NotImplementedException();
         }
 
-        protected override bool ApplyToEntity(EntityManager manager, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world)
         {
             var a = ComponentRegistry<T>.TakeManagedAddition();
             a.EntityId = target.Id;
