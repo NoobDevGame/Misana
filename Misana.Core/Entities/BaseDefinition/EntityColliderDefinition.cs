@@ -13,11 +13,14 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public float Mass { get; set; } = 50f;
 
+        public bool ApplySidesEffect { get; set; } = true;
+
         public override void OnApplyDefinition(Entity entity, Map map, EntityColliderComponent component)
         {
             component.Blocked = Blocked;
             component.Fixed = Fixed;
             component.Mass = Mass;
+            component.AppliesSideEffect = ApplySidesEffect;
         }
 
         public override void Serialize(Version version, BinaryWriter bw)
@@ -25,6 +28,7 @@ namespace Misana.Core.Entities.BaseDefinition
             bw.Write(Mass);
             bw.Write(Blocked);
             bw.Write(Fixed);
+            bw.Write(ApplySidesEffect);
         }
 
         public override void Deserialize(Version version, BinaryReader br)
@@ -32,6 +36,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Mass = br.ReadSingle();
             Blocked = br.ReadBoolean();
             Fixed = br.ReadBoolean();
+            ApplySidesEffect = br.ReadBoolean();
         }
     }
 }

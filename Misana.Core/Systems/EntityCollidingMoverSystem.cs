@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Systems
 {
-    public class EntityCollidingMover : BaseSystemR3O1<EntityColliderComponent, PositionComponent, DimensionComponent,MotionComponent>
+    public class EntityCollidingMoverSystem : BaseSystemR3O1<EntityColliderComponent, PositionComponent, DimensionComponent,MotionComponent>
     {
         public override void Tick()
         {
@@ -56,6 +56,9 @@ namespace Misana.Core.Systems
                     if(!entityCollider.Blocked || !entity2Collider.Blocked)
                         continue;
 
+                    if(motionComponent == null && motion2Component == null)
+                        continue;
+
                     vecDistance = vecDistance.Normalize() * Math.Abs(distance);
                     
                     if (!entityCollider.Fixed && entity2Collider.Fixed && motionComponent != null)
@@ -72,6 +75,15 @@ namespace Misana.Core.Systems
                         motionComponent.Move += vecDistance * (entity2Collider.Mass / mass);
                         motion2Component.Move -= vecDistance * (entityCollider.Mass / mass);
                     }
+                    else if( motionComponent == null && !entity2Collider.Fixed )
+                    {
+                        motion2Component.Move -= vecDistance;
+                    }
+                    else if( motion2Component == null && !entityCollider.Fixed )
+                    {
+                        motionComponent.Move += vecDistance;
+                    }
+
                 }
             }
         }

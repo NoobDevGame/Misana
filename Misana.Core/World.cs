@@ -9,6 +9,7 @@ using Misana.Core.Components;
 using Misana.Core.Components.StatusComponent;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
+using Misana.Core.Events.BaseEvents;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
 
@@ -26,9 +27,10 @@ namespace Misana.Core
         {
             List<BaseSystem> systems = new List<BaseSystem>();
             systems.Add(new InputSystem());
+            systems.Add(new EntityCollidingMoverSystem());
             systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new MoverSystem());
-            systems.Add(new CollisionApplicatorSystem());
+            systems.Add(new CollisionApplicatorSystem(this));
             systems.Add(new EntityCollisionRemoverSystem());
             systems.Add(new TimeDamageSystem());
             systems.AddRange(afterSystems);
@@ -50,6 +52,18 @@ namespace Misana.Core
                     EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition);
                 }
             }
+
+            EntityDefinition testDefinition = new EntityDefinition("DamageDealer");
+            testDefinition.Definitions.Add(new DimensionDefinition(0.5f));
+            testDefinition.Definitions.Add(new PositionDefinition(new Vector2(2.5f,2.5f),CurrentMap.StartArea));
+            testDefinition.Definitions.Add(new EntityColliderDefinition());
+            testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
+
+            CollisionDefinition collision = new CollisionDefinition();
+            collision.EventsActions.Add(new DamageEvent(20f));
+            testDefinition.Definitions.Add(collision);
+
+            EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition);
 
         }
 

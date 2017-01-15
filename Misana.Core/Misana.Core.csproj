@@ -64,6 +64,7 @@
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\CollisionDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\DimensionDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealtDefinition.cs" />
@@ -72,6 +73,9 @@
     <Compile Include="Entities\ComponentDefinition.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
+    <Compile Include="Events\BaseEvents\DamageEvent.cs" />
+    <Compile Include="Events\BaseEvents\TimeDamageEvent.cs" />
+    <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Maps\Area.cs" />
@@ -94,7 +98,7 @@
     <Compile Include="Components\PositionComponent.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\CollisionApplicatorSystem.cs" />
-    <Compile Include="Systems\EntityCollidingMover.cs" />
+    <Compile Include="Systems\EntityCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollisionRemoverSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\MoverSystem.cs" />
