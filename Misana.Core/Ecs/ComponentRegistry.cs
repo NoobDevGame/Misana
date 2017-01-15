@@ -14,9 +14,11 @@ namespace Misana.Core.Ecs
         private static int _additionIndex;
         private static object _listLock = new object();
 
-        private static readonly Mutex M = new Mutex(false);
+        private static readonly object NewManagerLock = new object();
 
         public static List<BaseSystem>[] InterestedSystems;
+        public static List<Action<EntityManager, Entity, T>>[] AdditionHooks;
+        public static List<Action<EntityManager, Entity, T>>[] RemovalHooks;
 
         // ReSharper disable once UnusedMember.Local
         private static void OnNewManager() // Called via reflection
@@ -24,14 +26,25 @@ namespace Misana.Core.Ecs
             if (InterestedSystems == null)
             {
                 InterestedSystems = new [] { new List<BaseSystem>() };
+                AdditionHooks = new [] {  new List<Action<EntityManager, Entity, T>>() };
+                RemovalHooks = new [] {  new List<Action<EntityManager, Entity, T>>() };
             }
             else
             {
-                M.WaitOne();
-                InterestedSystems = new List<List<BaseSystem>>(InterestedSystems) {
-                    new List<BaseSystem>()
-                }.ToArray();
-                M.ReleaseMutex();
+                lock (NewManagerLock)
+                {
+                    InterestedSystems = new List<List<BaseSystem>>(InterestedSystems) {
+                        new List<BaseSystem>()
+                    }.ToArray();
+
+                    AdditionHooks = new List<List<Action<EntityManager, Entity, T>>>(AdditionHooks) {
+                        new List<Action<EntityManager, Entity, T>>()
+                    }.ToArray();
+
+                    RemovalHooks = new List<List<Action<EntityManager, Entity, T>>>(RemovalHooks) {
+                        new List<Action<EntityManager, Entity, T>>()
+                    }.ToArray();
+                }
             }
         }
         
@@ -73,8 +86,7 @@ namespace Misana.Core.Ecs
 
             return item;
         }
-
-
+        
         internal static ManagedComponentAddition<T> TakeManagedAddition()
         {
             if (_additionIndex < 0)

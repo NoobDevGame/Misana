@@ -2,7 +2,7 @@ using System;
 
 namespace Misana.Core.Ecs.Changes
 {
-    internal class ManagedComponentAddition<T> : ComponentAddition<T> where T : Component, new()
+    public class ManagedComponentAddition<T> : ComponentAddition<T> where T : Component, new()
     {
         public T Template;
         public T Component;
@@ -48,14 +48,19 @@ namespace Misana.Core.Ecs.Changes
             var existing = e.Get<T>();
             if (existing == null)
             {
+                var cmp = Component;
                 if (Component != null)
                     e.Components[Index] = Component;
                 else
                 {
                     var c = ComponentRegistry<T>.Take();
                     Template?.CopyTo(c);
+                    cmp = c;
                     e.Components[Index] = c;
                 }
+
+                foreach (var a in ComponentRegistry<T>.AdditionHooks[manager.Index])
+                    a(manager, e, cmp);
 
                 foreach(var s in ComponentRegistry<T>.InterestedSystems[manager.Index])
                     s.EntityChanged(e);

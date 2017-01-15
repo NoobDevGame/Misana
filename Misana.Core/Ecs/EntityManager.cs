@@ -20,7 +20,8 @@ namespace Misana.Core.Ecs
         private readonly EntitiesToRemove _entitiesToRemove = new EntitiesToRemove();
         private readonly EntitiesToAdd _entitiesToAdd = new EntitiesToAdd();
         private readonly EntitesWithChanges _entitesWithChanges;
-        
+        private readonly object _nextTickChangeLock = new object();
+        private readonly List<EntityChange> _changesNextTick = new List<EntityChange>();
         internal readonly List<BaseSystem> Systems;
 
         public readonly int Index;
@@ -105,10 +106,33 @@ namespace Misana.Core.Ecs
             return new EntityManager(systems);
         }
 
+        public EntityManager RegisterAdditionHook<T>(Action<EntityManager, Entity, T> h) where T : Component, new()
+        {
+            ComponentRegistry<T>.AdditionHooks[Index].Add(h);
+            return this;
+        }
+
+        public EntityManager RegisterRemovalHook<T>(Action<EntityManager, Entity, T> h) where T : Component, new()
+        {
+            ComponentRegistry<T>.RemovalHooks[Index].Add(h);
+            return this;
+        }
+
         public void ApplyChanges()
         {
             if(_entitiesToRemove.HasChanges)
                 _entitiesToRemove.Commit(Systems);
+
+            if (_changesNextTick.Count > 0)
+            {
+                lock (_nextTickChangeLock)
+                {
+                    foreach (var c in _changesNextTick)
+                        _entitesWithChanges.Add(c);
+
+                    _changesNextTick.Clear();
+                }
+            }
 
             if(_entitesWithChanges.HasChanges)
                 _entitesWithChanges.Commit();
@@ -140,9 +164,19 @@ namespace Misana.Core.Ecs
             return this;
         }
 
-        internal EntityManager Add(EntityChange change)
+        internal EntityManager Change(EntityChange change)
         {
             _entitesWithChanges.Add(change);
+            return this;
+        }
+
+        public EntityManager ChangeNextTick(EntityChange change)
+        {
+            lock (_nextTickChangeLock)
+            {
+                _changesNextTick.Add(change);
+            }
+
             return this;
         }
 

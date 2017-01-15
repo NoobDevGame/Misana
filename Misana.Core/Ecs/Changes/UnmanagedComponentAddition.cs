@@ -2,9 +2,9 @@ using System;
 
 namespace Misana.Core.Ecs.Changes
 {
-    internal class UnmanagedComponentAddition<T> : ComponentAddition<T> where T : Component, new()
+    public class UnmanagedComponentAddition<T> : ComponentAddition<T> where T : Component, new()
     {
-        internal UnmanagedComponentAddition(int entityId, T component) : base(entityId)
+        public UnmanagedComponentAddition(int entityId, T component) : base(entityId)
         {
             ComponentToAdd = component;
         }
@@ -26,6 +26,10 @@ namespace Misana.Core.Ecs.Changes
             }
 
             e.Components[Index] = ComponentToAdd;
+
+            foreach (var a in ComponentRegistry<T>.AdditionHooks[manager.Index])
+                a(manager, e, ComponentToAdd);
+
             foreach (var s in ComponentRegistry<T>.InterestedSystems[manager.Index])
                 s.EntityChanged(e);
         }

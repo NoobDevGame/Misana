@@ -1,8 +1,8 @@
 namespace Misana.Core.Ecs.Changes
 {
-    internal class ComponentRemoval<T> : EntityChange where T : Component, new()
+    public class ComponentRemoval<T> : EntityChange where T : Component, new()
     {
-        internal ComponentRemoval(int entityId) : base(entityId, ComponentRegistry<T>.Index) { }
+        public ComponentRemoval(int entityId) : base(entityId, ComponentRegistry<T>.Index) { }
 
         internal override void Reconcile(EntityChange laterChange)
         {
@@ -21,6 +21,9 @@ namespace Misana.Core.Ecs.Changes
 
             foreach (var s in ComponentRegistry<T>.InterestedSystems[manager.Index])
                 s.EntityChanged(e);
+
+            foreach (var a in ComponentRegistry<T>.RemovalHooks[manager.Index])
+                a(manager, e, existing);
 
             ComponentRegistry<T>.Release(existing);
         }

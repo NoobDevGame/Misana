@@ -1,6 +1,6 @@
 ﻿namespace Misana.Core.Ecs.Changes
 {
-    internal abstract class EntityChange
+    public abstract class EntityChange
     {
         protected EntityChange(int entityId, int componentIndex)
         {
