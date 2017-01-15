@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Ecs.Changes;
 
 namespace Misana.Core.Components
 {
@@ -23,6 +24,14 @@ namespace Misana.Core.Components
 
         public List<CollisionEffect> CollisionEffects = new List<CollisionEffect>(2);
         public bool Blocked;
+
+        public override void CopyTo(EntityColliderComponent other)
+        {
+            other.Mass = Mass;
+            other.Fixed = Fixed;
+            other.Blocked = Blocked;
+            other.CollisionEffects = new List<CollisionEffect>(CollisionEffects); //TODO: :(
+        }
     }
 
     public abstract class CollisionEffect
@@ -35,13 +44,13 @@ namespace Misana.Core.Components
             Both
         }
 
-        public ApplicableTo ApplyTo;
 
+        public ApplicableTo ApplyTo;
         public TimeSpan Debounce;
         public TimeSpan CoolDown;
 
         protected TimeSpan LastExecution;
-        protected List<KeyValuePair<int, TimeSpan>> RecentExecutions = new List<KeyValuePair<int, TimeSpan>>();
+        protected Dictionary<int, TimeSpan> RecentExecutions = new Dictionary<int, TimeSpan>();
 
         public abstract void Apply(EntityManager manager, Entity self, Entity other);
     }
@@ -57,6 +66,23 @@ namespace Misana.Core.Components
 
         public override void Apply(EntityManager manager, Entity self, Entity other)
         {
+            if (Debounce != TimeSpan.Zero)
+            {
+                TimeSpan val;
+
+                if (RecentExecutions.TryGetValue(self.Id, out val))
+                {
+                    if (manager.GameTime.TotalTime - val > Debounce)
+                        RecentExecutions.Remove(self.Id);
+                    else
+                    {
+                        return;
+                    }
+                }
+
+                RecentExecutions[self.Id] = manager.GameTime.TotalTime;
+            }
+
             _action(manager, self, other);
         }
     }
@@ -70,6 +96,8 @@ namespace Misana.Core.Components
 
         public readonly T Template;
 
+        private readonly object _lockObj = new object();
+
         public override void Apply(EntityManager manager, Entity self, Entity other)
         {
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
@@ -82,48 +110,57 @@ namespace Misana.Core.Components
             {
                 if (Debounce != TimeSpan.Zero)
                 {
-                    for (int i = 0; i < RecentExecutions.Count; i++)
+                    TimeSpan val;
+                    lock (_lockObj)
                     {
-                        if (manager.GameTime.TotalTime - RecentExecutions[i].Value > Debounce)
+                        if (RecentExecutions.TryGetValue(self.Id, out val))
                         {
-                            RecentExecutions.RemoveAt(i--);
-                            continue;
+                            if (manager.GameTime.TotalTime - val > Debounce)
+                                RecentExecutions.Remove(self.Id);
+                            else
+                            {
+                                return;
+                            }
                         }
 
-                        if(RecentExecutions[i].Key == self.Id)
-                            return;
+                        RecentExecutions[self.Id] = manager.GameTime.TotalTime;
                     }
-
-                    RecentExecutions.Add(new KeyValuePair<int, TimeSpan>(self.Id, manager.GameTime.TotalTime));
                 }
 
-                T t = ComponentRegistry<T>.Take();
-                Template.CopyTo(t);
-                manager.Add(self, t, false);
+                var a = ComponentRegistry<T>.TakeManagedAddition();
+                a.EntityId = self.Id;
+                a.Template = Template;
+
+                manager.Change(a);
             }
 
             if (ApplyTo == ApplicableTo.Other || ApplyTo == ApplicableTo.Both)
             {
                 if (Debounce != TimeSpan.Zero)
                 {
-                    for (int i = 0; i < RecentExecutions.Count; i++)
+                    TimeSpan val;
+                    lock (_lockObj)
                     {
-                        if (manager.GameTime.TotalTime - RecentExecutions[i].Value > Debounce)
+                        if (RecentExecutions.TryGetValue(other.Id, out val))
                         {
-                            RecentExecutions.RemoveAt(i--);
-                            continue;
+                            if (manager.GameTime.TotalTime - val > Debounce)
+                                RecentExecutions.Remove(other.Id);
+                            else
+                            {
+                                return;
+                            }
                         }
 
-                        if (RecentExecutions[i].Key == other.Id)
-                            return;
+                        RecentExecutions[other.Id] = manager.GameTime.TotalTime;
                     }
-
-                    RecentExecutions.Add(new KeyValuePair<int, TimeSpan>(other.Id, manager.GameTime.TotalTime));
                 }
 
-                T t = ComponentRegistry<T>.Take();
-                Template.CopyTo(t);
-                manager.Add(other, t, false);
+                var a = ComponentRegistry<T>.TakeManagedAddition();
+                a.EntityId = other.Id;
+                a.Template = Template;
+
+                manager.Change(a);
+
             }
 
             LastExecution = manager.GameTime.TotalTime;
