@@ -32,17 +32,53 @@ namespace Misana.Editor.Forms.MDI
         {
             var item = listView.Items.Cast<ListViewItem>().FirstOrDefault(i => i.Tag == ev.EntityDefinition);
             if (item != null)
+            {
                 item.Text = ev.EntityDefinition.Name;
+                mainForm.Map.GlobalEntityDefinitions.Remove(mainForm.Map.GlobalEntityDefinitions.FirstOrDefault(t => t.Value == ev.EntityDefinition).Key);
+                mainForm.Map.GlobalEntityDefinitions.Add(ev.EntityDefinition.Name, ev.EntityDefinition);
+            }
         }
 
         private void button_add_Click(object sender, EventArgs e)
         {
-            EntityDefinition eDef = new EntityDefinition("Entity"+listView.Items.Count+1);
-            listView.Items.Add(new ListViewItem(eDef.Name) { Tag = eDef });
+            if(mainForm.Map == null)
+            {
+                mainForm.EventBus.Publish(new ErrorEvent("Error", "No map opened"));
+                return;
+            }
+
+            EntityDefinition eDef = new EntityDefinition("Entity"+(listView.Items.Count+1));
+            mainForm.Map.GlobalEntityDefinitions.Add(eDef.Name,eDef);
+            var lvi = new ListViewItem(eDef.Name) { Tag = eDef };
+            listView.Items.Add(lvi);
             
 
             EntityEditor ee = new EntityEditor(mainForm, eDef);
             mainForm.WindowManager.AddShowWindow(ee);
+        }
+
+        public void RemoveEntityDefinition(EntityDefinition edef)
+        {
+
+        }
+
+        private void listView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (listView.SelectedItems.Count == 0)
+                return;
+
+            var window = mainForm.WindowManager.Windows.FirstOrDefault(t => t.GetType() == typeof(EntityEditor) && ((EntityEditor)t).EntityDefinition == (EntityDefinition)listView.SelectedItems[0].Tag && t.Visible);
+
+            if (window != null)
+            {
+                window.Select();
+                window.Focus();
+            }
+            else
+            {
+                EntityEditor ee = new EntityEditor(mainForm, (EntityDefinition)listView.SelectedItems[0].Tag);
+                mainForm.WindowManager.AddShowWindow(ee);
+            }
         }
     }
 }

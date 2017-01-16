@@ -21,7 +21,7 @@ namespace Misana.Editor.Forms.MDI
         public Area Area { get { return areaRenderControl.Area; } }
 
         public Index2[] SelectedTiles { get { return areaRenderControl.SelectedTiles; }}
-        public int SelectedLayer { get { return areaRenderControl.SelectedLayer; } }
+        public int? SelectedLayer { get { return areaRenderControl.SelectedLayer; } }
 
         public bool IsSingleTileSelected { get { return areaRenderControl.IsSingleTileSelected; } }
 

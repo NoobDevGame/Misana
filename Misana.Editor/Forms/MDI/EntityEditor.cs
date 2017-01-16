@@ -17,6 +17,8 @@ namespace Misana.Editor.Forms.MDI
     {
         public DockState DefaultDockState => DockState.Document;
 
+        public EntityDefinition EntityDefinition { get { return entityDefinition; } }
+
         private MainForm mainForm;
         private EntityDefinition entityDefinition;
 
@@ -44,6 +46,12 @@ namespace Misana.Editor.Forms.MDI
 
         private void button_save_Click(object sender, EventArgs e)
         {
+            if(mainForm.Map.GlobalEntityDefinitions.ContainsKey(textBox_name.Text) && mainForm.Map.GlobalEntityDefinitions[textBox_name.Text] != entityDefinition)
+            {
+                mainForm.EventBus.Publish<ErrorEvent>(new ErrorEvent("Error", "Already a definition with that name"));
+                return;
+            }
+
             entityDefinition.Name = textBox_name.Text;
             mainForm.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
         }

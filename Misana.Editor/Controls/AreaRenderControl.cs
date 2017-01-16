@@ -24,7 +24,7 @@ namespace Misana.Editor.Controls
 
         public Index2[] SelectedTiles { get { return selectedTiles.ToArray(); } }
 
-        public int SelectedLayer { get { return selectedLayer; } }
+        public int? SelectedLayer { get { return selectedLayer; } }
 
         private List<Index2> selectedTiles = new List<Index2>();
         private int selectedLayer;
@@ -178,7 +178,7 @@ namespace Misana.Editor.Controls
                         }
                     }
 
-                    if(SelectedLayer == Area.Layers[l].Id)
+                    if(SelectedLayer != null && SelectedLayer == Area.Layers[l].Id)
                     {
                         if (Mode == AreaMode.Paint && tilesheetName != null && tilesheetTileIndex != null)
                             bg.DrawImage(mainForm.TilesheetManager.Tilesheets[tilesheetName].Texture, new Rectangle(lastMousePoint.X / 32 * 32, lastMousePoint.Y / 32 * 32, 32, 32), new Rectangle(tilesheetTileIndex.X * 17, tilesheetTileIndex.Y * 17, 16, 16), GraphicsUnit.Pixel);
@@ -283,8 +283,11 @@ namespace Misana.Editor.Controls
                 var tileIndex = Area.GetTileIndex(tile.X, tile.Y);
                 try
                 {
-                    Area.Layers[SelectedLayer].Tiles[tileIndex].TextureID = tilesheetTileID;
-                    Area.Layers[SelectedLayer].Tiles[tileIndex].TilesheetID = Area.Tilesheets.FirstOrDefault(t => t.Value == tilesheetName).Key;
+                    if (SelectedLayer != null)
+                    {
+                        Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TextureID = tilesheetTileID;
+                        Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TilesheetID = Area.Tilesheets.FirstOrDefault(t => t.Value == tilesheetName).Key;
+                    }
                 }catch(Exception ex)
                 {
                     mainForm.EventBus.Publish(new ErrorEvent("Paint Error", "Could not paint tile " + tileIndex + " on Layer " + tile.Z, false, ex));
@@ -335,14 +338,17 @@ namespace Misana.Editor.Controls
 
             Tile[] sTiles = new Tile[SelectedTiles.Length];
             var count = 0;
-            foreach(var ind2 in SelectedTiles)
+            if (SelectedLayer != null)
             {
-                var tileIndex = Area.GetTileIndex(ind2.X, ind2.Y);
-                sTiles[count] = Area.Layers[SelectedLayer].Tiles[tileIndex];
-                count++;
-            }
+                foreach (var ind2 in SelectedTiles)
+                {
+                    var tileIndex = Area.GetTileIndex(ind2.X, ind2.Y);
+                    sTiles[count] = Area.Layers[(int)SelectedLayer].Tiles[tileIndex];
+                    count++;
+                }
 
-            mainForm.EventBus.Publish(new MapTileSelectionEvent(SelectedLayer,sTiles.ToArray(),SelectedTiles));
+                mainForm.EventBus.Publish(new MapTileSelectionEvent((int)SelectedLayer,sTiles.ToArray(),SelectedTiles));
+            }
         }
 
         public enum AreaMode

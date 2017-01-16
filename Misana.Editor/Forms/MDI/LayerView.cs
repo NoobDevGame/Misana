@@ -65,11 +65,8 @@ namespace Misana.Editor.Forms.MDI
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listView.SelectedItems.Count == 0 && listView.Items.Count > 0)
-            {
-                listView.Items[0].Selected = true;
-                Select();
-            }
+            if (listView.SelectedItems.Count == 0)
+                return;
 
             if (HiddenLayers.Contains((int)listView.SelectedItems[0].Tag))
                 HiddenLayers.Remove((int)listView.SelectedItems[0].Tag);

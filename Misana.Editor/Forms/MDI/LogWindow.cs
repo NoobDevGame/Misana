@@ -38,6 +38,8 @@ namespace Misana.Editor.Forms.MDI
 
                 listView.Items.Add(lvi);
             });
+
+            listView.ContextMenuStrip = contextMenuStrip1;
         }
 
         protected override void OnLoad(EventArgs e)
@@ -54,10 +56,29 @@ namespace Misana.Editor.Forms.MDI
                 if (ev.GetType() == typeof(ErrorEvent))
                 {
                     lvi.Text = "Error";
-                    lvi.SubItems.Add(((ErrorEvent)ev).Exception.Message);
+                    if(((ErrorEvent)ev).Exception != null)
+                        lvi.SubItems.Add(((ErrorEvent)ev).Exception.Message);
                 }
 
                 listView.Items.Add(lvi);
+            }
+        }
+
+        private void clearLogToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ClearLog();
+        }
+
+        public void ClearLog()
+        {
+            listView.Items.Clear();
+        }
+
+        private void listView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right)
+            {
+                contextMenuStrip1.Show();
             }
         }
     }
