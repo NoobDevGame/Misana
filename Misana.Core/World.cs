@@ -13,7 +13,7 @@ using Misana.Core.Effects.Conditions;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
 
@@ -28,14 +28,17 @@ namespace Misana.Core
         public EntityManager Entities { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
+        private EntityInteractionSystem _interactionSystem;
 
         public World(List<BaseSystem> afterSystems)
         {
             _collidingMoverSystem = new EntityCollidingMoverSystem();
+            _interactionSystem = new EntityInteractionSystem();
 
             List<BaseSystem> systems = new List<BaseSystem>();
             systems.Add(new InputSystem());
             systems.Add(_collidingMoverSystem);
+            systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
@@ -53,6 +56,7 @@ namespace Misana.Core
 
             Entities.Clear();
             _collidingMoverSystem.ChangeWorld(this);
+            _interactionSystem.ChangeWorld(this);
             foreach (var area in CurrentMap.Areas)
             {
                 foreach (var entity in area.Entities)
@@ -67,12 +71,21 @@ namespace Misana.Core
             testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
 
             var colliderDef = new EntityColliderDefinition();
-            colliderDef.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(20f), new FlagCondition("DamageDealer_Flag", true)) { ApplyTo = ApplicableTo.Other, Debounce = TimeSpan.FromMilliseconds(250)});
-            colliderDef.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other, Debounce = TimeSpan.FromMilliseconds(250) });
-            colliderDef.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other, Debounce = TimeSpan.FromMilliseconds(250) });
+            colliderDef.OnCollisionEvents.Add(new MultiEvent(new Events.Conditions.FlagCondition("DamageDealer_Flag",true),
+                new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other},
+                new ApplyEffectEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other },
+                new ApplyEffectEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other }) {ApplyTo = ApplicableTo.Both,Debounce = TimeSpan.FromMilliseconds(250)}
+            );
             testDefinition.Definitions.Add(colliderDef);
 
-            EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition).Commit(Entities);
+            var interactDef = new EntityInteractableDefinition();
+            interactDef.OnInteractEvents.Add(new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
+            testDefinition.Definitions.Add(interactDef);
+
+
+
+            EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition)
+                .Commit(Entities);
 
 
         }
@@ -86,6 +99,7 @@ namespace Misana.Core
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
             playerDefinition.Definitions.Add(new EntityFlagDefintion());
+            playerDefinition.Definitions.Add(new EntityInteractableDefinition());
 
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);

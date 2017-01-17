@@ -48,6 +48,7 @@
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\CharacterRenderComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
+    <Compile Include="Components\EntityInteractalComponent.cs" />
     <Compile Include="Components\Events\EntityFlagComponent.cs" />
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
@@ -74,15 +75,17 @@
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\EntityInteractableDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />
     <Compile Include="Entities\ComponentDefinition.cs" />
-    <Compile Include="Events\Collision\AddComponentOnCollisionEvent.cs" />
-    <Compile Include="Events\Collision\ApplicableTo.cs" />
-    <Compile Include="Events\Collision\ApplyEffectOnCollisionEvent.cs" />
-    <Compile Include="Events\Collision\CustomCodeOnCollisionEvent.cs" />
-    <Compile Include="Events\Collision\OnCollisionEvent.cs" />
+    <Compile Include="Events\Entities\AddComponentEvent.cs" />
+    <Compile Include="Events\Entities\ApplicableTo.cs" />
+    <Compile Include="Events\Entities\ApplyEffectEvent.cs" />
+    <Compile Include="Events\Entities\CustomCodeEvent.cs" />
+    <Compile Include="Events\Entities\MultiEvent.cs" />
+    <Compile Include="Events\Entities\OnEvent.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
     <Compile Include="Entities\EntityDefinition.cs" />
     <Compile Include="Entities\Events\EntityFlagDefintion.cs" />
@@ -91,6 +94,8 @@
     <Compile Include="Effects\BaseEffects\TeleportEffect.cs" />
     <Compile Include="Effects\BaseEffects\TimeDamageEvent.cs" />
     <Compile Include="Effects\Conditions\FlagCondition.cs" />
+    <Compile Include="Events\Conditions\FlagCondition.cs" />
+    <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
@@ -115,6 +120,7 @@
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMoverSystem.cs" />
+    <Compile Include="Systems\EntityInteractionSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\MoverSystem.cs" />
     <Compile Include="Systems\StatusSystem\TimeDamageSystem.cs" />
@@ -129,9 +135,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Entities\Effects\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

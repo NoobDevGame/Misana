@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Events.Collision
+namespace Misana.Core.Events.Entities
 {
-    public abstract class OnCollisionEvent : EventDefinition
+    public abstract class OnEvent : EventDefinition
     {
         public ApplicableTo ApplyTo;
         public TimeSpan Debounce;
@@ -13,16 +13,16 @@ namespace Misana.Core.Events.Collision
         protected TimeSpan LastExecution;
         protected Dictionary<int, TimeSpan> RecentExecutions = new Dictionary<int, TimeSpan>();
 
-        protected virtual bool CanApply(EntityManager manager, Entity target, World world)
+        protected virtual bool CanApply(EntityManager manager, Ecs.Entity target, World world)
         {
             return true;
         }
 
         private readonly object _lockObj = new object();
 
-        protected abstract bool ApplyToEntity(EntityManager manager, Entity target, World world);
+        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, World world);
 
-        public virtual void Apply(EntityManager manager, Entity self, Entity other, World world)
+        public virtual void Apply(EntityManager manager, Ecs.Entity self, Ecs.Entity other, World world)
         {
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
             {
@@ -58,7 +58,7 @@ namespace Misana.Core.Events.Collision
                     }
 
                     if(apply)
-                        applied = ApplyToEntity(manager, self, world);
+                        applied = ApplyToEntity(manager, true, self, world);
                 }
             }
 
@@ -89,7 +89,7 @@ namespace Misana.Core.Events.Collision
 
                     if (apply)
                     {
-                        applied = ApplyToEntity(manager, other, world) || applied;
+                        applied = ApplyToEntity(manager, false, other, world) || applied;
                     }
                 }
             }

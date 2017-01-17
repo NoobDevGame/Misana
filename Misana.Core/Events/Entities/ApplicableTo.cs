@@ -1,4 +1,4 @@
-﻿namespace Misana.Core.Events.Collision
+﻿namespace Misana.Core.Events.Entities
 {
     public enum ApplicableTo : byte
     {

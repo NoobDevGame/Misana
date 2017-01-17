@@ -3,13 +3,13 @@ using System.IO;
 using Misana.Core.Ecs;
 using Misana.Core.Effects;
 
-namespace Misana.Core.Events.Collision
+namespace Misana.Core.Events.Entities
 {
-    public class ApplyEffectOnCollisionEvent : OnCollisionEvent
+    public class ApplyEffectEvent : OnEvent
     {
         public EffectDefinition Effect;
         public EffectCondition Condition;
-        public ApplyEffectOnCollisionEvent(EffectDefinition deff, EffectCondition condition = null)
+        public ApplyEffectEvent(EffectDefinition deff, EffectCondition condition = null)
         {
             Effect = deff;
             Condition = condition;
@@ -54,7 +54,7 @@ namespace Misana.Core.Events.Collision
             return Condition?.Test(target, world) ?? true;
         }
 
-        protected override bool ApplyToEntity(EntityManager manager, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager,bool targetIsSelf,  Entity target, World world)
         {
             Effect.Apply(target, world);
             return true;
