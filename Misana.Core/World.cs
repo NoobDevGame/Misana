@@ -13,7 +13,7 @@ using Misana.Core.Effects.Conditions;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
 
@@ -71,15 +71,15 @@ namespace Misana.Core
             testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
 
             var colliderDef = new EntityColliderDefinition();
-            colliderDef.OnCollisionEvents.Add(new MultiOnCollisionEvent(new Events.Conditions.FlagCondition("DamageDealer_Flag",true),
-                new ApplyEffectOnCollisionEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other},
-                new ApplyEffectOnCollisionEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other },
-                new ApplyEffectOnCollisionEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other }) {ApplyTo = ApplicableTo.Both,Debounce = TimeSpan.FromMilliseconds(250)}
+            colliderDef.OnCollisionEvents.Add(new MultiEvent(new Events.Conditions.FlagCondition("DamageDealer_Flag",true),
+                new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other},
+                new ApplyEffectEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other },
+                new ApplyEffectEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other }) {ApplyTo = ApplicableTo.Both,Debounce = TimeSpan.FromMilliseconds(250)}
             );
             testDefinition.Definitions.Add(colliderDef);
 
             var interactDef = new EntityInteractableDefinition();
-            interactDef.OnInteractEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
+            interactDef.OnInteractEvents.Add(new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
             testDefinition.Definitions.Add(interactDef);
 
 

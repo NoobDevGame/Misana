@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
@@ -13,7 +13,7 @@ namespace Misana.Core.Entities.BaseDefinition
         public bool Blocked { get; set; } = true;
         public bool Fixed { get; set; } = false;
 
-        public List<OnCollisionEvent> OnCollisionEvents= new List<OnCollisionEvent>();
+        public List<OnEvent> OnCollisionEvents= new List<OnEvent>();
 
         public float Mass { get; set; } = 50f;
 
@@ -22,7 +22,7 @@ namespace Misana.Core.Entities.BaseDefinition
             component.Blocked = Blocked;
             component.Fixed = Fixed;
             component.Mass = Mass;
-            component.OnCollisionEvents = new List<OnCollisionEvent>(OnCollisionEvents);
+            component.OnCollisionEvents = new List<OnEvent>(OnCollisionEvents);
         }
 
         public override void Serialize(Version version, BinaryWriter bw)
@@ -50,7 +50,7 @@ namespace Misana.Core.Entities.BaseDefinition
             for (int i = 0; i < count; i++)
             {
                 var typeName = br.ReadString();
-                var @event = (OnCollisionEvent)Activator.CreateInstance(Type.GetType(typeName));
+                var @event = (OnEvent)Activator.CreateInstance(Type.GetType(typeName));
                 @event.Deserialize(version, br);
                 OnCollisionEvents.Add(@event);
             }

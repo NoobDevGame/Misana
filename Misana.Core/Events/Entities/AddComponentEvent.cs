@@ -2,16 +2,16 @@ using System;
 using System.IO;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Events.Collision
+namespace Misana.Core.Events.Entities
 {
-    public class AddComponentOnCollisionEvent<T> : OnCollisionEvent where T : Component, new()
+    public class AddComponentEvent<T> : OnEvent where T : Component, new()
     {
-        public AddComponentOnCollisionEvent()
+        public AddComponentEvent()
         {
 
         }
 
-        public AddComponentOnCollisionEvent(T template)
+        public AddComponentEvent(T template)
         {
             Template = template;
         }
@@ -28,7 +28,7 @@ namespace Misana.Core.Events.Collision
             //throw new NotImplementedException();
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, World world)
         {
             var a = ComponentRegistry<T>.TakeManagedAddition();
             a.EntityId = target.Id;

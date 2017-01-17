@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
     public class EntityInteractableDefinition : ComponentDefinition<EntityInteractableComponent>
     {
-        public List<OnCollisionEvent> OnInteractEvents= new List<OnCollisionEvent>();
+        public List<OnEvent> OnInteractEvents= new List<OnEvent>();
 
         public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityInteractableComponent component)
         {
-            component.OnInteractionEvents = new List<OnCollisionEvent>( OnInteractEvents);
+            component.OnInteractionEvents = new List<OnEvent>( OnInteractEvents);
         }
 
         public override void Serialize(Version version, BinaryWriter bw)
@@ -34,7 +34,7 @@ namespace Misana.Core.Entities.BaseDefinition
             for (int i = 0; i < count; i++)
             {
                 var typeName = br.ReadString();
-                var @event = (OnCollisionEvent)Activator.CreateInstance(Type.GetType(typeName));
+                var @event = (OnEvent)Activator.CreateInstance(Type.GetType(typeName));
                 @event.Deserialize(version, br);
                 OnInteractEvents.Add(@event);
             }

@@ -2,13 +2,13 @@
 using System.IO;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Events.Collision
+namespace Misana.Core.Events.Entities
 {
-    public class CustomCodeOnCollisionEvent : OnCollisionEvent
+    public class CustomCodeEvent : OnEvent
     {
         private readonly Action<EntityManager, Entity, World> _action;
 
-        public CustomCodeOnCollisionEvent(Action<EntityManager, Entity, World> action)
+        public CustomCodeEvent(Action<EntityManager, Entity, World> action)
         {
             _action = action;
         }

@@ -1,21 +1,20 @@
 ﻿using System;
-using System.ComponentModel;
 using System.IO;
 using Misana.Core.Ecs;
 
-namespace Misana.Core.Events.Collision
+namespace Misana.Core.Events.Entities
 {
-    public class MultiOnCollisionEvent : OnCollisionEvent
+    public class MultiEvent : OnEvent
     {
         private EventCondition _condition;
-        private OnCollisionEvent[] _events;
-        public MultiOnCollisionEvent(EventCondition condition, params OnCollisionEvent[] events)
+        private OnEvent[] _events;
+        public MultiEvent(EventCondition condition, params OnEvent[] events)
         {
             _condition = condition;
             _events = events;
         }
 
-        public MultiOnCollisionEvent(){}
+        public MultiEvent(){}
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
@@ -47,11 +46,11 @@ namespace Misana.Core.Events.Collision
             }
 
             var lenght = br.ReadInt32();
-            _events = new OnCollisionEvent[lenght];
+            _events = new OnEvent[lenght];
             for (int i = 0; i < lenght; i++)
             {
                 var typeName = br.ReadString();
-                var @event = (OnCollisionEvent) Activator.CreateInstance(Type.GetType(typeName));
+                var @event = (OnEvent) Activator.CreateInstance(Type.GetType(typeName));
                 _events[i] = @event;
             }
         }

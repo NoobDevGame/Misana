@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Ecs.Changes;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 
 namespace Misana.Core.Components
 {
@@ -23,7 +23,7 @@ namespace Misana.Core.Components
         public float Mass = 50f;
         public bool Fixed;
 
-        public List<OnCollisionEvent> OnCollisionEvents = new List<OnCollisionEvent>(2);
+        public List<OnEvent> OnCollisionEvents = new List<OnEvent>(2);
         public bool Blocked;
 
         public override void CopyTo(EntityColliderComponent other)
@@ -31,7 +31,7 @@ namespace Misana.Core.Components
             other.Mass = Mass;
             other.Fixed = Fixed;
             other.Blocked = Blocked;
-            other.OnCollisionEvents = new List<OnCollisionEvent>(OnCollisionEvents); //TODO: :(
+            other.OnCollisionEvents = new List<OnEvent>(OnCollisionEvents); //TODO: :(
         }
     }
 

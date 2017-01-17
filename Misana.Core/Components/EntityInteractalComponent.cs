@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Misana.Core.Ecs;
-using Misana.Core.Events.Collision;
+using Misana.Core.Events.Entities;
 
 namespace Misana.Core.Components
 {
@@ -8,13 +8,13 @@ namespace Misana.Core.Components
     {
         public float InteractionRadius = 0.6f;
         public bool Interacting;
-        public List<OnCollisionEvent> OnInteractionEvents = new List<OnCollisionEvent>(2);
+        public List<OnEvent> OnInteractionEvents = new List<OnEvent>(2);
 
         public override void CopyTo(EntityInteractableComponent other)
         {
             other.Interacting = Interacting;
             other.InteractionRadius = InteractionRadius;
-            other.OnInteractionEvents = new List<OnCollisionEvent>(OnInteractionEvents);
+            other.OnInteractionEvents = new List<OnEvent>(OnInteractionEvents);
         }
     }
 }
