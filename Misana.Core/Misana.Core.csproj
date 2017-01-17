@@ -75,6 +75,7 @@
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\EntityInteractableDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />

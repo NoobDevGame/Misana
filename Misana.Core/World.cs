@@ -78,14 +78,13 @@ namespace Misana.Core
             );
             testDefinition.Definitions.Add(colliderDef);
 
+            var interactDef = new EntityInteractableDefinition();
+            interactDef.OnInteractEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
+            testDefinition.Definitions.Add(interactDef);
 
 
 
             EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition)
-                .Add<EntityInteractableComponent>(p =>
-                {
-                    p.OnInteractionEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
-                })
                 .Commit(Entities);
 
 
@@ -100,14 +99,14 @@ namespace Misana.Core
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
             playerDefinition.Definitions.Add(new EntityFlagDefintion());
+            playerDefinition.Definitions.Add(new EntityInteractableDefinition());
 
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
 
             var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
                 .Add(transform)
-                .Add(input))
-                .Add<EntityInteractableComponent>();
+                .Add(input));
 
             return playerBuilder.Commit(Entities).Id;
         }
