@@ -10,6 +10,8 @@ namespace Misana.Core.Components
     public class PlayerInputComponent : Component<PlayerInputComponent>
     {
         public Vector2 Move;
+        public Vector2 Facing;
+        public bool Attacking;
         public bool Interact;
 
         public Vector2 MousePosition;
@@ -17,6 +19,8 @@ namespace Misana.Core.Components
         public override void CopyTo(PlayerInputComponent other)
         {
             other.Move = Move;
+            other.Facing = Facing;
+            other.Attacking = Attacking;
         }
     }
 }

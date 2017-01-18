@@ -64,6 +64,12 @@ namespace Misana.Components
             Input.MousePosition =new Vector2(mouse.X,mouse.Y);
 
             Input.Move = move;
+
+          
+            var wf = Game.CameraComponent.ViewToWorld(new engenious.Vector2(mouse.X, mouse.Y));
+            Input.Facing = new Misana.Core.Vector2(wf.X, wf.Y);
+
+            Input.Attacking = mouse.LeftButton == ButtonState.Pressed;
         }
     }
 }

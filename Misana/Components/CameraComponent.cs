@@ -62,5 +62,10 @@ namespace Misana.Components
             PlayerPosition = viewportHalf;
 
         }
+
+        public Vector2 ViewToWorld(Vector2 viewVector)
+        {
+            return PlayerPosition - viewVector;
+        }
     }
 }
