@@ -6,7 +6,7 @@ namespace Misana.Core.Ecs
     {
         protected const int InitialSize = 16;
 
-        internal EntityManager Manager;
+        protected EntityManager Manager;
 
         protected GameTime GameTime => Manager.GameTime;
 

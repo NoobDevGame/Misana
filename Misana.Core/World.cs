@@ -13,6 +13,8 @@ using Misana.Core.Effects.Conditions;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
+using Misana.Core.Events.Collision;
+using Misana.Core.Events.OnUse;
 using Misana.Core.Events.Entities;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
@@ -29,10 +31,12 @@ namespace Misana.Core
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
+        private WieldedWieldableSystem _wieldedWieldableSystem;
 
         public World(List<BaseSystem> afterSystems)
         {
             _collidingMoverSystem = new EntityCollidingMoverSystem();
+            _wieldedWieldableSystem = new WieldedWieldableSystem();
             _interactionSystem = new EntityInteractionSystem();
 
             List<BaseSystem> systems = new List<BaseSystem>();
@@ -40,8 +44,12 @@ namespace Misana.Core
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
+            systems.Add(new WieldedSystem());
+            systems.Add(_wieldedWieldableSystem);
+            systems.Add(new ProjectileSystem());
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
+            systems.Add(new ExpirationSystem());
             systems.AddRange(afterSystems);
 
 
@@ -57,6 +65,8 @@ namespace Misana.Core
             Entities.Clear();
             _collidingMoverSystem.ChangeWorld(this);
             _interactionSystem.ChangeWorld(this);
+            _wieldedWieldableSystem.ChangeWorld(this);
+
             foreach (var area in CurrentMap.Areas)
             {
                 foreach (var entity in area.Entities)
@@ -104,11 +114,47 @@ namespace Misana.Core
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
 
-            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
-                .Add(transform)
-                .Add(input));
 
-            return playerBuilder.Commit(Entities).Id;
+            var playerWielding = new WieldingComponent();
+
+            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
+                .Add<FacingComponent>()
+                .Add(transform)
+                .Add(input)
+                .Add(playerWielding)
+                );
+
+            var playerId = playerBuilder.Commit(Entities).Id;
+
+            var bow = new EntityBuilder()
+                .Add<WieldableComponent>(wieldable => {
+                    wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
+                      Builder = new EntityBuilder()
+                        .Add<EntityColliderComponent>(pcoll => { 
+                            pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
+                            //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
+                        })
+                        .Add<CharacterRenderComponent>(),
+                      Radius = 0.3f,
+                      Expiration = 1500,
+                      Speed = 0.25f
+
+                  }) { CoolDown = TimeSpan.FromMilliseconds(250) });      
+                })
+                .Add<CharacterRenderComponent>()
+                .Add<WieldedComponent>(x => x.Distance = 0.5f)
+                .Add<FacingComponent>()
+                .Add<TransformComponent>(
+                    x => {
+                        x.ParentEntityId = playerId;
+                        x.Position = new Vector2(0.3f,0.3f);
+                    })
+                .Commit(Entities);
+
+            playerWielding.RightHandEntityId = bow.Id;
+            playerWielding.TwoHanded = true;
+
+            return playerId;
         }
 
         public void Update(GameTime gameTime)

@@ -50,9 +50,15 @@
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityInteractalComponent.cs" />
     <Compile Include="Components\Events\EntityFlagComponent.cs" />
+    <Compile Include="Components\ExpiringComponent.cs" />
+    <Compile Include="Components\FacingComponent.cs" />
     <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
+    <Compile Include="Components\ProjectileComponent.cs" />
     <Compile Include="Components\StatusComponent\TimeDamageComponent.cs" />
+    <Compile Include="Components\WieldableComponent.cs" />
+    <Compile Include="Components\WieldedComponent.cs" />
+    <Compile Include="Components\WieldingComponent.cs" />
     <Compile Include="Ecs\BaseSystem.cs" />
     <Compile Include="Ecs\Changes\ComponentAddition.cs" />
     <Compile Include="Ecs\Changes\ComponentRemoval.cs" />
@@ -69,6 +75,7 @@
     <Compile Include="Ecs\EntityBuilder.cs" />
     <Compile Include="Ecs\Changes\EntityChange.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
@@ -97,6 +104,7 @@
     <Compile Include="Events\Conditions\FlagCondition.cs" />
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
+    <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />
@@ -120,10 +128,14 @@
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMoverSystem.cs" />
+    <Compile Include="Systems\ExpirationSystem.cs" />
     <Compile Include="Systems\EntityInteractionSystem.cs" />
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\MoverSystem.cs" />
+    <Compile Include="Systems\ProjectileSystem.cs" />
     <Compile Include="Systems\StatusSystem\TimeDamageSystem.cs" />
+    <Compile Include="Systems\WieldedSystem.cs" />
+    <Compile Include="Systems\WieldedWieldableSystem.cs" />
     <Compile Include="Vector2.cs" />
     <Compile Include="World.cs" />
   </ItemGroup>

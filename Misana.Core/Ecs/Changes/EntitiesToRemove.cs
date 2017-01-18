@@ -25,6 +25,7 @@ namespace Misana.Core.Ecs.Changes
                 e.Components = null;
             }
 
+            _list.Clear();
             HasChanges = false;
         }
     }
