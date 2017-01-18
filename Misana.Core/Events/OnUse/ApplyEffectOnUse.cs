@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Misana.Core.Ecs;
 using Misana.Core.Effects;
-using Misana.Core.Events.Collision;
 
 namespace Misana.Core.Events.OnUse
 {

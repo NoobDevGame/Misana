@@ -13,7 +13,6 @@ using Misana.Core.Effects.Conditions;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
-using Misana.Core.Events.Collision;
 using Misana.Core.Events.OnUse;
 using Misana.Core.Events.Entities;
 using Misana.Core.Systems;
@@ -131,7 +130,7 @@ namespace Misana.Core
                     wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
                       Builder = new EntityBuilder()
                         .Add<EntityColliderComponent>(pcoll => { 
-                            pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
+                            pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
                             //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
                         })
                         .Add<CharacterRenderComponent>(),

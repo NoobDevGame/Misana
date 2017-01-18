@@ -65,7 +65,7 @@ namespace Misana.Components
 
             Input.Move = move;
 
-            var mouse = Mouse.GetState();
+          
             var wf = Game.CameraComponent.ViewToWorld(new engenious.Vector2(mouse.X, mouse.Y));
             Input.Facing = new Misana.Core.Vector2(wf.X, wf.Y);
 

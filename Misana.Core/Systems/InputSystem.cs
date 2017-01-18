@@ -11,7 +11,6 @@ namespace Misana.Core.Systems
     public class InputSystem : BaseSystemR3O1<PlayerInputComponent, MotionComponent, TransformComponent, FacingComponent>
     {
         protected override void Update(Entity e, PlayerInputComponent r1, MotionComponent r2, TransformComponent r3, FacingComponent o1)
-        protected override void Update(Entity e, PlayerInputComponent r1, MotionComponent r2, EntityInteractableComponent o1)
         {
             r2.Move += r1.Move * GameTime.ElapsedTime.TotalSeconds;
 
@@ -21,8 +20,11 @@ namespace Misana.Core.Systems
             var wielding = e.Get<WieldingComponent>();
             if (wielding != null)
                 wielding.Use = r1.Attacking;
-            if (o1 != null)
-                o1.Interacting = r1.Interact;
+
+            var interacting = e.Get<EntityInteractableComponent>();
+
+            if (interacting != null)
+                interacting.Interacting = r1.Interact;
         }
     }
 }
