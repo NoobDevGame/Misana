@@ -113,11 +113,11 @@ namespace Misana.Core
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
 
-            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
+            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder())
                 .Add<FacingComponent>()
                 .Add(transform)
                 .Add(input)
-            );
+                ;
 
             /*
             var bow = new EntityBuilder()
