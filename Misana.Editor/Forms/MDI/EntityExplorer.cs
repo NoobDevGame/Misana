@@ -1,4 +1,5 @@
 ﻿using Misana.Core.Entities;
+using Misana.Core.Maps;
 using Misana.Editor.Events;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,28 @@ namespace Misana.Editor.Forms.MDI
 
             InitializeComponent();
 
+            mainForm.EventBus.Subscribe<AreaSelectionEvent>(t => AreaChanged(t.Area));
+
             mainForm.EventBus.Subscribe<EntityDefinitionChangedEvent>(EntityDefinitionChanged);
+
+            mainForm.EventBus.Subscribe<MapChangedEvent>(t => LoadDefinitions());
+        }
+
+        private void LoadDefinitions()
+        {
+            if (mainForm.Map == null)
+                return;
+
+            foreach(var edef in mainForm.Map.GlobalEntityDefinitions)
+            {
+                listView.Items.Add(new ListViewItem(edef.Value.Name) { Tag = edef.Value });
+            }
+        }
+
+        private void AreaChanged(Area a)
+        {
+            //listView.Items.Clear();
+
         }
 
         private void EntityDefinitionChanged(EntityDefinitionChangedEvent ev)
@@ -79,6 +101,12 @@ namespace Misana.Editor.Forms.MDI
                 EntityEditor ee = new EntityEditor(mainForm, (EntityDefinition)listView.SelectedItems[0].Tag);
                 mainForm.WindowManager.AddShowWindow(ee);
             }
+        }
+
+        private void listView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            var x = (EntityDefinition) listView.SelectedItems[0].Tag;
+            listView.DoDragDrop(x, DragDropEffects.Copy);
         }
     }
 }

@@ -44,6 +44,9 @@ namespace Misana.Editor.Forms.MDI
 
         private void TreeView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
+            if (treeView.SelectedNode == null)
+                return;
+
             if(treeView.SelectedNode.Tag is Area)
                 mainForm.EventBus.Publish(new AreaSelectionEvent((Area)treeView.SelectedNode.Tag));
         }
@@ -74,6 +77,9 @@ namespace Misana.Editor.Forms.MDI
 
         private void toolStripButton_addArea_Click(object sender, EventArgs e)
         {
+            if (mainForm.Map == null)
+                return;
+
             var a = new NewAreaForm();
             if (a.ShowDialog() == DialogResult.OK)
             {

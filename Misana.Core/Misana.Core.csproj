@@ -51,7 +51,7 @@
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
-    <Compile Include="Components\CharacterRenderComponent.cs" />
+    <Compile Include="Components\SpriteInfoComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityInteractalComponent.cs" />
     <Compile Include="Components\Events\EntityFlagComponent.cs" />
@@ -128,6 +128,7 @@
     <Compile Include="Maps\TileProperty.cs" />
     <Compile Include="Maps\Tilesheet.cs" />
     <Compile Include="MessageManager.cs" />
+    <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />

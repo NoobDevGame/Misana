@@ -69,8 +69,10 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Events\AreaAddEvent.cs" />
+    <Compile Include="Events\AreaChangedEvent.cs" />
     <Compile Include="Events\AreaSelectionEvent.cs" />
     <Compile Include="Events\EntityDefinitionChangedEvent.cs" />
+    <Compile Include="Events\EntityVisibilityChangedEvent.cs" />
     <Compile Include="Events\ErrorEvent.cs" />
     <Compile Include="Events\ILoggerEvent.cs" />
     <Compile Include="Events\LayerVisibilityChangedEvent.cs" />

@@ -119,7 +119,32 @@ namespace Misana.Core
                 .Add(input)
             );
 
+            /*
+            var bow = new EntityBuilder()
+                .Add<WieldableComponent>(wieldable => {
+                    wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
+                        Builder = new EntityBuilder()
+                            .Add<EntityColliderComponent>(pcoll => {
+                                pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
+                                //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
+                            })
+                            .Add<SpriteInfoComponent>(),
+                        Radius = 0.3f,
+                        Expiration = 1500,
+                        Speed = 0.25f
 
+                    }) { CoolDown = TimeSpan.FromMilliseconds(250) });
+                })
+                .Add<SpriteInfoComponent>()
+                .Add<WieldedComponent>(x => x.Offset = new Vector2(0.5f,0.5f))
+                .Add<FacingComponent>()
+                .Add<TransformComponent>(
+                    x => {
+                        x.ParentEntityId = playerId;
+                        x.Position = new Vector2(0.3f,0.3f);
+                    })
+                .Commit(Entities);
+            */
 
             var playerId = playerBuilder.Commit(Entities).Id;
 

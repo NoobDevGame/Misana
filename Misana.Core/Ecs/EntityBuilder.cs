@@ -10,6 +10,11 @@ namespace Misana.Core.Ecs
             _components = ComponentArrayPool.Take();
         }
 
+        public EntityBuilder(Component[] components)
+        {
+            _components = components;
+        }
+
         public EntityBuilder Add<T>() where T : Component, new() => Add<T>((Action<T>) null);
 
         public EntityBuilder Add<T>(Action<T> a) where T : Component, new()

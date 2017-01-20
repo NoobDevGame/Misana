@@ -140,6 +140,9 @@ namespace Misana.Editor.Controls
 
             protected override void OnPaint(PaintEventArgs e)
             {
+                if (e.Graphics == null)
+                    return;
+
                 e.Graphics.DrawImage(tilesheet.Texture, new Rectangle(0, 0, tilesheet.Texture.Width * 2, tilesheet.Texture.Height * 2));
 
                 if (Selection == null || Active == false)

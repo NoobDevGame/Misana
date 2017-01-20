@@ -34,13 +34,15 @@
             this.listView = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.toolStripButton_toggleEntities = new System.Windows.Forms.ToolStripButton();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // toolStrip1
             // 
             this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.button_addLayer});
+            this.button_addLayer,
+            this.toolStripButton_toggleEntities});
             this.toolStrip1.Location = new System.Drawing.Point(0, 0);
             this.toolStrip1.Name = "toolStrip1";
             this.toolStrip1.Size = new System.Drawing.Size(284, 25);
@@ -55,6 +57,7 @@
             this.button_addLayer.Name = "button_addLayer";
             this.button_addLayer.Size = new System.Drawing.Size(64, 22);
             this.button_addLayer.Text = "Add Layer";
+            this.button_addLayer.Click += new System.EventHandler(this.button_addLayer_Click);
             // 
             // listView
             // 
@@ -83,6 +86,17 @@
             this.columnHeader2.Text = "Name";
             this.columnHeader2.Width = 173;
             // 
+            // toolStripButton_toggleEntities
+            // 
+            this.toolStripButton_toggleEntities.CheckOnClick = true;
+            this.toolStripButton_toggleEntities.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.toolStripButton_toggleEntities.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton_toggleEntities.Image")));
+            this.toolStripButton_toggleEntities.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.toolStripButton_toggleEntities.Name = "toolStripButton_toggleEntities";
+            this.toolStripButton_toggleEntities.Size = new System.Drawing.Size(88, 22);
+            this.toolStripButton_toggleEntities.Text = "Toggle Entities";
+            this.toolStripButton_toggleEntities.CheckedChanged += new System.EventHandler(this.toolStripButton_toggleEntities_CheckedChanged);
+            // 
             // LayerView
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -105,5 +119,6 @@
         private System.Windows.Forms.ListView listView;
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ToolStripButton toolStripButton_toggleEntities;
     }
 }

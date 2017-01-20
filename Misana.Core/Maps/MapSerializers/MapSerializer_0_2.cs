@@ -25,7 +25,7 @@ namespace Misana.Core.Maps.MapSerializers
             {
                 var definitionName = br.ReadString();
                 var definition = DeserializeEntityDefinition(br);
-                globalEntityDefinitions.Add(definitionName,definition);
+                globalEntityDefinitions.Add(definition.Name,definition);
             }
 
             //Areas
@@ -105,8 +105,9 @@ namespace Misana.Core.Maps.MapSerializers
             for (int i = 0; i < definitionCount; i++)
             {
                 var componentType = br.ReadString();
-                var componentDefinition = (ComponentDefinition)Activator.CreateInstance(Type.GetType( componentType));
-                componentDefinition.Deserialize(MapVersion,br);
+               var componentDefinition = (ComponentDefinition)Activator.CreateInstance(Type.GetType( componentType));
+                componentDefinition.Deserialize(MapVersion, br);
+                definition.Definitions.Add(componentDefinition);
             }
 
             return definition;

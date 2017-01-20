@@ -19,6 +19,8 @@ namespace Misana.Editor.Forms.MDI
 
         private MainForm mainForm;
 
+        private bool preferEntities;
+
         public PropertyView(MainForm mainForm)
         {
             this.mainForm = mainForm;

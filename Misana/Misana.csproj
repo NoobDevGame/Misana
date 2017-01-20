@@ -64,7 +64,12 @@
     <Compile Include="Components\CameraComponent.cs" />
     <Compile Include="Components\PlayerGameComponent.cs" />
     <Compile Include="Components\SimulationComponent.cs" />
-    <Compile Include="Controls\CharacterRenderSystem.cs" />
+    <Compile Include="EntityComponents\RenderSpriteComponent.cs" />
+    <Compile Include="EntityComponents\RenderHealthComponent.cs" />
+    <Compile Include="EntityComponents\RenderNameComponent.cs" />
+    <Compile Include="EntitySystems\HealthRenderSystem.cs" />
+    <Compile Include="EntitySystems\NameRenderSystem.cs" />
+    <Compile Include="EntitySystems\SpriteRenderSystem.cs" />
     <Compile Include="MisanaGame.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

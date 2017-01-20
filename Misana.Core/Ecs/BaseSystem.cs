@@ -88,6 +88,7 @@ namespace Misana.Core.Ecs
                     var newCapacity = Capacity * 2;
                     Grow(ref Entities, newCapacity);
                     Grow(newCapacity);
+                    Capacity = newCapacity;
                 }
 
                 idx = Count++;

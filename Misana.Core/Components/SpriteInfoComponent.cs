@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace Misana.Core.Components
 {
-    public class CharacterRenderComponent : Component<CharacterRenderComponent>
+    public class SpriteInfoComponent : Component<SpriteInfoComponent>
     {
         public Index2 TilePosition { get; set; }
 
-        public override void CopyTo(CharacterRenderComponent other)
+        public override void CopyTo(SpriteInfoComponent other)
         {
             other.TilePosition = TilePosition;
         }

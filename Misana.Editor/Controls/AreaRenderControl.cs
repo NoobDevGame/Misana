@@ -1,4 +1,8 @@
 ﻿using Misana.Core;
+using Misana.Core.Components;
+using Misana.Core.Ecs;
+using Misana.Core.Entities;
+using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Maps;
 using Misana.Editor.Events;
 using Misana.Editor.Forms.MDI;
@@ -24,9 +28,12 @@ namespace Misana.Editor.Controls
 
         public Index2[] SelectedTiles { get { return selectedTiles.ToArray(); } }
 
+        public AreaEntity[] SelectedEntities { get { return selectedEntities.ToArray(); } }
+
         public int? SelectedLayer { get { return selectedLayer; } }
 
         private List<Index2> selectedTiles = new List<Index2>();
+        private List<AreaEntity> selectedEntities = new List<AreaEntity>();
         private int selectedLayer;
 
         public Area Area { get; private set; }
@@ -76,6 +83,8 @@ namespace Misana.Editor.Controls
         {
             this.mainForm = mainForm;
             this.areaRenderer = areaRenderer;
+
+            AllowDrop = true;
 
             Area = area;
 
@@ -128,6 +137,9 @@ namespace Misana.Editor.Controls
 
         protected override void OnPaint(PaintEventArgs e)
         {
+            if (e.Graphics == null)
+                return;
+
             if (mainForm == null || areaRenderer == null)
                 return;
 
@@ -184,6 +196,8 @@ namespace Misana.Editor.Controls
                             bg.DrawImage(mainForm.TilesheetManager.Tilesheets[tilesheetName].Texture, new Rectangle(lastMousePoint.X / 32 * 32, lastMousePoint.Y / 32 * 32, 32, 32), new Rectangle(tilesheetTileIndex.X * 17, tilesheetTileIndex.Y * 17, 16, 16), GraphicsUnit.Pixel);
                     }
 
+                   
+
                 }
 
                 bitmapCache = (Bitmap)bitMap.Clone();
@@ -193,13 +207,22 @@ namespace Misana.Editor.Controls
 
             g.DrawImage(bitmapCache, new Point(0, 0));
 
+            foreach (var eD in Area.Entities)
+            {
+                var transformDefintion = (TransformDefinition)eD.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                if (transformDefintion == null)
+                    continue;
+
+                g.FillEllipse(new SolidBrush(Color.Red), new Rectangle((int)transformDefintion.Position.X * 32, (int)transformDefintion.Position.Y * 32, 32, 32));
+            }
+
 
             //var selWidth = SelectionEnd.X - SelectionStart.X+1;
             //var selHeight = selectionEnd.Y - SelectionStart.Y+1;
 
             //g.DrawRectangle(new Pen(Color.FromArgb(255, 0, 102, 204)), new Rectangle(SelectionStart.X * 32 - 1, SelectionStart.Y * 32 - 1, selWidth*32, selHeight*32));
 
-            if(Mode == AreaMode.Select)
+            if (Mode == AreaMode.Select)
             {
                 foreach (var tile in SelectedTiles)
                 {
@@ -316,13 +339,15 @@ namespace Misana.Editor.Controls
         public void Select(Index2 start, Index2 end, bool keepSelection = false)
         {
             if (!keepSelection)
+            {
                 selectedTiles.Clear();
+                selectedEntities.Clear();
+            }
 
             start.X = Math.Max(0, Math.Min(start.X, Area.Width - 1));
             start.Y = Math.Max(0, Math.Min(start.Y, Area.Height - 1));
             end.X = Math.Max(0, Math.Min(end.X, Area.Width - 1));
             end.Y = Math.Max(0, Math.Min(end.Y, Area.Height - 1));
-
 
             for (int x = start.X; x <= end.X; x++)
             {
@@ -331,6 +356,14 @@ namespace Misana.Editor.Controls
                     var tiles = SelectedTiles.Where(t => t.X == x && t.Y == y);
                     if (tiles.Count() == 0)
                         selectedTiles.Add(new Index2(x, y));
+
+                    
+                    foreach(var en in Area.Entities)
+                    {
+                        var transform = (TransformDefinition)en.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                        if (transform != null && (int) transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
+                            selectedEntities.Add(en); 
+                    }
                 }
             }
 
@@ -349,6 +382,60 @@ namespace Misana.Editor.Controls
 
                 mainForm.EventBus.Publish(new MapTileSelectionEvent((int)SelectedLayer,sTiles.ToArray(),SelectedTiles));
             }
+        }
+
+        protected override void OnDragEnter(DragEventArgs drgevent)
+        {
+            drgevent.Effect = DragDropEffects.Copy;
+            base.OnDragEnter(drgevent);
+        }
+
+        protected override void OnDragDrop(DragEventArgs drgevent)
+        {
+            var edef = (EntityDefinition)drgevent.Data.GetData(typeof(EntityDefinition));
+
+            //var x = (drgevent.X-this.ClientRectangle.X) / 32;
+            //var y = (drgevent.Y-this.ClientRectangle.Y) / 32;
+
+            var ptc = PointToClient(new Point(drgevent.X, drgevent.Y));
+            var x = ptc.X / 32;
+            var y = ptc.Y / 32;
+
+            var ndef = edef.Copy();//new EntityDefinition(edef.Name);
+
+            //foreach (var xdef in edef.Definitions)
+            //    ndef.Definitions.Add(xdef);
+
+            var z = (TransformDefinition) ndef.Definitions.FirstOrDefault(b => b.GetType() == typeof(TransformDefinition));
+
+            if (z == null)
+            {
+                ndef.Definitions.Add(new TransformDefinition());
+                z = (TransformDefinition)ndef.Definitions.FirstOrDefault(b => b.GetType() == typeof(TransformDefinition));
+            }
+
+            z.AreaId = Area.Id;
+            z.Position = new Vector2(x+0.5f, y+0.5f);
+            z.Radius = 0.9f;
+
+            Area.Entities.Add(new AreaEntity() { Name = new Random().Next().ToString(), Definition =  ndef });
+
+            Invalidate();
+
+            base.OnDragDrop(drgevent);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Delete)
+            {
+                if(selectedEntities.Count > 0)
+                {
+                    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
+                    selectedEntities.Clear();
+                }
+            }
+            base.OnKeyDown(e);
         }
 
         public enum AreaMode

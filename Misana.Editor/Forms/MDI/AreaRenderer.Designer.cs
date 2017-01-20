@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             this.toolStrip = new System.Windows.Forms.ToolStrip();
-            this.control_panel = new System.Windows.Forms.Panel();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.button_toggle_spawnpoint = new System.Windows.Forms.ToolStripButton();
+            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.button_mode_select = new Misana.Editor.Controls.ToolStripRadioButton();
             this.button_mode_paint = new Misana.Editor.Controls.ToolStripRadioButton();
             this.button_mode_fill = new Misana.Editor.Controls.ToolStripRadioButton();
+            this.control_panel = new System.Windows.Forms.Panel();
             this.toolStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -51,19 +51,6 @@
             this.toolStrip.Size = new System.Drawing.Size(284, 25);
             this.toolStrip.TabIndex = 0;
             // 
-            // control_panel
-            // 
-            this.control_panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.control_panel.Location = new System.Drawing.Point(0, 25);
-            this.control_panel.Name = "control_panel";
-            this.control_panel.Size = new System.Drawing.Size(284, 236);
-            this.control_panel.TabIndex = 1;
-            // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
             // button_toggle_spawnpoint
             // 
             this.button_toggle_spawnpoint.CheckOnClick = true;
@@ -74,6 +61,12 @@
             this.button_toggle_spawnpoint.Size = new System.Drawing.Size(23, 22);
             this.button_toggle_spawnpoint.Text = "toolStripButton1";
             this.button_toggle_spawnpoint.CheckStateChanged += new System.EventHandler(this.button_toggle_spawnpoint_CheckStateChanged);
+            this.button_toggle_spawnpoint.Click += new System.EventHandler(this.button_toggle_spawnpoint_Click);
+            // 
+            // toolStripSeparator1
+            // 
+            this.toolStripSeparator1.Name = "toolStripSeparator1";
+            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
             // 
             // button_mode_select
             // 
@@ -118,6 +111,14 @@
             this.button_mode_fill.Size = new System.Drawing.Size(23, 22);
             this.button_mode_fill.Text = "Select";
             this.button_mode_fill.CheckStateChanged += new System.EventHandler(this.ModeSelectionChanged);
+            // 
+            // control_panel
+            // 
+            this.control_panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.control_panel.Location = new System.Drawing.Point(0, 25);
+            this.control_panel.Name = "control_panel";
+            this.control_panel.Size = new System.Drawing.Size(284, 236);
+            this.control_panel.TabIndex = 1;
             // 
             // AreaRenderer
             // 
