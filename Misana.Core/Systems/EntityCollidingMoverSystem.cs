@@ -10,29 +10,26 @@ namespace Misana.Core.Systems
 {
     public class EntityCollidingMoverSystem : BaseSystemR2O1<EntityColliderComponent, TransformComponent, MotionComponent>
     {
-        private struct CollisionPair
+        public EntityCollidingMoverSystem()
         {
-            public int HigherEntityId;
-            public int LowerEntityId;
+            _colArraySize = Capacity * 2;
+            _collisionChecks = new bool[_colArraySize][];
 
-            public CollisionPair(int higher, int lower)
+            for (int i = 0; i < _colArraySize; i++)
             {
-                HigherEntityId = higher;
-                LowerEntityId = lower;
+                _collisionChecks[i] = new bool[_colArraySize];
             }
         }
 
         private World _world;
         List<int>[][] _areas;
         HashSet<int>[] _occupiedTilesPerArea;
-        HashSet<CollisionPair>[] _collisionPairsPerArea;
         
         public void ChangeWorld(World world)
         {
             _world = world;
             _areas = new List<int>[world.CurrentMap.Areas.Count][];
             _occupiedTilesPerArea = new HashSet<int>[world.CurrentMap.Areas.Count];
-            _collisionPairsPerArea = new HashSet<CollisionPair>[world.CurrentMap.Areas.Count];
 
             for (int i = 0; i < world.CurrentMap.Areas.Count; i++)
             {
@@ -41,7 +38,6 @@ namespace Misana.Core.Systems
                 var n = area.Width * area.Height;
                 _areas[i] = new List<int>[n];
                 _occupiedTilesPerArea[i] = new HashSet<int>();
-                _collisionPairsPerArea[i] = new HashSet<CollisionPair>();
 
                 for (int j = 0; j < n; j++)
                 {
@@ -50,9 +46,28 @@ namespace Misana.Core.Systems
             }
         }
 
+        private int _colArraySize;
+        private bool[][] _collisionChecks;
+
+        protected override void Grow(int to)
+        {
+            base.Grow(to);
+
+            if (to > _colArraySize)
+            {
+                _colArraySize = to * 2;
+                _collisionChecks = new bool[_colArraySize][];
+
+                for (int i = 0; i < _colArraySize; i++)
+                {
+                    _collisionChecks[i] = new bool[_colArraySize];
+                }
+            }
+            
+        }
+
         public override void Tick()
         {
-            // Cleanup
             for (var index = 0; index < _occupiedTilesPerArea.Length; index++)
             {
                 var occ = _occupiedTilesPerArea[index];
@@ -63,13 +78,16 @@ namespace Misana.Core.Systems
                 occ.Clear();
             }
 
-            foreach(var cps in _collisionPairsPerArea)
-                cps.Clear();
-            
             for (int i = 0; i < Count; i++)
             {
                 var transformComponent = R2S[i];
-                
+
+                for (int j = 0; j < Count; j++)
+                {
+                    _collisionChecks[i][j] = false;
+                }
+
+
                 if (transformComponent.CurrentArea == null)
                     continue;
 
@@ -109,7 +127,6 @@ namespace Misana.Core.Systems
             for (var index = 0; index < _occupiedTilesPerArea.Length; index++)
             {
                 var occ = _occupiedTilesPerArea[index];
-                var collisionPairs = _collisionPairsPerArea[index];
 
                 foreach (var a in occ)
                 {
@@ -140,10 +157,13 @@ namespace Misana.Core.Systems
                             if (distance > 0)
                                 continue;
 
-                            var pair = new CollisionPair(e1.Id > e2.Id ? e1.Id : e2.Id, e1.Id > e2.Id ? e2.Id : e1.Id);
+                            var higherIndex = e1.Id > e2.Id ? i : j;
+                            var lowerIndex = e1.Id > e2.Id ? j : i;
 
-                            if(!collisionPairs.Add(pair))
+                            if(_collisionChecks[higherIndex][lowerIndex])
                                 continue;
+
+                            _collisionChecks[higherIndex][lowerIndex] = true;
                             
 
                             foreach (var e in entityCollider.OnCollisionEvents)
