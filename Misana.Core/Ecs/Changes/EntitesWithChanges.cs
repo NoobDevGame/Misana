@@ -17,7 +17,7 @@ namespace Misana.Core.Ecs.Changes
                 ChangeStack.Push(new List<EntityChange>(16));
             }
         }
-        const int ThreadCount = 3;
+        const int ThreadCount = 0;
         internal EntitesWithChanges(EntityManager manager)
         {
             _manager = manager;
@@ -130,8 +130,12 @@ namespace Misana.Core.Ecs.Changes
 
             CommitWork(ThreadCount);
 
-            _workDone.WaitOne();
-            _workDoneCounter = 0;
+            if (ThreadCount > 0)
+            {
+                _workDone.WaitOne();
+
+                _workDoneCounter = 0;
+            }
 
             _changes.Clear();
             HasChanges = false;

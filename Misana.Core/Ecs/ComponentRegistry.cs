@@ -118,10 +118,24 @@ namespace Misana.Core.Ecs
             }
             
         }
+
+        internal static void TriggerAdditionHooks(EntityManager em, Entity e, T component)
+        {
+            foreach (var ah in AdditionHooks[em.Index])
+                ah(em, e, component);
+        }
+
+        internal static void TriggerRemovalHooks(EntityManager em, Entity e, T component)
+        {
+            foreach (var ah in RemovalHooks[em.Index])
+                ah(em, e, component);
+        }
     }
 
     public static class ComponentRegistry
     {
+        public static Action<EntityManager, Entity, Component>[] AdditionHooks;
+        public static Action<EntityManager, Entity, Component>[] RemovalHooks;
         public static Action<Component>[] Release;
         public static Func<Component>[] Take;
     }

@@ -128,14 +128,14 @@ namespace Misana.Core
                                 pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
                                 //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
                             })
-                            .Add<CharacterRenderComponent>(),
+                            .Add<SpriteInfoComponent>(),
                         Radius = 0.3f,
                         Expiration = 1500,
                         Speed = 0.25f
 
                     }) { CoolDown = TimeSpan.FromMilliseconds(250) });
                 })
-                .Add<CharacterRenderComponent>()
+                .Add<SpriteInfoComponent>()
                 .Add<WieldedComponent>(x => x.Offset = new Vector2(0.5f,0.5f))
                 .Add<FacingComponent>()
                 .Add<TransformComponent>(

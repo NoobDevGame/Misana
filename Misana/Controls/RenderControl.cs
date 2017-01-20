@@ -23,14 +23,13 @@ namespace Misana.Controls
         public RenderControl(ScreenComponent manager, string style = "") : base(manager, style)
         {
             this.manager = manager;
+            manager.Game.Simulation.SpriteRenderSystem.LoadContent();
+            manager.Game.Simulation.HealthRenderSystem.LoadContent();
+            manager.Game.Simulation.NameRenderSystem.LoadContent();
             
-
-            manager.Game.Simulation.CharacterRender.LoadContent(manager.Game);
-
             effect = manager.Content.Load<Effect>("simple");
             CreateIndexBuffer();
             LoadTilesheets();
-
         }
 
         public void LoadTilesheets()
@@ -131,8 +130,10 @@ namespace Misana.Controls
             {
                 batch.Draw(ControlTexture,new Vector2(0,0),Color.White);
             }
-
-            manager.Game.Simulation.CharacterRender.Draw(manager.Game,gameTime, batch);
+            
+            manager.Game.Simulation.SpriteRenderSystem.Draw(manager.Game,gameTime, batch);
+            manager.Game.Simulation.HealthRenderSystem.Draw(manager.Game,gameTime, batch);
+            manager.Game.Simulation.NameRenderSystem.Draw(manager.Game,gameTime, batch);
         }
 
         public void Dispose()

@@ -6,7 +6,7 @@ using Misana.Core.Maps;
 
 namespace Misana.Core.Entities.BaseDefinition
 {
-    public class CharacterRenderDefinition : ComponentDefinition<CharacterRenderComponent>
+    public class CharacterRenderDefinition : ComponentDefinition<SpriteInfoComponent>
     {
         public Index2 TilePosition { get; set; }
 
@@ -20,7 +20,7 @@ namespace Misana.Core.Entities.BaseDefinition
             TilePosition = tilePosition;
         }
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, CharacterRenderComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, SpriteInfoComponent component)
         {
             component.TilePosition = TilePosition;
         }

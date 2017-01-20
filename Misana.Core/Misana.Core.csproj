@@ -52,7 +52,7 @@
     <Compile Include="Communication\Systems\ServerEntityPositionSystem.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
-    <Compile Include="Components\CharacterRenderComponent.cs" />
+    <Compile Include="Components\SpriteInfoComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityInteractalComponent.cs" />
     <Compile Include="Components\Events\EntityFlagComponent.cs" />

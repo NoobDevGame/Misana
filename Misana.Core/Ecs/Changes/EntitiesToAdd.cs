@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Misana.Core.Components;
 
 namespace Misana.Core.Ecs.Changes
 {
@@ -18,6 +19,14 @@ namespace Misana.Core.Ecs.Changes
         {
             foreach (var e in _list)
             {
+                for (int i = 0; i < e.Components.Length; i++)
+                {
+                    if (e.Components[i] != null)
+                    {
+                        ComponentRegistry.AdditionHooks[i](e.Manager, e, e.Components[i]);
+                    }
+                }
+                
                 foreach (var s in systems)
                     s.EntityAdded(e);
             }
