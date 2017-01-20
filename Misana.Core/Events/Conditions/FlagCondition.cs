@@ -53,5 +53,9 @@ namespace Misana.Core.Events.Conditions
             Not = br.ReadBoolean();
         }
 
+        public override EventCondition Copy()
+        {
+            return new FlagCondition(Name, Not);
+        }
     }
 }
