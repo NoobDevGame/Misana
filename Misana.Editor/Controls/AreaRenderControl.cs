@@ -28,9 +28,12 @@ namespace Misana.Editor.Controls
 
         public Index2[] SelectedTiles { get { return selectedTiles.ToArray(); } }
 
+        public AreaEntity[] SelectedEntities { get { return selectedEntities.ToArray(); } }
+
         public int? SelectedLayer { get { return selectedLayer; } }
 
         private List<Index2> selectedTiles = new List<Index2>();
+        private List<AreaEntity> selectedEntities = new List<AreaEntity>();
         private int selectedLayer;
 
         public Area Area { get; private set; }
@@ -336,13 +339,15 @@ namespace Misana.Editor.Controls
         public void Select(Index2 start, Index2 end, bool keepSelection = false)
         {
             if (!keepSelection)
+            {
                 selectedTiles.Clear();
+                selectedEntities.Clear();
+            }
 
             start.X = Math.Max(0, Math.Min(start.X, Area.Width - 1));
             start.Y = Math.Max(0, Math.Min(start.Y, Area.Height - 1));
             end.X = Math.Max(0, Math.Min(end.X, Area.Width - 1));
             end.Y = Math.Max(0, Math.Min(end.Y, Area.Height - 1));
-
 
             for (int x = start.X; x <= end.X; x++)
             {
@@ -351,6 +356,14 @@ namespace Misana.Editor.Controls
                     var tiles = SelectedTiles.Where(t => t.X == x && t.Y == y);
                     if (tiles.Count() == 0)
                         selectedTiles.Add(new Index2(x, y));
+
+                    
+                    foreach(var en in Area.Entities)
+                    {
+                        var transform = (TransformDefinition)en.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                        if (transform != null && (int) transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
+                            selectedEntities.Add(en); 
+                    }
                 }
             }
 
@@ -410,6 +423,19 @@ namespace Misana.Editor.Controls
             Invalidate();
 
             base.OnDragDrop(drgevent);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if(e.KeyCode == Keys.Delete)
+            {
+                if(selectedEntities.Count > 0)
+                {
+                    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
+                    selectedEntities.Clear();
+                }
+            }
+            base.OnKeyDown(e);
         }
 
         public enum AreaMode

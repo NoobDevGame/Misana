@@ -32,7 +32,7 @@ namespace Misana.Editor.Forms.MDI
 
             foreach(var cdef in entityDefinition.Definitions)
             {
-                ListViewItem lvi = new ListViewItem(cdef.GetType().ToString());
+                ListViewItem lvi = new ListViewItem(cdef.GetType().FullName) { Tag=cdef };
                 listView.Items.Add(lvi);
             }
 

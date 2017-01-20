@@ -97,5 +97,10 @@ namespace Misana.Editor.Forms.MDI
 
             mainForm.EventBus.Publish(new AreaChangedEvent(area));
         }
+
+        private void toolStripButton_toggleEntities_CheckedChanged(object sender, EventArgs e)
+        {
+            mainForm.EventBus.Publish(new EntityVisibilityChangedEvent(toolStripButton_toggleEntities.Checked));
+        }
     }
 }
