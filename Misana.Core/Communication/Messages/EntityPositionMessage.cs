@@ -2,8 +2,16 @@
 
 namespace Misana.Core.Communication.Messages
 {
-    public class EntityPositionMessage : CommunicationMessage<TransformComponent>
+    public struct EntityPositionMessage
     {
-        public override uint MessageTypeId => (uint)MessageType.EntityPosition;
+        public int entityId;
+
+        public Vector2 position;
+
+        public EntityPositionMessage(int entityId,TransformComponent component)
+        {
+            this.entityId = entityId;
+            position = component.Position;
+        }
     }
 }

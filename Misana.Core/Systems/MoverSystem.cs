@@ -7,7 +7,14 @@ namespace Misana.Core.Systems
     {
         protected override void Update(Entity e, TransformComponent r1, MotionComponent r2)
         {
-            r1.Position += r2.Move;
+
+            r1.Position += r2.Move * 5;
+
+            if (float.IsNaN(r1.Position.X) || float.IsNaN(r1.Position.Y))
+            {
+                
+            }
+            
             r2.Move = Vector2.Zero;
         }
     }

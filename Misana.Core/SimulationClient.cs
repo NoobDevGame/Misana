@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Entities;
 using Misana.Core.Maps;
 
 namespace Misana.Core
@@ -22,11 +24,12 @@ namespace Misana.Core
             _serverClient = new DummyServer();
 
             List<BaseSystem> beforSystems = new List<BaseSystem>();
+            beforSystems.Add(new ReceiveEntityPositionSystem(_serverClient));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 
             List<BaseSystem> afterSystems = new List<BaseSystem>();
-            afterSystems.Add(new ClientPositionSystem(_serverClient));
+            afterSystems.Add(new SendEntityPositionSystem(_serverClient));
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
@@ -42,10 +45,37 @@ namespace Misana.Core
             _serverClient.ChangeMap(map);
         }
 
+        public int CreateEntity(string definitionName)
+        {
+            var serverId = _serverClient.CreateEntity(definitionName);
+            var localId =  BaseSimulation.CreateEntity(definitionName);
+
+            if (serverId != localId)
+                throw new Exception("IDs sind nicht gleich");
+
+            return serverId;
+        }
+
+        public int CreateEntity(EntityDefinition defintion)
+        {
+            var serverId = _serverClient.CreateEntity(defintion);
+            var localId =  BaseSimulation.CreateEntity(defintion);
+
+            if (serverId != localId)
+                throw new Exception("IDs sind nicht gleich");
+
+            return serverId;
+        }
+
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            _serverClient.CreatePlayer(input, transform);
-            return BaseSimulation.CreatePlayer(input, transform);
+            var serverId = _serverClient.CreateEntity("Player");
+            var localId = BaseSimulation.CreatePlayer(input, transform);
+
+            if (serverId != localId)
+                throw new Exception("IDs sind nicht gleich");
+
+            return serverId;
         }
 
         public void Update(GameTime gameTime)

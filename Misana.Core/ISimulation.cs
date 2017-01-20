@@ -1,5 +1,6 @@
 ﻿using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Entities;
 using Misana.Core.Maps;
 
 namespace Misana.Core
@@ -12,7 +13,9 @@ namespace Misana.Core
 
         void ChangeMap(Map map);
 
-        int CreatePlayer(PlayerInputComponent input, TransformComponent transform);
+        int CreateEntity(string definitionName);
+        int CreateEntity(EntityDefinition defintion);
+        int CreatePlayer( PlayerInputComponent input, TransformComponent transform);
 
         void Update(GameTime gameTime);
     }

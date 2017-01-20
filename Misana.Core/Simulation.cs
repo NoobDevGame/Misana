@@ -94,59 +94,34 @@ namespace Misana.Core
                 .Commit(Entities);
         }
 
+        public int CreateEntity(string definitionName)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions["Player"];
+            return CreateEntity(definition);
+        }
+
+        public int CreateEntity(EntityDefinition defintion)
+        {
+            var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
+            return entityBuilder.Commit(Entities).Id;
+        }
+
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            EntityDefinition playerDefinition = new EntityDefinition();
-            playerDefinition.Definitions.Add(new HealthDefinition());
-            playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
-            playerDefinition.Definitions.Add(new MotionComponentDefinition());
-            playerDefinition.Definitions.Add(new EntityColliderDefinition());
-            playerDefinition.Definitions.Add(new BlockColliderDefinition());
-            playerDefinition.Definitions.Add(new EntityFlagDefintion());
-            playerDefinition.Definitions.Add(new EntityInteractableDefinition());
+            var playerDefinition = CurrentMap.GlobalEntityDefinitions["Player"];
 
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
-
-
-            var playerWielding = new WieldingComponent();
 
             var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
                 .Add<FacingComponent>()
                 .Add(transform)
                 .Add(input)
-                .Add(playerWielding)
             );
 
+
+
             var playerId = playerBuilder.Commit(Entities).Id;
-
-            var bow = new EntityBuilder()
-                .Add<WieldableComponent>(wieldable => {
-                    wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
-                        Builder = new EntityBuilder()
-                            .Add<EntityColliderComponent>(pcoll => {
-                                pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
-                                //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
-                            })
-                            .Add<CharacterRenderComponent>(),
-                        Radius = 0.3f,
-                        Expiration = 1500,
-                        Speed = 0.25f
-
-                    }) { CoolDown = TimeSpan.FromMilliseconds(250) });
-                })
-                .Add<CharacterRenderComponent>()
-                .Add<WieldedComponent>(x => x.Offset = new Vector2(0.5f,0.5f))
-                .Add<FacingComponent>()
-                .Add<TransformComponent>(
-                    x => {
-                        x.ParentEntityId = playerId;
-                        x.Position = new Vector2(0.3f,0.3f);
-                    })
-                .Commit(Entities);
-
-            playerWielding.RightHandEntityId = bow.Id;
-            playerWielding.TwoHanded = true;
 
             return playerId;
         }

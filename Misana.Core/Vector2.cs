@@ -67,9 +67,21 @@ namespace Misana.Core
             return new Vector2(vec1.X / (float)value, vec1.Y / (float)value);
         }
 
+        public static bool operator ==(Vector2 obj1, Vector2 obj2)
+        {
+            return obj1.X == obj2.X && obj1.Y == obj2.Y;
+        }
+
+        public static bool operator !=(Vector2 obj1, Vector2 obj2)
+        {
+            return !(obj1.X == obj2.X && obj1.Y == obj2.Y);
+        }
+
         public static float Distance(Vector2 position1, Vector2 position2)
         {
             return (position1 - position2).Length();
         }
+
+
     }
 }

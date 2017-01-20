@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Misana.Core.Entities;
+using Misana.Core.Entities.BaseDefinition;
+using Misana.Core.Entities.Events;
 using Misana.Core.Maps.MapSerializers;
 
 namespace Misana.Core.Maps
@@ -14,6 +17,7 @@ namespace Misana.Core.Maps
         {
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not founded", path);
+            Map map;
 
             using (var fs = File.Open(path, FileMode.Open, FileAccess.ReadWrite))
             using (var br = new BinaryReader(fs))
@@ -32,9 +36,24 @@ namespace Misana.Core.Maps
                 else
                     version = new Version(major, minor);
 
-                return MapSerializer.DeserializeMap(version, br);
+                map =  MapSerializer.DeserializeMap(version, br);
 
             }
+            if (!map.GlobalEntityDefinitions.ContainsKey("Player"))
+            {
+                EntityDefinition playerDefinition = new EntityDefinition();
+                playerDefinition.Definitions.Add(new HealthDefinition());
+                playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
+                playerDefinition.Definitions.Add(new MotionComponentDefinition());
+                playerDefinition.Definitions.Add(new EntityColliderDefinition());
+                playerDefinition.Definitions.Add(new BlockColliderDefinition());
+                playerDefinition.Definitions.Add(new EntityFlagDefintion());
+                playerDefinition.Definitions.Add(new EntityInteractableDefinition());
+                playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(5, 3),map.StartArea,0.5f));
+                map.GlobalEntityDefinitions.Add("Player",playerDefinition);
+            }
+
+            return map;
         }
 
         public static Map Load(string name)
