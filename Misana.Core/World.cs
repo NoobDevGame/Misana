@@ -43,8 +43,8 @@ namespace Misana.Core
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
-            systems.Add(new WieldedSystem());
             systems.Add(_wieldedWieldableSystem);
+            systems.Add(new WieldedSystem());
             systems.Add(new ProjectileSystem());
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
@@ -135,22 +135,57 @@ namespace Misana.Core
                         })
                         .Add<CharacterRenderComponent>(),
                       Radius = 0.3f,
-                      Expiration = 1500,
-                      Speed = 0.25f
+                      Expiration = 2000,
+                      Speed = 0.33f
 
-                  }) { CoolDown = TimeSpan.FromMilliseconds(250) });      
+                  }) { CoolDown = TimeSpan.FromMilliseconds(1) });      
                 })
                 .Add<CharacterRenderComponent>()
-                .Add<WieldedComponent>(x => x.Distance = 0.5f)
+                .Add<EntityColliderComponent>()
                 .Add<FacingComponent>()
-                .Add<TransformComponent>(
-                    x => {
-                        x.ParentEntityId = playerId;
-                        x.Position = new Vector2(0.3f,0.3f);
-                    })
-                .Commit(Entities);
+                .Add<WieldingComponent>();
 
-            playerWielding.RightHandEntityId = bow.Id;
+
+
+            var bowBow = bow.Copy();
+            var bowEntity = bow.Add<WieldedComponent>(x => x.Offset = new Vector2(0.3f, 0.3f)).Add<TransformComponent>(
+                x => {
+                    x.ParentEntityId = playerId;
+                    x.Position = new Vector2(-0.3f, 0.3f);
+                })
+            .Commit(Entities);
+
+            var wielder = bowEntity;
+
+            for (int i = 0; i < 5; i++)
+            {
+                var i1 = i;
+                var bowBowEntity = bowBow.Copy()
+                    .Add<WieldedComponent>(x => x.Offset = new Vector2(0.3f * i1, 0.3f))
+                    .Add<TransformComponent>(x => {
+                        x.ParentEntityId = wielder.Id;
+                        x.Position = new Vector2(i1, 0.1f);
+                    }).Commit(Entities);
+
+                var bew = wielder.Get<WieldingComponent>();
+                bew.Use = true;
+                bew.RightHandEntityId = bowBowEntity.Id;
+                wielder = bowBowEntity;
+            }
+
+            //var bowBowEntity = bowBow.Add<TransformComponent>(
+            //    x => {
+            //        x.ParentEntityId = bowEntity.Id;
+            //        x.Position = new Vector2(0.3f, 0.3f);
+            //    }).Commit(Entities);
+
+            //var bew = bowEntity.Get<WieldingComponent>();
+            //bew.Use = true;
+            //bew.RightHandEntityId = bowBowEntity.Id;
+
+
+
+            playerWielding.RightHandEntityId = bowEntity.Id;
             playerWielding.TwoHanded = true;
 
             return playerId;

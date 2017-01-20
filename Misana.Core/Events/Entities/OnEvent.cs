@@ -97,5 +97,7 @@ namespace Misana.Core.Events.Entities
             if(applied)
                 LastExecution = manager.GameTime.TotalTime;
         }
+
+        public abstract OnEvent Copy();
     }
 }

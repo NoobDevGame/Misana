@@ -43,21 +43,39 @@ namespace Misana.Controls
                 Vector2 dimension;
                 Vector2 position;
 
+                if (positionComponent.CurrentArea.Id != area.Id)
+                    continue;
+
                 if (positionComponent.ParentEntityId != 0)
                 {
-                    var parent = Manager.GetEntityById(positionComponent.ParentEntityId);
-                    if (parent == null)
+                    Core.Vector2 parentPos = Core.Vector2.Zero;
+                    int pid = positionComponent.ParentEntityId;
+                    var found = false;
+                    while (true)
                     {
-                        continue;
+                        var parent = Manager.GetEntityById(pid);
+                        if (parent == null)
+                        {
+                            break;
+                        }
+
+                        var pt = parent.Get<TransformComponent>();
+                        if(pt == null)
+                            break;
+
+                        parentPos += pt.Position;
+                        if (pt.ParentEntityId != 0)
+                        {
+                            pid = pt.ParentEntityId;
+                           
+                            continue;
+                        }
+
+                        found = true;
+                        break;
                     }
 
-                    int parentIdx;
-                    if(!IndexMap.TryGetValue(parent, out parentIdx))
-                        continue;
-
-                    var parentPos = R2S[parentIdx];
-
-                    if(parentPos.CurrentArea.Id != area.Id)
+                    if(!found)
                         continue;
 
                     dimension = new Vector2(positionComponent.HalfSize.X, positionComponent.HalfSize.Y);
@@ -65,19 +83,18 @@ namespace Misana.Controls
                     if (positionComponent.ParentEntityId == game.Player.PlayerId)
                     {
 
-                        position = (new Vector2(parentPos.Position.X + positionComponent.Position.X, parentPos.Position.Y + positionComponent.Position.Y) *
+                        position = (new Vector2(parentPos.X + positionComponent.Position.X, parentPos.Y + positionComponent.Position.Y) *
                                     camera.TileSize * camera.Zoom + camera.CameraOffset);
                     }
                     else
                     {
-                        position = (new Vector2(parentPos.Position.X + positionComponent.Position.X, parentPos.Position.Y + positionComponent.Position.Y) *
+                        position = (new Vector2(parentPos.X + positionComponent.Position.X, parentPos.Y + positionComponent.Position.Y) *
                                    camera.TileSize * camera.Zoom + camera.CameraOffset);
                     }
                 }
                 else
                 {
-                    if (positionComponent.CurrentArea.Id != area.Id)
-                        continue;
+                    
 
                     dimension = new Vector2(positionComponent.HalfSize.X, positionComponent.HalfSize.Y);
                     position = (new Vector2(positionComponent.Position.X, positionComponent.Position.Y) * camera.TileSize * camera.Zoom + camera.CameraOffset);

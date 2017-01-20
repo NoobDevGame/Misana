@@ -10,5 +10,7 @@ namespace Misana.Core.Events
 
         public abstract void Serialize(Version version,BinaryWriter bw);
         public abstract void Deserialize(Version version, BinaryReader br);
+
+        public abstract EventCondition Copy();
     }
 }

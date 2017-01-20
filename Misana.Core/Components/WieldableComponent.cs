@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Misana.Core.Ecs;
 using Misana.Core.Events.OnUse;
 
@@ -10,9 +11,7 @@ namespace Misana.Core.Components
 
         public override void CopyTo(WieldableComponent other)
         {
-            other.OnUseEvents = new List<OnUseEvent>(OnUseEvents);
+            other.OnUseEvents = new List<OnUseEvent>(OnUseEvents.Select(e => e.Copy()));
         }
-
-        //public 
     }
 }

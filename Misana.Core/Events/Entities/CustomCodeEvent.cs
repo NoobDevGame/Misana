@@ -29,5 +29,10 @@ namespace Misana.Core.Events.Entities
             _action(manager, target, world);
             return true;
         }
+
+        public override OnEvent Copy()
+        {
+            return new CustomCodeEvent(_action);
+        }
     }
 }

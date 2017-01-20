@@ -59,5 +59,10 @@ namespace Misana.Core.Events.Entities
             Effect.Apply(target, world);
             return true;
         }
+
+        public override OnEvent Copy()
+        {
+            return new ApplyEffectEvent(Effect, Condition);
+        }
     }
 }
