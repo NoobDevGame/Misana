@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Misana.Core.Communication;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Maps;
@@ -14,12 +15,25 @@ namespace Misana.Core
 
         public EntityManager Entities => BaseSimulation.Entities;
 
-        private ISimulation _serverClient;
+        private DummyServer _serverClient;
 
-        public SimulationClient(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
+        public SimulationClient(List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
         {
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
             _serverClient = new DummyServer();
+
+            List<BaseSystem> beforSystems = new List<BaseSystem>();
+            if (baseBeforSystems != null)
+                beforSystems.AddRange(baseBeforSystems);
+
+            List<BaseSystem> afterSystems = new List<BaseSystem>();
+            afterSystems.Add(new ClientPositionSystem(_serverClient));
+            if (baseAfterSystems != null)
+                afterSystems.AddRange(baseAfterSystems);
+
+
+
+            BaseSimulation = new Simulation(beforSystems,afterSystems);
+
         }
 
         public void ChangeMap(Map map)

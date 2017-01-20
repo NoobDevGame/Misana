@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Maps;
+using Misana.Network;
 
 namespace Misana.Core.Communication
 {
-    public class DummyServer : ISimulation
+    public class DummyServer : ISimulation , INetworkClient
     {
         public ISimulation BaseSimulation { get; private set; }
 
@@ -15,7 +17,12 @@ namespace Misana.Core.Communication
 
         public DummyServer()
         {
-            BaseSimulation = new Simulation(null,null);
+            List<BaseSystem> beforSystems = new List<BaseSystem>();
+            beforSystems.Add(new ServerEntityPositionSystem(this));
+
+            List<BaseSystem> afterSystems = new List<BaseSystem>();
+
+            BaseSimulation = new Simulation(beforSystems,null);
         }
 
         public void ChangeMap(Map map)
@@ -31,6 +38,11 @@ namespace Misana.Core.Communication
         public void Update(GameTime gameTime)
         {
             BaseSimulation.Update(gameTime);
+        }
+
+        public void SendMessageFast(NetworkMessage message)
+        {
+
         }
     }
 }
