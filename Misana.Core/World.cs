@@ -30,7 +30,7 @@ namespace Misana.Core
 
         public World(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
+            BaseSimulation = new SimulationClient(beforSystems,afterSystems);
         }
 
         public void ChangeMap(Map map)
