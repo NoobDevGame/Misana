@@ -6,13 +6,14 @@ namespace Misana.Core.Components
     {
         public Vector2 ParentFacing;
         public Vector2 ParentPosition;
-        public float Distance;
+        public Vector2 Offset;
         public bool Use;
 
         public override void CopyTo(WieldedComponent other)
         {
             other.ParentFacing = ParentFacing;
-            other.Distance = Distance;
+            other.Offset = Offset;
+            other.ParentPosition = ParentPosition;
         }
     }
 }

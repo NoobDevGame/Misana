@@ -37,5 +37,10 @@ namespace Misana.Core.Events.Entities
             manager.Change(a);
             return true;
         }
+
+        public override OnEvent Copy()
+        {
+            return new AddComponentEvent<T>(Template);
+        }
     }
 }

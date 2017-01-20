@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Events.Entities
@@ -78,6 +79,11 @@ namespace Misana.Core.Events.Entities
             }
 
             return applied;
+        }
+
+        public override OnEvent Copy()
+        {
+            return new MultiEvent(_condition?.Copy(), _events.Select(e => e.Copy()).ToArray());
         }
     }
 }

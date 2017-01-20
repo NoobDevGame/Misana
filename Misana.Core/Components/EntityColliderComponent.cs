@@ -31,7 +31,7 @@ namespace Misana.Core.Components
             other.Mass = Mass;
             other.Fixed = Fixed;
             other.Blocked = Blocked;
-            other.OnCollisionEvents = new List<OnEvent>(OnCollisionEvents); //TODO: :(
+            other.OnCollisionEvents = new List<OnEvent>(OnCollisionEvents.Select(e => e.Copy())); //TODO: :(
         }
     }
 

@@ -32,6 +32,8 @@ namespace Misana.Core.Events.OnUse
                 LastExecution = manager.GameTime.TotalTime;
         }
 
+        public abstract OnUseEvent Copy();
+
         protected abstract bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, World world);
     }
 
@@ -48,6 +50,11 @@ namespace Misana.Core.Events.OnUse
         {
             _eff.Apply(self, world);
             return true;
+        }
+
+        public override OnUseEvent Copy()
+        {
+            return new ApplyEffectOnUseEvent(_eff) { CoolDown = CoolDown };
         }
     }
 }

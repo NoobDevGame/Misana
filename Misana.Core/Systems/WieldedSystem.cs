@@ -21,17 +21,39 @@ namespace Misana.Core.Systems
             if (parentTransform != null)
             {
                 r2.CurrentArea = parentTransform.CurrentArea;
-                r1.ParentPosition = parentTransform.Position;
+
+                if (parentTransform.ParentEntityId != 0)
+                {
+                    var pw = parent.Get<WieldedComponent>();
+                    if(pw != null)
+                        r1.ParentPosition = parentTransform.Position + pw.ParentPosition;
+                    else
+                    {
+                        r1.ParentPosition = parentTransform.Position;
+                    }
+                }
+                else
+                {
+                    r1.ParentPosition = parentTransform.Position;
+                }
+                
             }
 
             if (parentTransform != null && parentFacing != null)
             {
                 r3.Facing = parentFacing.Facing;
-                r2.Position = r3.Facing * r1.Distance;
+                r2.Position = r3.Facing * r1.Offset;
             }
 
             var parentWielding = parent.Get<WieldingComponent>();
             r1.Use = parentWielding != null && parentWielding.Use;
+
+            var w = e.Get<WieldingComponent>();
+            if (w != null)
+            {
+                w.Use = r1.Use;
+            }
+
         }
     }
 }
