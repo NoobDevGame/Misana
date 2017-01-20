@@ -12,7 +12,7 @@ namespace Misana.Core.Effects.BaseEffects
         public float Radius;
         public float Expiration;
 
-        public override void Apply(Entity entity, World world)
+        public override void Apply(Entity entity, ISimulation simulation)
         {
             Vector2 direction;
 
@@ -50,7 +50,7 @@ namespace Misana.Core.Effects.BaseEffects
             
 
             var builder = Builder.Copy()
-                .Add<MotionComponent>(x => x.Move = move * world.Entities.GameTime.ElapsedTime.TotalSeconds)
+                .Add<MotionComponent>(x => x.Move = move * simulation.Entities.GameTime.ElapsedTime.TotalSeconds)
                 .Add<ProjectileComponent>(x => x.Move = move)
                 .Add<TransformComponent>(t => {
                     t.CurrentArea = transform.CurrentArea;

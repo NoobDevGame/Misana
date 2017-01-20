@@ -19,7 +19,7 @@ namespace Misana.Core.Effects.BaseEffects
             Damage = damage;
         }
 
-        public override void Apply(Entity entity, World world)
+        public override void Apply(Entity entity, ISimulation simulation)
         {
             var healthComponet = entity.Get<HealthComponent>();
 

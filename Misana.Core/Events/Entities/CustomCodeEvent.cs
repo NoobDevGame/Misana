@@ -6,9 +6,9 @@ namespace Misana.Core.Events.Entities
 {
     public class CustomCodeEvent : OnEvent
     {
-        private readonly Action<EntityManager, Entity, World> _action;
+        private readonly Action<EntityManager, Entity, ISimulation> _action;
 
-        public CustomCodeEvent(Action<EntityManager, Entity, World> action)
+        public CustomCodeEvent(Action<EntityManager, Entity, ISimulation> action)
         {
             _action = action;
         }
@@ -24,7 +24,7 @@ namespace Misana.Core.Events.Entities
             
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             _action(manager, target, world);
             return true;

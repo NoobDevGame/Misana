@@ -26,7 +26,7 @@ namespace Misana.Core.Events.Conditions
             Not = not;
         }
 
-        public override bool Test(EntityManager manager, Entity self, Entity other, World world)
+        public override bool Test(EntityManager manager, Entity self, Entity other, ISimulation simulation)
         {
             var flagComponent = other.Get<EntityFlagComponent>();
 

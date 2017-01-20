@@ -13,16 +13,16 @@ namespace Misana.Core.Events.Entities
         protected TimeSpan LastExecution;
         protected Dictionary<int, TimeSpan> RecentExecutions = new Dictionary<int, TimeSpan>();
 
-        protected virtual bool CanApply(EntityManager manager, Ecs.Entity target, World world)
+        protected virtual bool CanApply(EntityManager manager, Ecs.Entity target, ISimulation simulation)
         {
             return true;
         }
 
         private readonly object _lockObj = new object();
 
-        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, World world);
+        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, ISimulation simulation);
 
-        public virtual void Apply(EntityManager manager, Ecs.Entity self, Ecs.Entity other, World world)
+        public virtual void Apply(EntityManager manager, Ecs.Entity self, Ecs.Entity other, ISimulation simulation)
         {
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
             {
@@ -34,7 +34,7 @@ namespace Misana.Core.Events.Entities
 
             if (ApplyTo == ApplicableTo.Self || ApplyTo == ApplicableTo.Both)
             {
-                if (CanApply(manager, self, world))
+                if (CanApply(manager, self, simulation))
                 {
                     var apply = true;
                     if (Debounce != TimeSpan.Zero)
@@ -58,13 +58,13 @@ namespace Misana.Core.Events.Entities
                     }
 
                     if(apply)
-                        applied = ApplyToEntity(manager, true, self, world);
+                        applied = ApplyToEntity(manager, true, self, simulation);
                 }
             }
 
             if (ApplyTo == ApplicableTo.Other || ApplyTo == ApplicableTo.Both)
             {
-                if (CanApply(manager, other, world))
+                if (CanApply(manager, other, simulation))
                 {
                     var apply = true;
                     if (Debounce != TimeSpan.Zero)
@@ -89,7 +89,7 @@ namespace Misana.Core.Events.Entities
 
                     if (apply)
                     {
-                        applied = ApplyToEntity(manager, false, other, world) || applied;
+                        applied = ApplyToEntity(manager, false, other, simulation) || applied;
                     }
                 }
             }

@@ -38,7 +38,7 @@ namespace Misana.Components
             List<BaseSystem> renderSystems = new List<BaseSystem>();
             renderSystems.Add(CharacterRender);
 
-            World = new World(renderSystems);
+            World = new World(renderSystems,null);
             World.ChangeMap(m);
 
             Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Transform);
