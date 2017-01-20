@@ -27,7 +27,7 @@ namespace Misana.Core.Effects.Conditions
             Not = not;
         }
 
-        public override bool Test(Entity entity, World world)
+        public override bool Test(Entity entity, ISimulation simulation)
         {
             var flagComponent = entity.Get<EntityFlagComponent>();
 

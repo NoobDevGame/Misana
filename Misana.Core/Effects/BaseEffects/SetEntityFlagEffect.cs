@@ -21,7 +21,7 @@ namespace Misana.Core.Effects.BaseEffects
             Name = name;
         }
 
-        public override void Apply(Entity entity, World world)
+        public override void Apply(Entity entity, ISimulation simulation)
         {
             var flagComponent = entity.Get<EntityFlagComponent>();
 

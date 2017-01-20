@@ -26,13 +26,13 @@ namespace Misana.Core.Effects.BaseEffects
             AreaId = areaID;
         }
 
-        public override void Apply(Entity entity, World world)
+        public override void Apply(Entity entity, ISimulation simulation)
         {
             var positionComponent = entity.Get<TransformComponent>();
 
             if (positionComponent != null)
             {
-                var area = world.CurrentMap.GetAreaById(AreaId);
+                var area = simulation.CurrentMap.GetAreaById(AreaId);
                 positionComponent.CurrentArea = area;
                 positionComponent.Position = new Vector2(X,Y);
                 if (CenterOfBlock)
