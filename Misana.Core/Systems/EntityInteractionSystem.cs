@@ -19,21 +19,21 @@ namespace Misana.Core.Systems
             }
         }
 
-        private World _world;
+        private ISimulation _world;
         List<int>[][] _areas;
         HashSet<int>[] _occupiedTilesPerArea;
         HashSet<CollisionPair>[] _collisionPairsPerArea;
 
-        public void ChangeWorld(World world)
+        public void ChangeSimulation(ISimulation simulation)
         {
-            _world = world;
-            _areas = new List<int>[world.CurrentMap.Areas.Count][];
-            _occupiedTilesPerArea = new HashSet<int>[world.CurrentMap.Areas.Count];
-            _collisionPairsPerArea = new HashSet<CollisionPair>[world.CurrentMap.Areas.Count];
+            _world = simulation;
+            _areas = new List<int>[simulation.CurrentMap.Areas.Count][];
+            _occupiedTilesPerArea = new HashSet<int>[simulation.CurrentMap.Areas.Count];
+            _collisionPairsPerArea = new HashSet<CollisionPair>[simulation.CurrentMap.Areas.Count];
 
-            for (int i = 0; i < world.CurrentMap.Areas.Count; i++)
+            for (int i = 0; i < simulation.CurrentMap.Areas.Count; i++)
             {
-                var area = world.CurrentMap.Areas[i];
+                var area = simulation.CurrentMap.Areas[i];
 
                 var n = area.Width * area.Height;
                 _areas[i] = new List<int>[n];

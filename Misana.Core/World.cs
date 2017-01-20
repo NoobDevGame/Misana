@@ -20,145 +20,32 @@ using Misana.Core.Systems.StatusSystem;
 
 namespace Misana.Core
 {
-    public class World
+    public class World : ISimulation
     {
-        public int Simulation { get; private set; }
+        public ISimulation BaseSimulation { get; private set; }
 
-        public Map CurrentMap { get; private set; }
+        public Map CurrentMap => BaseSimulation.CurrentMap;
 
-        public EntityManager Entities { get; }
+        public EntityManager Entities => BaseSimulation.Entities;
 
-        private EntityCollidingMoverSystem _collidingMoverSystem;
-        private EntityInteractionSystem _interactionSystem;
-        private WieldedWieldableSystem _wieldedWieldableSystem;
-
-        public World(List<BaseSystem> afterSystems)
+        public World(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
-            _collidingMoverSystem = new EntityCollidingMoverSystem();
-            _wieldedWieldableSystem = new WieldedWieldableSystem();
-            _interactionSystem = new EntityInteractionSystem();
-
-            List<BaseSystem> systems = new List<BaseSystem>();
-            systems.Add(new InputSystem());
-            systems.Add(_collidingMoverSystem);
-            systems.Add(_interactionSystem);
-            systems.Add(new BlockCollidingMoverSystem());
-            systems.Add(new WieldedSystem());
-            systems.Add(_wieldedWieldableSystem);
-            systems.Add(new ProjectileSystem());
-            systems.Add(new MoverSystem());
-            systems.Add(new TimeDamageSystem());
-            systems.Add(new ExpirationSystem());
-            systems.AddRange(afterSystems);
-
-
-            Entities = EntityManager.Create("LocalWorld",systems);
+            BaseSimulation = new Simulation(beforSystems,afterSystems);
         }
 
-        private Random Random = new Random();
-        private static int foo;
         public void ChangeMap(Map map)
         {
-            CurrentMap = map;
-
-            Entities.Clear();
-            _collidingMoverSystem.ChangeWorld(this);
-            _interactionSystem.ChangeWorld(this);
-            _wieldedWieldableSystem.ChangeWorld(this);
-
-            foreach (var area in CurrentMap.Areas)
-            {
-                foreach (var entity in area.Entities)
-                {
-                    EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition).Commit(Entities);
-                }
-            }
-
-            EntityDefinition testDefinition = new EntityDefinition("DamageDealer");
-            testDefinition.Definitions.Add(new TransformDefinition(new Vector2(2.5f,2.5f),CurrentMap.StartArea, 0.5f));
-            
-            testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
-
-            var colliderDef = new EntityColliderDefinition();
-            colliderDef.OnCollisionEvents.Add(new MultiEvent(new Events.Conditions.FlagCondition("DamageDealer_Flag",true),
-                new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other},
-                new ApplyEffectEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other },
-                new ApplyEffectEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other }) {ApplyTo = ApplicableTo.Both,Debounce = TimeSpan.FromMilliseconds(250)}
-            );
-            testDefinition.Definitions.Add(colliderDef);
-
-            var interactDef = new EntityInteractableDefinition();
-            interactDef.OnInteractEvents.Add(new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
-            testDefinition.Definitions.Add(interactDef);
-
-
-
-            EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition)
-                .Commit(Entities);
-
-
+            BaseSimulation.ChangeMap(map);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            EntityDefinition playerDefinition = new EntityDefinition();
-            playerDefinition.Definitions.Add(new HealthDefinition());
-            playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
-            playerDefinition.Definitions.Add(new MotionComponentDefinition());
-            playerDefinition.Definitions.Add(new EntityColliderDefinition());
-            playerDefinition.Definitions.Add(new BlockColliderDefinition());
-            playerDefinition.Definitions.Add(new EntityFlagDefintion());
-            playerDefinition.Definitions.Add(new EntityInteractableDefinition());
-
-            transform.CurrentArea = CurrentMap.StartArea;
-            transform.Position = new Vector2(5, 3);
-
-
-            var playerWielding = new WieldingComponent();
-
-            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder()
-                .Add<FacingComponent>()
-                .Add(transform)
-                .Add(input)
-                .Add(playerWielding)
-                );
-
-            var playerId = playerBuilder.Commit(Entities).Id;
-
-            var bow = new EntityBuilder()
-                .Add<WieldableComponent>(wieldable => {
-                    wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
-                      Builder = new EntityBuilder()
-                        .Add<EntityColliderComponent>(pcoll => { 
-                            pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
-                            //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
-                        })
-                        .Add<CharacterRenderComponent>(),
-                      Radius = 0.3f,
-                      Expiration = 1500,
-                      Speed = 0.25f
-
-                  }) { CoolDown = TimeSpan.FromMilliseconds(250) });      
-                })
-                .Add<CharacterRenderComponent>()
-                .Add<WieldedComponent>(x => x.Distance = 0.5f)
-                .Add<FacingComponent>()
-                .Add<TransformComponent>(
-                    x => {
-                        x.ParentEntityId = playerId;
-                        x.Position = new Vector2(0.3f,0.3f);
-                    })
-                .Commit(Entities);
-
-            playerWielding.RightHandEntityId = bow.Id;
-            playerWielding.TwoHanded = true;
-
-            return playerId;
+            return BaseSimulation.CreatePlayer(input, transform);
         }
 
         public void Update(GameTime gameTime)
         {
-            Entities.Update(gameTime);
+            BaseSimulation.Update(gameTime);
         }
     }
 }

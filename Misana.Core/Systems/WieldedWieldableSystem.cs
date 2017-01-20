@@ -5,11 +5,11 @@ namespace Misana.Core.Systems
 {
     public class WieldedWieldableSystem : BaseSystemR2<WieldedComponent, WieldableComponent>
     {
-        private World _world;
+        private ISimulation _simulation;
 
-        public void ChangeWorld(World world)
+        public void ChangeSimulation(ISimulation simulation)
         {
-            _world = world;
+            _simulation = simulation;
         }
 
         protected override void Update(Entity e, WieldedComponent r1, WieldableComponent r2)
@@ -18,7 +18,7 @@ namespace Misana.Core.Systems
                 return;
 
             foreach(var ev in r2.OnUseEvents)
-                ev.Apply(Manager, e, r1.ParentFacing, _world);
+                ev.Apply(Manager, e, r1.ParentFacing, _simulation);
         }
     }
 }

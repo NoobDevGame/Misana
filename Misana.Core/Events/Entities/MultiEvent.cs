@@ -55,15 +55,15 @@ namespace Misana.Core.Events.Entities
             }
         }
 
-        public override void Apply(EntityManager manager, Entity self, Entity other, World world)
+        public override void Apply(EntityManager manager, Entity self, Entity other, ISimulation simulation)
         {
-            if (!_condition.Test(manager, self, other, world))
+            if (!_condition.Test(manager, self, other, simulation))
                 return;
 
-            base.Apply(manager, self, other, world);
+            base.Apply(manager, self, other, simulation);
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             var applied = false;
 

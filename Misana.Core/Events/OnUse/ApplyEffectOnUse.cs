@@ -10,7 +10,7 @@ namespace Misana.Core.Events.OnUse
         public TimeSpan CoolDown;
         protected TimeSpan LastExecution;
 
-        protected virtual bool CanApply(EntityManager manager, Entity target, World world)
+        protected virtual bool CanApply(EntityManager manager, Entity target, ISimulation simulation)
         {
             return true;
         }
@@ -18,7 +18,7 @@ namespace Misana.Core.Events.OnUse
         private readonly object _lockObj = new object();
 
 
-        public virtual void Apply(EntityManager manager, Entity self, Vector2 target, World world)
+        public virtual void Apply(EntityManager manager, Entity self, Vector2 target, ISimulation simulation)
         {
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
             {
@@ -26,13 +26,13 @@ namespace Misana.Core.Events.OnUse
                     return;
             }
 
-            var applied = ApplyToTarget(manager, self, target, world);
+            var applied = ApplyToTarget(manager, self, target, simulation);
 
             if(applied)
                 LastExecution = manager.GameTime.TotalTime;
         }
 
-        protected abstract bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, World world);
+        protected abstract bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, ISimulation simulation);
     }
 
     public class ApplyEffectOnUseEvent : OnUseEvent
@@ -44,9 +44,9 @@ namespace Misana.Core.Events.OnUse
             _eff = eff;
         }
 
-        protected override bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, World world)
+        protected override bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, ISimulation simulation)
         {
-            _eff.Apply(self, world);
+            _eff.Apply(self, simulation);
             return true;
         }
     }

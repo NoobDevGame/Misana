@@ -49,14 +49,14 @@ namespace Misana.Core.Events.Entities
             effect.Deserialize(version, br);
         }
 
-        protected override bool CanApply(EntityManager manager, Entity target, World world)
+        protected override bool CanApply(EntityManager manager, Entity target, ISimulation simulation)
         {
-            return Condition?.Test(target, world) ?? true;
+            return Condition?.Test(target, simulation) ?? true;
         }
 
-        internal override bool ApplyToEntity(EntityManager manager,bool targetIsSelf,  Entity target, World world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation simulation)
         {
-            Effect.Apply(target, world);
+            Effect.Apply(target, simulation);
             return true;
         }
     }
