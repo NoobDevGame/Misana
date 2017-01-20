@@ -55,6 +55,7 @@
             this.button_addLayer.Name = "button_addLayer";
             this.button_addLayer.Size = new System.Drawing.Size(64, 22);
             this.button_addLayer.Text = "Add Layer";
+            this.button_addLayer.Click += new System.EventHandler(this.button_addLayer_Click);
             // 
             // listView
             // 

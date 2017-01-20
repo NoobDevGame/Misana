@@ -23,23 +23,27 @@ namespace Misana.Editor.Forms.MDI
 
         public int SelectedLayer { get; private set; }
 
+        private Area area;
+
         public LayerView(MainForm mainForm) : base()
         {
             this.mainForm = mainForm;
             InitializeComponent();
 
-            mainForm.EventBus.Subscribe<AreaSelectionEvent>(AreaSelectionEvent);
+            mainForm.EventBus.Subscribe<AreaSelectionEvent>(t => UpdateArea(t.Area));
 
             listView.HideSelection = false;
 
             mainForm.VSToolStripExtender.SetStyle(toolStrip1, VisualStudioToolStripExtender.VsVersion.Vs2015, mainForm.Theme);
+
+            mainForm.EventBus.Subscribe<AreaChangedEvent>(t => UpdateArea(t.Area));
         }
 
-        public void AreaSelectionEvent(AreaSelectionEvent ev)
+        public void UpdateArea(Area a)
         {
             listView.Items.Clear();
 
-            foreach(Layer l in ev.Area.Layers)
+            foreach (Layer l in a.Layers)
             {
                 ListViewItem lvi = new ListViewItem(l.Id.ToString());
 
@@ -50,6 +54,8 @@ namespace Misana.Editor.Forms.MDI
                 lvi.Checked = true;
 
                 listView.Items.Add(lvi);
+
+                area = a;
             }
         }
 
@@ -73,7 +79,23 @@ namespace Misana.Editor.Forms.MDI
 
             mainForm.EventBus.Publish(new SelectedLayerChangedEvent((int)listView.SelectedItems[0].Tag));
 
+            
+        }
 
+        private void button_addLayer_Click(object sender, EventArgs e)
+        {
+            var maxId = 0;
+            if(area.Layers.Count > 0)
+                maxId = area.Layers.Max(t => t.Id);
+
+            var tx = new Tile[area.Width * area.Height];
+
+            for (int i = 0; i < tx.Length; i++)
+                tx[i] = new Tile(0, 0, false);
+            Layer l = new Layer(maxId + 1, "Layer " + (maxId + 1),tx );
+            area.Layers.Add(l);
+
+            mainForm.EventBus.Publish(new AreaChangedEvent(area));
         }
     }
 }

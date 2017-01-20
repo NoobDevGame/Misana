@@ -57,5 +57,13 @@ namespace Misana.Editor.Forms.MDI
         {
             areaRenderControl.RenderSpawnpoint = button_toggle_spawnpoint.Checked;
         }
+
+        private void button_toggle_spawnpoint_Click(object sender, EventArgs e)
+        {
+            if(IsSingleTileSelected)
+            {
+                areaRenderControl.Area.SpawnPoint = new Vector2(SelectedTiles[0].X + 0.5f, SelectedTiles[0].Y + 0.5f);
+            }
+        }
     }
 }
