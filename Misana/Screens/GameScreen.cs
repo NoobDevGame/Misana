@@ -24,24 +24,6 @@ namespace Misana.Screens
             renderControl.HorizontalAlignment = HorizontalAlignment.Stretch;
             Controls.Add(renderControl);
 
-
-
-            Panel timePanel = new Panel(manager);
-            timePanel.HorizontalAlignment = HorizontalAlignment.Left;
-            timePanel.VerticalAlignment = VerticalAlignment.Top;
-            timePanel.Background = NineTileBrush.FromSingleTexture(manager.Content.Load<Texture2D>("ui/panels/green_panel"), 8, 8);
-            timePanel.Padding = Border.All(5);
-            timePanel.Margin = Border.All(5);
-            Controls.Add(timePanel);
-
-            Panel scorePanel = new Panel(manager);
-            scorePanel.HorizontalAlignment = HorizontalAlignment.Right;
-            scorePanel.VerticalAlignment = VerticalAlignment.Top;
-            scorePanel.Background = NineTileBrush.FromSingleTexture(manager.Content.Load<Texture2D>("ui/panels/green_panel"), 8, 8);
-            scorePanel.Padding = Border.All(5);
-            scorePanel.Margin = Border.All(5);
-            Controls.Add(scorePanel);
-
         }
 
         protected override void OnKeyDown(KeyEventArgs args)
