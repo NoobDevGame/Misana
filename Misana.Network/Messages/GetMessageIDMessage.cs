@@ -1,22 +1,37 @@
-﻿namespace Misana.Network.Messages
+﻿using System;
+using System.Runtime.InteropServices;
+
+namespace Misana.Network.Messages
 {
     internal struct GetMessageIDMessageRequest
     {
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
         public readonly string TypeName;
 
         public GetMessageIDMessageRequest(string typeName)
         {
             TypeName = typeName;
         }
+
+        public GetMessageIDMessageRequest(Type type)
+        {
+            TypeName = type.AssemblyQualifiedName;
+        }
     }
 
     internal struct GetMessageIDMessageResponse
     {
-        public readonly int typeId;
+        public readonly int TypeId;
+        public readonly bool Result;
 
-        public GetMessageIDMessageResponse(int id)
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
+        public readonly string TypeName;
+
+        public GetMessageIDMessageResponse(bool result ,int id,string typeName)
         {
-            typeId = id;
+            Result = result;
+            TypeId = id;
+            TypeName = typeName;
         }
     }
 }

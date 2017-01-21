@@ -3,12 +3,12 @@ using System.Threading;
 
 namespace Misana.Network
 {
-    public abstract class MessageIdPair
+    public class MessageIdPair
     {
         public readonly int SystemId;
         public readonly Type MessageType;
 
-        protected MessageIdPair(int systemId, Type messageType)
+        public MessageIdPair(int systemId, Type messageType)
         {
             SystemId = systemId;
             MessageType = messageType;

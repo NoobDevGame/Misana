@@ -1,0 +1,31 @@
+﻿using System;
+
+namespace Misana.Network
+{
+    internal class HandleList
+    {
+        private MessageHandle[] handles = MessageHandle.CreateHandleArray();
+
+        public bool ExistHandle(int index)
+        {
+            return !(index >= handles.Length || handles[index] == null);
+        }
+
+        public MessageHandle GetHandle(int index)
+        {
+            return handles[index];
+        }
+
+        public void CreateHandle(Type type)
+        {
+            var id = MessageHandle.GetId(type);
+            if (id.HasValue)
+            {
+                if (id >= handles.Length)
+                    Array.Resize(ref handles,id.Value+1);
+
+                handles[id.Value] = new VirtualMessageHandle(type,id.Value);
+            }
+        }
+    }
+}
