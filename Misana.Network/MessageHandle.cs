@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -7,7 +8,36 @@ namespace Misana.Network
 {
     internal abstract class MessageHandle
     {
-        protected static int maxIndex = 0;
+        private static int maxIndex = 0;
+
+        private static MessageIdPair[] SystemPairs;
+        private static MessageIdPair[] CommunictaionPairs;
+
+        private static readonly int headerSize = Marshal.SizeOf(typeof(MessageHeader));
+
+        static MessageHandle()
+        {
+            SystemPairs = new MessageIdPair[ushort.MaxValue+1];
+            CommunictaionPairs = new MessageIdPair[ushort.MaxValue+1];
+        }
+
+        protected static int RegisterType<T>()
+            where T : struct
+        {
+            var type = typeof(T);
+
+            var attribute = type.GetCustomAttribute<MessageDefinitionAttribute>();
+
+            if (attribute == null)
+                throw new ArgumentException($"{nameof(MessageDefinitionAttribute)} is not implemented");
+
+            var systemId =  Interlocked.Increment(ref maxIndex);
+
+            SystemPairs[systemId] = CommunictaionPairs[attribute.CommunictaionId] = new MessageIdPair<T>(systemId,attribute.CommunictaionId);
+
+
+            return systemId;
+        }
 
         public byte[] Serialize<T>(MessageHeader header,ref T data)
             where T : struct
@@ -74,7 +104,7 @@ namespace Misana.Network
 
         static MessageHandle()
         {
-            Index = Interlocked.Increment(ref maxIndex);
+            Index = RegisterType<T>();
         }
 
         public byte[] Serialize(MessageHeader header,ref T data) => Serialize<T>(header, ref data);

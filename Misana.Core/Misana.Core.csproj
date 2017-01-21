@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Communication\DummyServer.cs" />
+    <Compile Include="Communication\MessageDataType.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
