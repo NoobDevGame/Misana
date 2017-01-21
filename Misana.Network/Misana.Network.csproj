@@ -41,7 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HandleList.cs" />
+    <Compile Include="MessageHandleList.cs" />
     <Compile Include="INetworkClient.cs" />
     <Compile Include="InternNetworkClient.cs" />
     <Compile Include="MessageDefinitionAttribute.cs" />
@@ -52,9 +52,6 @@
     <Compile Include="MessageIdPair.cs" />
     <Compile Include="MessageInformation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Messages" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

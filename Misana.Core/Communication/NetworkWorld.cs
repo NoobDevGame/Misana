@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Misana.Core.Communication.Messages;
 using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -27,6 +28,12 @@ namespace Misana.Core.Communication
             afterSystems.Add(new SendEntityPositionSystem(OuterClient));
 
             BaseSimulation = new Simulation(beforSystems,afterSystems);
+
+            OuterClient.RegisterOnMessageCallback<CreateEntityMessage>(OnCreateEntity);
+        }
+
+        private void OnCreateEntity(CreateEntityMessage message)
+        {
         }
 
         public void ChangeMap(Map map)
@@ -34,14 +41,16 @@ namespace Misana.Core.Communication
             BaseSimulation.ChangeMap(map);
         }
 
-        public int CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName)
         {
-            return BaseSimulation.CreateEntity(definitionName);
+            CreateEntityMessage message = new CreateEntityMessage();
+
+            SendMessage(ref message);
         }
 
-        public int CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition defintion)
         {
-            return BaseSimulation.CreateEntity(defintion);
+            CreateEntity(defintion.Name);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)

@@ -15,8 +15,8 @@ namespace Misana.Core
 
         void ChangeMap(Map map);
 
-        int CreateEntity(string definitionName);
-        int CreateEntity(EntityDefinition defintion);
+        void CreateEntity(string definitionName);
+        void CreateEntity(EntityDefinition defintion);
         int CreatePlayer( PlayerInputComponent input, TransformComponent transform);
 
         void Update(GameTime gameTime);

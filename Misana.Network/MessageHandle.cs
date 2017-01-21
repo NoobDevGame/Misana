@@ -108,6 +108,8 @@ namespace Misana.Network
         private Queue<T> messages = new Queue<T>();
         private object messagesLockObject = new object();
 
+        private Action<T> _callback;
+
         public MessageHandle()
             : base(typeof(T))
         {
@@ -157,6 +159,12 @@ namespace Misana.Network
 
         public void SetMessage(T message)
         {
+            if (_callback != null)
+            {
+                _callback.Invoke(message);
+                return;
+            }
+
             lock (messagesLockObject)
             {
                 messages.Enqueue(message);
@@ -166,6 +174,12 @@ namespace Misana.Network
         public override void SetMessage(object value)
         {
             SetMessage((T)value);
+        }
+
+
+        public void RegisterCallback(Action<T> callback)
+        {
+            _callback += callback;
         }
     }
 }

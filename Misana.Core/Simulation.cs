@@ -98,16 +98,16 @@ namespace Misana.Core
                 .Commit(Entities);
         }
 
-        public int CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName)
         {
             var definition = CurrentMap.GlobalEntityDefinitions["Player"];
-            return CreateEntity(definition);
+            CreateEntity(definition);
         }
 
-        public int CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition defintion)
         {
             var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
-            return entityBuilder.Commit(Entities).Id;
+            entityBuilder.Commit(Entities);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)

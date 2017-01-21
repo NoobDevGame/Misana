@@ -47,37 +47,24 @@ namespace Misana.Core
             _serverClient.ChangeMap(map);
         }
 
-        public int CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName)
         {
-            var serverId = _serverClient.CreateEntity(definitionName);
-            var localId =  BaseSimulation.CreateEntity(definitionName);
-
-            if (serverId != localId)
-                throw new Exception("IDs sind nicht gleich");
-
-            return serverId;
+            _serverClient.CreateEntity(definitionName);
+            BaseSimulation.CreateEntity(definitionName);
         }
 
-        public int CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition defintion)
         {
-            var serverId = _serverClient.CreateEntity(defintion);
-            var localId =  BaseSimulation.CreateEntity(defintion);
-
-            if (serverId != localId)
-                throw new Exception("IDs sind nicht gleich");
-
-            return serverId;
+            _serverClient.CreateEntity(defintion);
+            BaseSimulation.CreateEntity(defintion);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            var serverId = _serverClient.CreateEntity("Player");
+            _serverClient.CreateEntity("Player");
             var localId = BaseSimulation.CreatePlayer(input, transform);
 
-            if (serverId != localId)
-                throw new Exception("IDs sind nicht gleich");
-
-            return serverId;
+            return localId;
         }
 
         public void Update(GameTime gameTime)

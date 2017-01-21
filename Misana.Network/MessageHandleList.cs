@@ -2,7 +2,7 @@
 
 namespace Misana.Network
 {
-    internal class HandleList
+    internal class MessageHandleList
     {
         private MessageHandle[] handles = MessageHandleManager.CreateHandleArray();
 
@@ -14,6 +14,12 @@ namespace Misana.Network
         public MessageHandle GetHandle(int index)
         {
             return handles[index];
+        }
+
+        public MessageHandle<T> GetHandle<T>()
+            where T : struct
+        {
+            return (MessageHandle<T>) GetHandle(MessageHandle<T>.Index.Value);
         }
 
         public void CreateHandle(Type type)

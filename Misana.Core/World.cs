@@ -40,14 +40,14 @@ namespace Misana.Core
             BaseSimulation.ChangeMap(map);
         }
 
-        public int CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName)
         {
-            return BaseSimulation.CreateEntity(definitionName);
+            BaseSimulation.CreateEntity(definitionName);
         }
 
-        public int CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition defintion)
         {
-            return BaseSimulation.CreateEntity(defintion);
+            BaseSimulation.CreateEntity(defintion);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)

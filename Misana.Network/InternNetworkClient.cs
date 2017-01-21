@@ -7,9 +7,7 @@ namespace Misana.Network
     {
         public InternNetworkClient OuterClient { get; private set; }
 
-        private HandleList handles = new HandleList();
-
-        Dictionary<Type,Action<object>> callbacks = new Dictionary<Type, Action<object>>();
+        private MessageHandleList _messageHandles = new MessageHandleList();
 
         private string name;
 
@@ -17,65 +15,34 @@ namespace Misana.Network
         {
             name = "client";
             OuterClient = new InternNetworkClient(this);
-            Initialize();
         }
 
         private InternNetworkClient(InternNetworkClient outerClient)
         {
             name = "server";
             OuterClient = outerClient;
-            Initialize();
         }
-
-        private void Initialize()
-        {
-
-        }
-
-
 
         private void ReceiveData(byte[] data)
         {
             var header = MessageHandle.DeserializeHeader(ref data);
             var index = header.MessageIndex;
 
-            if (!handles.ExistHandle(index))
+            if (!_messageHandles.ExistHandle(index))
             {
                 return;
             }
 
-            var handle = handles.GetHandle(index);
+            var handle = _messageHandles.GetHandle(index);
             var message = handle.Derserialize(ref data);
 
-            if (!OnMessageReceived(handle,header,message))
-                handle.SetMessage(message);
-
-
-
+            handle.SetMessage(message);
         }
 
         public void RegisterOnMessageCallback<T>(Action<T> callback)
             where T : struct
         {
-            Action<object> objectCallback = (o) => callback((T) o);
-
-            if (!callbacks.ContainsKey(typeof(T)))
-            {
-                callbacks.Add(typeof(T),objectCallback);
-            }
-
-            callbacks[typeof(T)] += objectCallback;
-        }
-
-        private bool OnMessageReceived(MessageHandle handle,MessageHeader header,object message)
-        {
-            if (callbacks.ContainsKey(handle.Type))
-            {
-                callbacks[handle.Type](message);
-                return true;
-            }
-
-            return false;
+            _messageHandles.GetHandle<T>().RegisterCallback(callback);
         }
 
         public void SendMessage<T>(ref T message) where T : struct
@@ -90,7 +57,7 @@ namespace Misana.Network
         {
             var index = MessageHandle<T>.Index;
 
-            var handler = handles.GetHandle(index.Value);
+            var handler = _messageHandles.GetHandle(index.Value);
             if (handler == null)
             {
                 message = null;
