@@ -17,7 +17,7 @@ namespace Misana.Core.Communication.Systems
         protected override void Update(Entity e, TransformComponent r1)
         {
             EntityPositionMessage message = new EntityPositionMessage(e.Id,r1);
-            _client.SendMessageFast((uint)MessageType.EntityPosition, ref message);
+            _client.SendMessage((uint)MessageType.EntityPosition, ref message);
         }
     }
 }

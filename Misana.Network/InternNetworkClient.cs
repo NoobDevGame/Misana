@@ -7,12 +7,13 @@ namespace Misana.Network
     {
         public InternNetworkClient OuterClient { get; private set; }
 
-        private Dictionary<Type,Queue<object>> _messages = new Dictionary<Type, Queue<object>>();
+        private MessageHandle[] handles = new MessageHandle[1];
 
         private string name;
 
         public InternNetworkClient()
         {
+
             name = "client";
             OuterClient = new InternNetworkClient(this);
         }
@@ -23,37 +24,46 @@ namespace Misana.Network
             OuterClient = outerClient;
         }
 
-        private void ReceiveMessageFast<T>(uint messageType, T message)
+        private void ReceiveMessage<T>(uint messageType, T message)
             where T : struct
         {
-            Queue<object> messages = null;
+            var index = MessageHandle<T>.Index;
+            if (index >= handles.Length)
+                Array.Resize(ref handles,handles.Length * 2);
 
-            if (!_messages.TryGetValue(typeof(T),out messages))
-            {
-                messages = new Queue<object>();
-                _messages.Add(typeof(T),messages);
-            }
+            MessageHandle<T> handler = (MessageHandle<T>)handles[index];
 
-            messages.Enqueue(message);
+            if (handles[index] == null)
+                handles[index] = handler = new MessageHandle<T>();
+
+            handler.SetMessage(message);
+
+
         }
 
-        public void SendMessageFast<T>(uint messageType, ref T message) where T : struct
+        public void SendMessage<T>(uint messageType, ref T message) where T : struct
         {
-            OuterClient.ReceiveMessageFast(messageType,message);
+            OuterClient.ReceiveMessage(messageType,message);
         }
 
         public bool TryGetMessage<T>(uint messageType, out T? message) where T : struct
         {
-            Queue<object> messages = null;
+            var index = MessageHandle<T>.Index;
 
-            if (_messages.TryGetValue(typeof(T),out messages) && messages.Count > 0 )
+            if (index >= handles.Length)
             {
-                message = (T)messages.Dequeue();
-                return true;
+                message = null;
+                return false;
             }
 
-            message = null;
-            return false;
+            var handler = handles[index] as MessageHandle<T>;
+            if (handler == null)
+            {
+                message = null;
+                return false;
+            }
+
+            return handler.TryGetValue(out message);
         }
     }
 }
