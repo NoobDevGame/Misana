@@ -9,36 +9,60 @@ namespace Misana.Network
     {
         protected static int maxIndex = 0;
 
-        public byte[] Serialize<T>(MessageHeaderState state,ref T data)
+
+
+        public byte[] Serialize<T>(MessageHeader header,ref T data)
             where T : struct
         {
-            int size = Marshal.SizeOf(typeof(T)) + sizeof(MessageHeaderState);
-            byte[] arr = new byte[size];
-            arr[0] = (byte) state;
+            int headerSize = Marshal.SizeOf(typeof(MessageHeader));
+            int dataSize = Marshal.SizeOf(typeof(T));
 
+            byte[] arr = new byte[dataSize + headerSize];
 
-            IntPtr ptr = Marshal.AllocHGlobal(size);
-            Marshal.StructureToPtr(data, ptr, true);
-            Marshal.Copy(ptr, arr, sizeof(MessageHeaderState), size);
-            Marshal.FreeHGlobal(ptr);
+            {
+                IntPtr ptr = Marshal.AllocHGlobal(headerSize);
+                Marshal.StructureToPtr(header, ptr, true);
+                Marshal.Copy(ptr, arr, 0, headerSize);
+                Marshal.FreeHGlobal(ptr);
+            }
+
+            {
+                IntPtr ptr = Marshal.AllocHGlobal(dataSize);
+                Marshal.StructureToPtr(data, ptr, true);
+                Marshal.Copy(ptr, arr, headerSize, dataSize);
+                Marshal.FreeHGlobal(ptr);
+            }
             return arr;
         }
 
-        public T Deserialize<T>(byte[] data,out MessageHeaderState state)
+        public T Deserialize<T>(byte[] data,out MessageHeader header)
             where T : struct
         {
-            int size = Marshal.SizeOf(typeof(T)) + sizeof(MessageHeaderState) ;
-            IntPtr ptr = Marshal.AllocHGlobal(size);
+            int headerSize = Marshal.SizeOf(typeof(MessageHeader));
+            int dataSize = Marshal.SizeOf(typeof(T));
 
-            Marshal.Copy(data, sizeof(MessageHeaderState), ptr, size);
+            {
+                IntPtr ptr = Marshal.AllocHGlobal(headerSize);
+
+                Marshal.Copy(data,0, ptr, headerSize);
 
 
-            var value = Marshal.PtrToStructure<T>(ptr);
-            Marshal.FreeHGlobal(ptr);
+                header = Marshal.PtrToStructure<MessageHeader>(ptr);
+                Marshal.FreeHGlobal(ptr);
+            }
 
-            state = (MessageHeaderState) data[0];
+            {
+                IntPtr ptr = Marshal.AllocHGlobal(dataSize);
 
-            return value;
+                Marshal.Copy(data,headerSize, ptr, dataSize);
+
+
+                var result  = Marshal.PtrToStructure<T>(ptr);
+                Marshal.FreeHGlobal(ptr);
+
+                return result;
+            }
+
         }
     }
 
@@ -55,9 +79,9 @@ namespace Misana.Network
             Index = Interlocked.Increment(ref maxIndex);
         }
 
-        public byte[] Serialize(MessageHeaderState state,ref T data) => Serialize<T>(state, ref data);
+        public byte[] Serialize(MessageHeader header,ref T data) => Serialize<T>(header, ref data);
 
-        public T Deserialize(byte[] data,out MessageHeaderState state) => Deserialize<T>(data,out state);
+        public T Deserialize(byte[] data,out MessageHeader header) => Deserialize<T>(data,out header);
 
         public void SetMessage(T message)
         {
