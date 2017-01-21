@@ -24,7 +24,7 @@ namespace Misana.Network
             OuterClient = outerClient;
         }
 
-        private void ReceiveMessage<T>(uint messageType, T message)
+        private void ReceiveMessage<T>( T message)
             where T : struct
         {
             var index = MessageHandle<T>.Index;
@@ -41,12 +41,12 @@ namespace Misana.Network
 
         }
 
-        public void SendMessage<T>(uint messageType, ref T message) where T : struct
+        public void SendMessage<T>(ref T message) where T : struct
         {
-            OuterClient.ReceiveMessage(messageType,message);
+            OuterClient.ReceiveMessage(message);
         }
 
-        public bool TryGetMessage<T>(uint messageType, out T? message) where T : struct
+        public bool TryGetMessage<T>(out T? message) where T : struct
         {
             var index = MessageHandle<T>.Index;
 

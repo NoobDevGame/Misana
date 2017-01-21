@@ -18,7 +18,7 @@ namespace Misana.Core.Communication.Systems
         public override void Tick()
         {
             EntityPositionMessage? message;
-            while (_client.TryGetMessage((int) MessageType.EntityPosition, out message))
+            while (_client.TryGetMessage(out message))
             {
                 var component = Entities.First(i => i.Id == message.Value.entityId).Get<TransformComponent>();
                 component.Position = message.Value.position;

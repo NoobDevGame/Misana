@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="Communication\DummyServer.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
-    <Compile Include="Communication\MessageType.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />

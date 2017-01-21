@@ -9,8 +9,6 @@ namespace Misana.Network
     {
         protected static int maxIndex = 0;
 
-
-
         public byte[] Serialize<T>(MessageHeader header,ref T data)
             where T : struct
         {

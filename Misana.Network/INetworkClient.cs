@@ -2,10 +2,10 @@
 {
     public interface INetworkClient
     {
-        void SendMessage<T>(uint messageType,ref T message)
+        void SendMessage<T>(ref T message)
             where T : struct ;
 
-        bool TryGetMessage<T>(uint messageType,out T? message)
+        bool TryGetMessage<T>(out T? message)
             where T : struct ;
     }
 }
