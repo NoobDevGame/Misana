@@ -52,11 +52,11 @@ namespace Misana.Network
             {
                 var castMessage = (GetMessageIDMessageRequest) message;
                 var type = Type.GetType(castMessage.TypeName);
-                var id = MessageHandle.GetId(type);
+                var id = MessageHandleManager.GetId(type);
 
                 if (!id.HasValue)
                 {
-                    id = MessageHandle.RegisterType(type);
+                    id = MessageHandleManager.RegisterType(type);
                     handles.CreateHandle(type);
                 }
 
@@ -74,10 +74,10 @@ namespace Misana.Network
 
                     var type = Type.GetType(castMessage.TypeName);
 
-                    var readId = MessageHandle.GetId(type);
+                    var readId = MessageHandleManager.GetId(type);
                     if (!readId.HasValue)
                     {
-                        MessageHandle.RegisterType(type, castMessage.TypeId);
+                        MessageHandleManager.RegisterType(type, castMessage.TypeId);
                         handles.CreateHandle(type);
                     }
                     else if (readId.Value != castMessage.TypeId)

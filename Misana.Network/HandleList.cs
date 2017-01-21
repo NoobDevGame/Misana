@@ -4,7 +4,7 @@ namespace Misana.Network
 {
     internal class HandleList
     {
-        private MessageHandle[] handles = MessageHandle.CreateHandleArray();
+        private MessageHandle[] handles = MessageHandleManager.CreateHandleArray();
 
         public bool ExistHandle(int index)
         {
@@ -18,7 +18,7 @@ namespace Misana.Network
 
         public void CreateHandle(Type type)
         {
-            var id = MessageHandle.GetId(type);
+            var id = MessageHandleManager.GetId(type);
             if (id.HasValue)
             {
                 if (id >= handles.Length)
