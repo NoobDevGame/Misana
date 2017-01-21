@@ -16,8 +16,8 @@ namespace Misana.Network
 
         static MessageHandleManager()
         {
-            RegisterType<GetMessageIDMessageRequest>();
-            RegisterType<GetMessageIDMessageResponse>();
+            RegisterType<GetMessageIdMessageRequest>();
+            RegisterType<GetMessageIdMessageResponse>();
         }
 
         public static int RegisterType<T>()

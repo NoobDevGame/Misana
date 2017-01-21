@@ -10,18 +10,65 @@ namespace Misana.Network
 
         private HandleList handles = new HandleList();
 
+        Dictionary<Type,Action<object>> callbacks = new Dictionary<Type, Action<object>>();
+
         private string name;
 
         public InternNetworkClient()
         {
             name = "client";
             OuterClient = new InternNetworkClient(this);
+            Initialize();
         }
 
         private InternNetworkClient(InternNetworkClient outerClient)
         {
             name = "server";
             OuterClient = outerClient;
+            Initialize();
+        }
+
+        private void Initialize()
+        {
+            RegisterOnMessageCallback<GetMessageIdMessageRequest>(ReceiveGetMessageIdRequest);
+            RegisterOnMessageCallback<GetMessageIdMessageResponse>(ReceiveGetMessageIdResponse);
+
+        }
+
+        private void ReceiveGetMessageIdResponse(GetMessageIdMessageResponse message)
+        {
+            if (message.Result)
+            {
+                var type = Type.GetType(message.TypeName);
+
+                var readId = MessageHandleManager.GetId(type);
+                if (!readId.HasValue)
+                {
+                    MessageHandleManager.RegisterType(type, message.TypeId);
+                }
+                else if (readId.Value != message.TypeId)
+                {
+                    throw new Exception();
+                }
+
+                if(!handles.ExistHandle(message.TypeId))
+                    handles.CreateHandle(type);
+            }
+        }
+
+        private void ReceiveGetMessageIdRequest(GetMessageIdMessageRequest message)
+        {
+            var type = Type.GetType(message.TypeName);
+            var id = MessageHandleManager.GetId(type);
+
+            if (!id.HasValue)
+            {
+                id = MessageHandleManager.RegisterType(type);
+                handles.CreateHandle(type);
+            }
+
+            var responseMessage = new GetMessageIdMessageResponse(true,id.Value,message.TypeName);
+            SendMessage(ref responseMessage);
         }
 
         private void ReceiveData(byte[] data)
@@ -44,51 +91,27 @@ namespace Misana.Network
 
         }
 
+        public void RegisterOnMessageCallback<T>(Action<T> callback)
+            where T : struct
+        {
+            Action<object> objectCallback = (o) => callback((T) o);
+
+            if (!callbacks.ContainsKey(typeof(T)))
+            {
+                callbacks.Add(typeof(T),objectCallback);
+            }
+
+            callbacks[typeof(T)] += objectCallback;
+        }
+
         private bool OnMessageReceived(MessageHandle handle,MessageHeader header,object message)
         {
-            if (MessageHandle<GetMessageIDMessageRequest>.Index != null
-                && header.MessageIndex == MessageHandle<GetMessageIDMessageRequest>.Index.Value)
+            if (callbacks.ContainsKey(handle.Type))
             {
-                var castMessage = (GetMessageIDMessageRequest) message;
-                var type = Type.GetType(castMessage.TypeName);
-                var id = MessageHandleManager.GetId(type);
-
-                if (!id.HasValue)
-                {
-                    id = MessageHandleManager.RegisterType(type);
-                    handles.CreateHandle(type);
-                }
-
-                var responseMessage = new GetMessageIDMessageResponse(true,id.Value,castMessage.TypeName);
-                SendMessage(ref responseMessage);
-
+                callbacks[handle.Type](message);
+                return true;
             }
-            else if (MessageHandle<GetMessageIDMessageResponse>.Index != null
-                     && header.MessageIndex == MessageHandle<GetMessageIDMessageResponse>.Index.Value)
-            {
-                var castMessage = (GetMessageIDMessageResponse) message;
-                if (castMessage.Result)
-                {
 
-
-                    var type = Type.GetType(castMessage.TypeName);
-
-                    var readId = MessageHandleManager.GetId(type);
-                    if (!readId.HasValue)
-                    {
-                        MessageHandleManager.RegisterType(type, castMessage.TypeId);
-                        handles.CreateHandle(type);
-                    }
-                    else if (readId.Value != castMessage.TypeId)
-                    {
-                        throw new Exception();
-                    }
-
-
-                }
-
-
-            }
             return false;
         }
 
@@ -98,8 +121,8 @@ namespace Misana.Network
 
             if (!index.HasValue || !handles.ExistHandle(index.Value))
             {
-                GetMessageIDMessageRequest request = new GetMessageIDMessageRequest(typeof(T));
-                SendMessage<GetMessageIDMessageRequest>(ref request);
+                GetMessageIdMessageRequest request = new GetMessageIdMessageRequest(typeof(T));
+                SendMessage<GetMessageIdMessageRequest>(ref request);
                 return;
             }
 
@@ -113,8 +136,8 @@ namespace Misana.Network
 
             if (!index.HasValue || !handles.ExistHandle(index.Value))
             {
-                GetMessageIDMessageRequest request = new GetMessageIDMessageRequest(typeof(T));
-                SendMessage<GetMessageIDMessageRequest>(ref request);
+                GetMessageIdMessageRequest request = new GetMessageIdMessageRequest(typeof(T));
+                SendMessage<GetMessageIdMessageRequest>(ref request);
                 message = null;
                 return false;
             }

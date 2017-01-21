@@ -10,6 +10,12 @@ namespace Misana.Network
     internal abstract class MessageHandle
     {
         private static readonly int headerSize = Marshal.SizeOf(typeof(MessageHeader));
+        public readonly Type Type;
+
+        public MessageHandle(Type type)
+        {
+            Type = type;
+        }
 
         public static byte[] Serialize<T>(MessageHeader header,ref T data)
             where T : struct
@@ -81,8 +87,6 @@ namespace Misana.Network
         public abstract void SetMessage(object value);
 
         public abstract bool TryGetValue(out object message);
-
-
     }
 
     internal sealed class MessageHandle<T> : MessageHandle
@@ -104,6 +108,12 @@ namespace Misana.Network
 
         private Queue<T> messages = new Queue<T>();
         private object messagesLockObject = new object();
+
+        public MessageHandle()
+            : base(typeof(T))
+        {
+
+        }
 
         public static byte[] Serialize(MessageInformation information, ref T data)
         {
@@ -158,7 +168,5 @@ namespace Misana.Network
         {
             SetMessage((T)value);
         }
-
-
     }
 }

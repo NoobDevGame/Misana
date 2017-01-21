@@ -19,11 +19,11 @@ namespace Misana.Core
 
         public SimulationState State => BaseSimulation.State;
 
-        private DummyServer _serverClient;
+        private NetworkWorld _serverClient;
 
         public SimulationClient(List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
         {
-            _serverClient = new DummyServer();
+            _serverClient = new NetworkWorld();
 
             List<BaseSystem> beforSystems = new List<BaseSystem>();
             beforSystems.Add(new ReceiveEntityPositionSystem(_serverClient));

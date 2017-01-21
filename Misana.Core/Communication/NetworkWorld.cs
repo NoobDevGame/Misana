@@ -8,7 +8,7 @@ using Misana.Network;
 
 namespace Misana.Core.Communication
 {
-    public class DummyServer : InternNetworkClient, ISimulation
+    public class NetworkWorld : InternNetworkClient, ISimulation
     {
         public ISimulation BaseSimulation { get; private set; }
 
@@ -18,7 +18,7 @@ namespace Misana.Core.Communication
 
         public SimulationState State => BaseSimulation.State;
 
-        public DummyServer()
+        public NetworkWorld()
         {
             List<BaseSystem> beforSystems = new List<BaseSystem>();
             beforSystems.Add(new ReceiveEntityPositionSystem(OuterClient));

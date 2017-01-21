@@ -3,23 +3,23 @@ using System.Runtime.InteropServices;
 
 namespace Misana.Network.Messages
 {
-    internal struct GetMessageIDMessageRequest
+    internal struct GetMessageIdMessageRequest
     {
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
         public readonly string TypeName;
 
-        public GetMessageIDMessageRequest(string typeName)
+        public GetMessageIdMessageRequest(string typeName)
         {
             TypeName = typeName;
         }
 
-        public GetMessageIDMessageRequest(Type type)
+        public GetMessageIdMessageRequest(Type type)
         {
             TypeName = type.AssemblyQualifiedName;
         }
     }
 
-    internal struct GetMessageIDMessageResponse
+    internal struct GetMessageIdMessageResponse
     {
         public readonly int TypeId;
         public readonly bool Result;
@@ -27,7 +27,7 @@ namespace Misana.Network.Messages
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 512)]
         public readonly string TypeName;
 
-        public GetMessageIDMessageResponse(bool result ,int id,string typeName)
+        public GetMessageIdMessageResponse(bool result ,int id,string typeName)
         {
             Result = result;
             TypeId = id;
