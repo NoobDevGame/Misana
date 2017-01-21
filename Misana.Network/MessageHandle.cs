@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace Misana.Network
@@ -8,16 +9,36 @@ namespace Misana.Network
     {
         protected static int maxIndex = 0;
 
-        public byte[] Serialize<T>(T data)
+        public byte[] Serialize<T>(MessageHeaderState state,ref T data)
             where T : struct
         {
-            throw new NotImplementedException();
+            int size = Marshal.SizeOf(typeof(T)) + sizeof(MessageHeaderState);
+            byte[] arr = new byte[size];
+            arr[0] = (byte) state;
+
+
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+            Marshal.StructureToPtr(data, ptr, true);
+            Marshal.Copy(ptr, arr, sizeof(MessageHeaderState), size);
+            Marshal.FreeHGlobal(ptr);
+            return arr;
         }
 
-        public T Deserialize<T>(byte[] data)
+        public T Deserialize<T>(byte[] data,out MessageHeaderState state)
             where T : struct
         {
-            throw new NotImplementedException();
+            int size = Marshal.SizeOf(typeof(T)) + sizeof(MessageHeaderState) ;
+            IntPtr ptr = Marshal.AllocHGlobal(size);
+
+            Marshal.Copy(data, sizeof(MessageHeaderState), ptr, size);
+
+
+            var value = Marshal.PtrToStructure<T>(ptr);
+            Marshal.FreeHGlobal(ptr);
+
+            state = (MessageHeaderState) data[0];
+
+            return value;
         }
     }
 
@@ -34,9 +55,9 @@ namespace Misana.Network
             Index = Interlocked.Increment(ref maxIndex);
         }
 
-        public byte[] Serialize(T data) => Serialize<T>(data);
+        public byte[] Serialize(MessageHeaderState state,ref T data) => Serialize<T>(state, ref data);
 
-        public T Deserialize(byte[] data) => Deserialize<T>(data);
+        public T Deserialize(byte[] data,out MessageHeaderState state) => Deserialize<T>(data,out state);
 
         public void SetMessage(T message)
         {
