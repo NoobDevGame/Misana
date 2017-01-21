@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Misana.Network.Messages;
 
 namespace Misana.Network
 {
@@ -16,8 +17,17 @@ namespace Misana.Network
 
         static MessageHandleManager()
         {
-            RegisterType<GetMessageIdMessageRequest>();
-            RegisterType<GetMessageIdMessageResponse>();
+            var structs = from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                from type in assembly.GetTypes()
+                where type.IsValueType && !type.IsEnum
+                let attribute = type.GetCustomAttribute<MessageDefinitionAttribute>(false)
+                where attribute != null
+                select type;
+
+            foreach (var @struct in structs)
+            {
+                RegisterType(@struct);
+            }
         }
 
         public static int RegisterType<T>()

@@ -3,6 +3,7 @@ using Misana.Network;
 
 namespace Misana.Core.Communication.Messages
 {
+    [MessageDefinition]
     public struct EntityPositionMessage
     {
         public int entityId;

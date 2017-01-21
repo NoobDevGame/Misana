@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Misana.Network.Messages;
 
 namespace Misana.Network
 {
@@ -30,46 +29,10 @@ namespace Misana.Network
 
         private void Initialize()
         {
-            RegisterOnMessageCallback<GetMessageIdMessageRequest>(ReceiveGetMessageIdRequest);
-            RegisterOnMessageCallback<GetMessageIdMessageResponse>(ReceiveGetMessageIdResponse);
 
         }
 
-        private void ReceiveGetMessageIdResponse(GetMessageIdMessageResponse message)
-        {
-            if (message.Result)
-            {
-                var type = Type.GetType(message.TypeName);
 
-                var readId = MessageHandleManager.GetId(type);
-                if (!readId.HasValue)
-                {
-                    MessageHandleManager.RegisterType(type, message.TypeId);
-                }
-                else if (readId.Value != message.TypeId)
-                {
-                    throw new Exception();
-                }
-
-                if(!handles.ExistHandle(message.TypeId))
-                    handles.CreateHandle(type);
-            }
-        }
-
-        private void ReceiveGetMessageIdRequest(GetMessageIdMessageRequest message)
-        {
-            var type = Type.GetType(message.TypeName);
-            var id = MessageHandleManager.GetId(type);
-
-            if (!id.HasValue)
-            {
-                id = MessageHandleManager.RegisterType(type);
-                handles.CreateHandle(type);
-            }
-
-            var responseMessage = new GetMessageIdMessageResponse(true,id.Value,message.TypeName);
-            SendMessage(ref responseMessage);
-        }
 
         private void ReceiveData(byte[] data)
         {
@@ -119,13 +82,6 @@ namespace Misana.Network
         {
             var index = MessageHandle<T>.Index;
 
-            if (!index.HasValue || !handles.ExistHandle(index.Value))
-            {
-                GetMessageIdMessageRequest request = new GetMessageIdMessageRequest(typeof(T));
-                SendMessage<GetMessageIdMessageRequest>(ref request);
-                return;
-            }
-
             var data = MessageHandle<T>.Serialize(new MessageInformation(), ref message);
             OuterClient.ReceiveData(data);
         }
@@ -133,14 +89,6 @@ namespace Misana.Network
         public bool TryGetMessage<T>(out T? message) where T : struct
         {
             var index = MessageHandle<T>.Index;
-
-            if (!index.HasValue || !handles.ExistHandle(index.Value))
-            {
-                GetMessageIdMessageRequest request = new GetMessageIdMessageRequest(typeof(T));
-                SendMessage<GetMessageIdMessageRequest>(ref request);
-                message = null;
-                return false;
-            }
 
             var handler = handles.GetHandle(index.Value);
             if (handler == null)

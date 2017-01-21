@@ -1,5 +1,8 @@
-﻿namespace Misana.Core.Communication.Messages
+﻿using Misana.Network;
+
+namespace Misana.Core.Communication.Messages
 {
+    [MessageDefinition]
     public struct CreateEntityMessage
     {
 
