@@ -6,13 +6,11 @@ namespace Misana.Network
     public abstract class MessageIdPair
     {
         public readonly int SystemId;
-        public readonly ushort CommunictaionId;
         public readonly Type MessageType;
 
-        protected MessageIdPair(int systemId, ushort communictaionId, Type messageType)
+        protected MessageIdPair(int systemId, Type messageType)
         {
             SystemId = systemId;
-            CommunictaionId = communictaionId;
             MessageType = messageType;
         }
     }
@@ -20,8 +18,8 @@ namespace Misana.Network
     public sealed class MessageIdPair<T> : MessageIdPair
         where T : struct
     {
-        public MessageIdPair(int systemId, ushort communictaionId)
-            : base(systemId, communictaionId, typeof(T))
+        public MessageIdPair(int systemId)
+            : base(systemId, typeof(T))
         {
         }
     }

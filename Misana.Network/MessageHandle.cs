@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Misana.Network.Messages;
 
 namespace Misana.Network
 {
@@ -10,15 +11,14 @@ namespace Misana.Network
     {
         private static int maxIndex = 0;
 
-        private static MessageIdPair[] SystemPairs;
-        private static MessageIdPair[] CommunictaionPairs;
+        private static Dictionary<Type,MessageIdPair> SystemPairs = new Dictionary<Type, MessageIdPair>();
 
         private static readonly int headerSize = Marshal.SizeOf(typeof(MessageHeader));
 
         static MessageHandle()
         {
-            SystemPairs = new MessageIdPair[ushort.MaxValue+1];
-            CommunictaionPairs = new MessageIdPair[ushort.MaxValue+1];
+            RegisterType<GetMessageIDMessageRequest>();
+            RegisterType<GetMessageIDMessageResponse>();
         }
 
         protected static int RegisterType<T>()
@@ -26,18 +26,34 @@ namespace Misana.Network
         {
             var type = typeof(T);
 
-            var attribute = type.GetCustomAttribute<MessageDefinitionAttribute>();
-
-            if (attribute == null)
-                throw new ArgumentException($"{nameof(MessageDefinitionAttribute)} is not implemented");
-
             var systemId =  Interlocked.Increment(ref maxIndex);
 
-            SystemPairs[systemId] = CommunictaionPairs[attribute.CommunictaionId] = new MessageIdPair<T>(systemId,attribute.CommunictaionId);
+            if (SystemPairs.ContainsKey(type))
+                throw new ArgumentException("SystemId already");
+
+            SystemPairs.Add(type, new MessageIdPair<T>(systemId));
 
 
             return systemId;
         }
+
+        public static int? GetId<T>()
+            where T : struct
+        {
+            return GetId(typeof(T));
+        }
+
+        public static int? GetId(Type type)
+        {
+            if (SystemPairs.ContainsKey(type))
+            {
+                return SystemPairs[type].SystemId;
+            }
+
+            return null;
+        }
+
+
 
         public byte[] Serialize<T>(MessageHeader header,ref T data)
             where T : struct
