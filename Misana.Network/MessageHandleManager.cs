@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Misana.Network.Messages;
@@ -11,7 +12,6 @@ namespace Misana.Network
         private static int maxIndex = 0;
 
         private static Dictionary<Type,MessageIdPair> SystemPairs = new Dictionary<Type, MessageIdPair>();
-
 
 
         static MessageHandleManager()
@@ -77,16 +77,27 @@ namespace Misana.Network
             return null;
         }
 
+        internal static MessageHandle CreateMessageHandle(Type type)
+        {
+            var generictype = typeof(MessageHandle<>).MakeGenericType(type);
+
+            var instance = (MessageHandle) Activator.CreateInstance(generictype);
+
+            return instance;
+        }
+
         internal static MessageHandle[] CreateHandleArray()
         {
             MessageHandle[] array = new MessageHandle[SystemPairs.Count];
             int i = 0;
             foreach (var pair in SystemPairs)
             {
-                array[i++] = new VirtualMessageHandle(pair.Value.MessageType,pair.Value.SystemId);
+                array[i++] = CreateMessageHandle(pair.Key);
             }
 
             return array;
         }
+
+
     }
 }

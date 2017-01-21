@@ -85,50 +85,6 @@ namespace Misana.Network
 
     }
 
-    internal sealed class VirtualMessageHandle : MessageHandle
-    {
-        public readonly int Index;
-        public readonly Type Type;
-
-        private Queue<object> messages = new Queue<object>();
-        private object messagesLockObject = new object();
-
-        public VirtualMessageHandle(Type type,int index)
-        {
-            Type = type;
-            Index = index;
-        }
-
-        public override object Derserialize(ref byte[] data)
-        {
-            return DeserializeData(ref data, Type);
-        }
-
-        public override void SetMessage(object message)
-        {
-            lock (messagesLockObject)
-            {
-                messages.Enqueue(message);
-            }
-        }
-
-        public override bool TryGetValue(out object message)
-        {
-            if (messages.Count > 0)
-            {
-                lock (messagesLockObject)
-                {
-                    message = messages.Dequeue();
-                }
-
-                return true;
-            }
-
-            message = null;
-            return false;
-        }
-    }
-
     internal sealed class MessageHandle<T> : MessageHandle
         where T : struct
     {
@@ -164,14 +120,6 @@ namespace Misana.Network
             return Deserialize(ref data);
         }
 
-        public void SetMessage(T message)
-        {
-            lock (messagesLockObject)
-            {
-                messages.Enqueue(message);
-            }
-        }
-
         public bool TryGetValue(out T? message)
         {
             if (messages.Count > 0)
@@ -188,14 +136,29 @@ namespace Misana.Network
             return false;
         }
 
+        public override bool TryGetValue(out object message)
+        {
+            T? value;
+            var result = TryGetValue(out value);
+
+            message = value;
+
+            return result;
+        }
+
+        public void SetMessage(T message)
+        {
+            lock (messagesLockObject)
+            {
+                messages.Enqueue(message);
+            }
+        }
+
         public override void SetMessage(object value)
         {
             SetMessage((T)value);
         }
 
-        public override bool TryGetValue(out object message)
-        {
-            return TryGetValue(out message);
-        }
+
     }
 }

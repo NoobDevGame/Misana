@@ -24,7 +24,7 @@ namespace Misana.Network
                 if (id >= handles.Length)
                     Array.Resize(ref handles,id.Value+1);
 
-                handles[id.Value] = new VirtualMessageHandle(type,id.Value);
+                handles[id.Value] = MessageHandleManager.CreateMessageHandle(type);
             }
         }
     }
