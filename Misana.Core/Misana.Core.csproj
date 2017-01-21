@@ -133,6 +133,7 @@
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="SimulationClient.cs" />
+    <Compile Include="SimulationState.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMoverSystem.cs" />
     <Compile Include="Systems\ExpirationSystem.cs" />

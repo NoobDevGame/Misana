@@ -11,6 +11,8 @@ namespace Misana.Core
 
         EntityManager Entities { get; }
 
+        SimulationState State { get; }
+
         void ChangeMap(Map map);
 
         int CreateEntity(string definitionName);

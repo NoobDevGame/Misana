@@ -16,6 +16,8 @@ namespace Misana.Core.Communication
 
         public EntityManager Entities => BaseSimulation.Entities;
 
+        public SimulationState State => BaseSimulation.State;
+
         public DummyServer()
         {
             List<BaseSystem> beforSystems = new List<BaseSystem>();

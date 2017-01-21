@@ -28,6 +28,8 @@ namespace Misana.Core
 
         public EntityManager Entities => BaseSimulation.Entities;
 
+        public SimulationState State => BaseSimulation.State;
+
         public World(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
             BaseSimulation = new SimulationClient(beforSystems,afterSystems);

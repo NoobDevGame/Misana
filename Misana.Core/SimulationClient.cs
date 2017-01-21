@@ -17,6 +17,8 @@ namespace Misana.Core
 
         public EntityManager Entities => BaseSimulation.Entities;
 
+        public SimulationState State => BaseSimulation.State;
+
         private DummyServer _serverClient;
 
         public SimulationClient(List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)

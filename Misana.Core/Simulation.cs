@@ -28,8 +28,12 @@ namespace Misana.Core
 
         public Map CurrentMap { get; private set; }
 
+        public SimulationState State { get; private set; }
+
         public Simulation(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
+            State = SimulationState.Unloaded;
+
             _collidingMoverSystem = new EntityCollidingMoverSystem();
             _interactionSystem = new EntityInteractionSystem();
             _wieldedWieldableSystem = new WieldedWieldableSystem();

@@ -14,7 +14,6 @@ namespace Misana.Network
 
         public InternNetworkClient()
         {
-
             name = "client";
             OuterClient = new InternNetworkClient(this);
         }
