@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
@@ -34,6 +35,8 @@ namespace Misana.Core.Communication
 
         private void OnCreateEntity(CreateEntityMessage message)
         {
+            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == message.DefinitionId).Value;
+            BaseSimulation.CreateEntity(definition);
         }
 
         public void ChangeMap(Map map)
@@ -43,14 +46,15 @@ namespace Misana.Core.Communication
 
         public void CreateEntity(string definitionName)
         {
-            CreateEntityMessage message = new CreateEntityMessage();
-
-            SendMessage(ref message);
+            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Key == definitionName).Value;
+            CreateEntity(definition);
         }
 
         public void CreateEntity(EntityDefinition defintion)
         {
-            CreateEntity(defintion.Name);
+            CreateEntityMessage message = new CreateEntityMessage();
+            message.DefinitionId = defintion.Id;
+            SendMessage(ref message);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
