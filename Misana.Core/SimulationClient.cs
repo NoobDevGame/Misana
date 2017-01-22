@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Systems;
@@ -6,71 +7,111 @@ using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
 using Misana.Core.Maps;
+using Misana.Network;
 
 namespace Misana.Core
 {
-    public class SimulationClient : ISimulation
+    public class SimulationClient : ISimulation , INetworkWorld
     {
-        public ISimulation BaseSimulation { get; private set; }
+        public ISimulation ClientSimulation { get; private set; }
 
-        public Map CurrentMap => BaseSimulation.CurrentMap;
+        public Map CurrentMap => ClientSimulation.CurrentMap;
 
-        public EntityManager Entities => BaseSimulation.Entities;
+        public EntityManager Entities => ClientSimulation.Entities;
 
-        public SimulationState State => BaseSimulation.State;
+        public SimulationState State => ClientSimulation.State;
 
-        private NetworkWorld _serverClient;
+        public ConnectState ConnectionState => _client.ConnectionState;
+
+        private NetworkWorld _server;
+        private ISimulation _serverSimulation;
+        private NetworkWorld _client;
+
+        private InternNetworkClient _network = new InternNetworkClient();
 
         public SimulationClient(List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
         {
-            _serverClient = new NetworkWorld();
+            { //Server
+                List<BaseSystem> beforSystems = new List<BaseSystem>();
+                beforSystems.Add(new ReceiveEntityPositionSystem(_network.Server));
+                if (baseBeforSystems != null)
+                    beforSystems.AddRange(baseBeforSystems);
 
-            List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(_serverClient));
-            if (baseBeforSystems != null)
-                beforSystems.AddRange(baseBeforSystems);
+                List<BaseSystem> afterSystems = new List<BaseSystem>();
+                afterSystems.Add(new SendEntityPositionSystem(_network.Server));
+                if (baseAfterSystems != null)
+                    afterSystems.AddRange(baseAfterSystems);
 
-            List<BaseSystem> afterSystems = new List<BaseSystem>();
-            afterSystems.Add(new SendEntityPositionSystem(_serverClient));
-            if (baseAfterSystems != null)
-                afterSystems.AddRange(baseAfterSystems);
+                _serverSimulation = new Simulation(beforSystems,afterSystems);
 
+                _server = new NetworkWorld(_network.Server,_serverSimulation);
+            }
 
+            {//Client
+                List<BaseSystem> beforSystems = new List<BaseSystem>();
+                beforSystems.Add(new ReceiveEntityPositionSystem(_network));
+                if (baseBeforSystems != null)
+                    beforSystems.AddRange(baseBeforSystems);
 
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
+                List<BaseSystem> afterSystems = new List<BaseSystem>();
+                afterSystems.Add(new SendEntityPositionSystem(_network));
+                if (baseAfterSystems != null)
+                    afterSystems.AddRange(baseAfterSystems);
+
+               ClientSimulation = new Simulation(beforSystems,afterSystems);
+
+                _client = new NetworkWorld(_network,ClientSimulation);
+            }
+
+            Connect();
 
         }
 
         public void ChangeMap(Map map)
         {
-            BaseSimulation.ChangeMap(map);
-            _serverClient.ChangeMap(map);
+            //ClientSimulation.ChangeMap(map);
+            //_server.ChangeMap(map);
         }
 
         public void CreateEntity(string definitionName)
         {
-            _serverClient.CreateEntity(definitionName);
-            BaseSimulation.CreateEntity(definitionName);
+            //_server.CreateEntity(definitionName);
+            //ClientSimulation.CreateEntity(definitionName);
         }
 
         public void CreateEntity(EntityDefinition defintion)
         {
-            _serverClient.CreateEntity(defintion);
-            BaseSimulation.CreateEntity(defintion);
+            //_server.CreateEntity(defintion);
+            //ClientSimulation.CreateEntity(defintion);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            _serverClient.CreateEntity("Player");
-            var localId = BaseSimulation.CreatePlayer(input, transform);
-
-            return localId;
+            if (ConnectionState == ConnectState.Local)
+            {
+                return ClientSimulation.CreatePlayer(input, transform);
+            }
+            else
+            {
+                var playerId = ClientSimulation.CreatePlayer(input, transform);
+                return playerId;
+            }
         }
 
         public void Update(GameTime gameTime)
         {
-            BaseSimulation.Update(gameTime);
-            _serverClient.Update(gameTime);
+            ClientSimulation.Update(gameTime);
+           _serverSimulation.Update(gameTime);
+        }
+
+        public void Connect()
+        {
+            _client.Connect();
+        }
+
+        public void Disconnect()
+        {
+            _client.Disconnect();
         }
     }
 }

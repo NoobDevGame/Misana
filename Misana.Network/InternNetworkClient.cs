@@ -5,7 +5,7 @@ namespace Misana.Network
 {
     public class InternNetworkClient : INetworkClient
     {
-        public InternNetworkClient OuterClient { get; private set; }
+        public InternNetworkClient Server { get; private set; }
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
@@ -14,13 +14,13 @@ namespace Misana.Network
         public InternNetworkClient()
         {
             name = "client";
-            OuterClient = new InternNetworkClient(this);
+            Server = new InternNetworkClient(this);
         }
 
-        private InternNetworkClient(InternNetworkClient outerClient)
+        private InternNetworkClient(InternNetworkClient server)
         {
             name = "server";
-            OuterClient = outerClient;
+            Server = server;
         }
 
         private void ReceiveData(byte[] data)
@@ -50,7 +50,7 @@ namespace Misana.Network
             var index = MessageHandle<T>.Index;
 
             var data = MessageHandle<T>.Serialize(new MessageInformation(), ref message);
-            OuterClient.ReceiveData(data);
+            Server.ReceiveData(data);
         }
 
         public bool TryGetMessage<T>(out T? message) where T : struct

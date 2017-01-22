@@ -10,62 +10,51 @@ using Misana.Network;
 
 namespace Misana.Core.Communication
 {
-    public class NetworkWorld : InternNetworkClient, ISimulation
+    public class NetworkWorld : INetworkWorld
     {
-        public ISimulation BaseSimulation { get; private set; }
+        public ConnectState ConnectionState { get; private set; }
 
-        public Map CurrentMap => BaseSimulation.CurrentMap;
-
-        public EntityManager Entities => BaseSimulation.Entities;
-
-        public SimulationState State => BaseSimulation.State;
-
-        public NetworkWorld()
+        private ISimulation simulation;
+        private INetworkClient client;
+        public NetworkWorld(INetworkClient client,ISimulation simulation )
         {
-            List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(OuterClient));
+            this.simulation = simulation;
+            this.client = client;
+            client.RegisterOnMessageCallback<CreateEntityMessage>(OnCreateEntity);
+            
+            client.RegisterOnMessageCallback<LoginRequestMessage>(OnLoginRequest);
+            client.RegisterOnMessageCallback<LoginResponeMessage>(OnLoginResponse);
+            
+        }
 
-            List<BaseSystem> afterSystems = new List<BaseSystem>();
-            afterSystems.Add(new SendEntityPositionSystem(OuterClient));
+        private void OnLoginResponse(LoginResponeMessage message)
+        {
+            ConnectionState = ConnectState.Connected;
+        }
 
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
-
-            OuterClient.RegisterOnMessageCallback<CreateEntityMessage>(OnCreateEntity);
+        private void OnLoginRequest(LoginRequestMessage message)
+        {
+            LoginResponeMessage responeMessage = new LoginResponeMessage();
+            client.SendMessage(ref responeMessage);
         }
 
         private void OnCreateEntity(CreateEntityMessage message)
         {
-            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == message.DefinitionId).Value;
-            BaseSimulation.CreateEntity(definition);
+            var definition = simulation.CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == message.DefinitionId).Value;
+            simulation.CreateEntity(definition);
 
         }
 
-        public void ChangeMap(Map map)
+
+        public void Connect()
         {
-            BaseSimulation.ChangeMap(map);
+            LoginRequestMessage message = new LoginRequestMessage();
+
+            client.SendMessage(ref message);
         }
 
-        public void CreateEntity(string definitionName)
+        public void Disconnect()
         {
-            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Key == definitionName).Value;
-            CreateEntity(definition);
-        }
-
-        public void CreateEntity(EntityDefinition defintion)
-        {
-            CreateEntityMessage message = new CreateEntityMessage();
-            message.DefinitionId = defintion.Id;
-            SendMessage(ref message);
-        }
-
-        public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
-        {
-            return BaseSimulation.CreatePlayer(input, transform);
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            BaseSimulation.Update(gameTime);
         }
     }
 }
