@@ -27,6 +27,7 @@ namespace Misana.Core.Ecs
         public readonly int Index;
 
         private int _entityId;
+        private int _maxEntityId;
 
         public GameTime GameTime;
 
@@ -120,13 +121,18 @@ namespace Misana.Core.Ecs
             Systems = systems;
         }
         
-        public static EntityManager Create(string name, List<BaseSystem> systems)
+        public static EntityManager Create(string name, List<BaseSystem> systems,int startIndex = 0, int maxCount = int.MaxValue)
         {
 
-            return new EntityManager(systems)
+            var manager =  new EntityManager(systems)
             {
                 Name = name,
             };
+
+            manager._entityId = startIndex;
+            manager._maxEntityId = startIndex + maxCount;
+
+            return manager;
         }
 
         public EntityManager RegisterAdditionHook<T>(Action<EntityManager, Entity, T> h) where T : Component, new()
@@ -292,6 +298,12 @@ namespace Misana.Core.Ecs
             return e;
         }
 
-        public int NextId() => Interlocked.Increment(ref _entityId);
+        public int NextId()
+        {
+            var id = Interlocked.Increment(ref _entityId);
+            if (id > _entityManagerIndex)
+                throw new IndexOutOfRangeException("Entity out of Range");
+            return id;
+        }
     }
 }
