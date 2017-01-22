@@ -37,6 +37,7 @@ namespace Misana.Core.Communication
         {
             var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == message.DefinitionId).Value;
             BaseSimulation.CreateEntity(definition);
+
         }
 
         public void ChangeMap(Map map)

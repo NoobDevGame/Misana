@@ -30,6 +30,8 @@ namespace Misana.Core.Ecs
 
         public GameTime GameTime;
 
+        public string Name { get; set; }
+
         static EntityManager()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
@@ -120,7 +122,11 @@ namespace Misana.Core.Ecs
         
         public static EntityManager Create(string name, List<BaseSystem> systems)
         {
-            return new EntityManager(systems);
+
+            return new EntityManager(systems)
+            {
+                Name = name,
+            };
         }
 
         public EntityManager RegisterAdditionHook<T>(Action<EntityManager, Entity, T> h) where T : Component, new()
