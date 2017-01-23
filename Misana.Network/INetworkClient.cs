@@ -13,5 +13,9 @@ namespace Misana.Network
 
         bool TryGetMessage<T>(out T? message)
             where T : struct ;
+
+        void Connect();
+        void Disconnect();
+        bool IsConnected { get; }
     }
 }

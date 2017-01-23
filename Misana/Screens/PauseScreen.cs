@@ -35,7 +35,7 @@ namespace NoobFight.Screens
             };
             stack.Controls.Add(resumeButton);
 
-            Button switchWorldButton = Button.TextButton(manager, "Switch World");
+            Button switchWorldButton = Button.TextButton(manager, "Switch Simulation");
             switchWorldButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             switchWorldButton.Margin = new Border(0, 0, 0, 10);
             switchWorldButton.LeftMouseClick += (s, e) =>
@@ -47,12 +47,12 @@ namespace NoobFight.Screens
             /*
             if (manager.Game.SimulationComponent.Simulation.Mode == SimulationMode.Single)
             {
-                manager.Game.SimulationComponent.World.Pause();
+                manager.Game.SimulationComponent.Simulation.Pause();
 
                 disconnectButton = Button.TextButton(manager, "Exit");
                 disconnectButton.LeftMouseClick += (s, e) =>
                 {
-                    manager.Game.SimulationComponent.World.Pause();
+                    manager.Game.SimulationComponent.Simulation.Pause();
                     manager.NavigateHome();
                 };
             }
@@ -80,7 +80,7 @@ namespace NoobFight.Screens
             /*
             if (Manager.Game.SimulationComponent.Simulation.Mode == SimulationMode.Single)
             {
-                Manager.Game.SimulationComponent.World.Resume();
+                Manager.Game.SimulationComponent.Simulation.Resume();
             }
             */
         }

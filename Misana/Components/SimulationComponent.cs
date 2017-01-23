@@ -13,18 +13,23 @@ using Misana.Core.Systems.StatusSystem;
 using Misana.Core.Maps;
 using Misana.EntityComponents;
 using Misana.EntitySystems;
+using Misana.Network;
 
 namespace Misana.Components
 {
     internal class SimulationComponent : GameComponent
     {
-        public World World { get; private set; }
+        public ISimulation Simulation { get; private set; }
 
         public new MisanaGame Game;
         
         public SpriteRenderSystem SpriteRenderSystem;
         public HealthRenderSystem HealthRenderSystem;
         public NameRenderSystem NameRenderSystem;
+
+        private GameHost host;
+        private GameHost serverHost;
+        private InternNetworkClient networkClient;
 
         public SimulationComponent(MisanaGame game) : base(game)
         {
@@ -46,29 +51,35 @@ namespace Misana.Components
             NameRenderSystem = new NameRenderSystem(Game);
             //NameRenderSystem.LoadContent();
 
-        }
+            networkClient = new InternNetworkClient();
 
-        public void StartMap(Map m)
-        {
             List<BaseSystem> renderSystems = new List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
-            
-            World = new World(renderSystems,null);
 
-            World.Entities.RegisterAdditionHook<SpriteInfoComponent>(
+            host = new GameHost(GameHostMode.Local,networkClient, null,renderSystems);
+            serverHost = new GameHost(GameHostMode.Server, networkClient.Server,null,null);
+        }
+
+        public void StartLocalGame(Map m)
+        {
+            host.Connect();
+
+            Simulation = host.CreateWorld("LocalWorld");
+
+            Simulation.Entities.RegisterAdditionHook<SpriteInfoComponent>(
                 (em, e, si) => {
                     var rsc = ComponentRegistry<RenderSpriteComponent>.Take();
                     em.Add(e, rsc, false);
                 }
             );
 
-            World.Entities.RegisterRemovalHook<SpriteInfoComponent>(
+            Simulation.Entities.RegisterRemovalHook<SpriteInfoComponent>(
                 (em,e,si) => e.Remove<RenderSpriteComponent>()
             );
 
-            World.Entities.RegisterAdditionHook<CharacterComponent>(
+            Simulation.Entities.RegisterAdditionHook<CharacterComponent>(
                 (em, e, si) => {
                     var rnc = ComponentRegistry<RenderNameComponent>.Take();
                     rnc.Text = si.Name;
@@ -76,23 +87,23 @@ namespace Misana.Components
                 }
             );
 
-            World.Entities.RegisterRemovalHook<RenderNameComponent>(
+            Simulation.Entities.RegisterRemovalHook<RenderNameComponent>(
                 (em, e, si) => e.Remove<RenderNameComponent>()
             );
 
-            World.Entities.RegisterAdditionHook<HealthComponent>(
+            Simulation.Entities.RegisterAdditionHook<HealthComponent>(
                 (em, e, si) => {
                     em.Add(e, ComponentRegistry<RenderHealthComponent>.Take(), false);
                 }
             );
 
-            World.Entities.RegisterRemovalHook<HealthComponent>(
+            Simulation.Entities.RegisterRemovalHook<HealthComponent>(
                (em, e, si) => e.Remove<RenderHealthComponent>()
            );
             
-            World.ChangeMap(m);
+            Simulation.ChangeMap(m);
 
-            Game.Player.PlayerId = World.CreatePlayer(Game.Player.Input, Game.Player.Transform);
+            Game.Player.PlayerId = Simulation.CreatePlayer(Game.Player.Input, Game.Player.Transform);
 
         }
 
@@ -100,8 +111,8 @@ namespace Misana.Components
         {
             base.Update(gameTime);
 
-            if(World != null && World.CurrentMap != null)
-                World.Update(new Core.GameTime(gameTime.ElapsedGameTime,gameTime.TotalGameTime));
+            host.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
+            serverHost.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
         }
     }
 }

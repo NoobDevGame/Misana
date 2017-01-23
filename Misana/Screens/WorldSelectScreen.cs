@@ -50,7 +50,7 @@ namespace Misana.Screens
             };
             grid.AddControl(joinButton, 0, 1);
 
-            Button createButton = Button.TextButton(manager, "Create World");
+            Button createButton = Button.TextButton(manager, "Create Simulation");
             createButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             createButton.Height = 50;
             createButton.MinWidth = 300;

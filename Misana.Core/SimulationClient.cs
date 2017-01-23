@@ -11,107 +11,107 @@ using Misana.Network;
 
 namespace Misana.Core
 {
-    public class SimulationClient : ISimulation , INetworkWorld
+    public class SimulationClient : ISimulation
     {
-        public ISimulation ClientSimulation { get; private set; }
+        public ISimulation BaseSimulation { get; private set; }
 
-        public Map CurrentMap => ClientSimulation.CurrentMap;
+        public Map CurrentMap => BaseSimulation.CurrentMap;
 
-        public EntityManager Entities => ClientSimulation.Entities;
+        public EntityManager Entities => BaseSimulation.Entities;
 
-        public SimulationState State => ClientSimulation.State;
+        public SimulationState State => BaseSimulation.State;
 
-        public ConnectState ConnectionState => _client.ConnectionState;
 
-        private NetworkWorld _server;
-        private ISimulation _serverSimulation;
-        private NetworkWorld _client;
+        private INetworkClient _client;
 
-        private InternNetworkClient _network = new InternNetworkClient();
 
-        public SimulationClient(List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
+        public SimulationClient(INetworkClient client,List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
         {
-            { //Server
-                List<BaseSystem> beforSystems = new List<BaseSystem>();
-                beforSystems.Add(new ReceiveEntityPositionSystem(_network.Server));
-                if (baseBeforSystems != null)
-                    beforSystems.AddRange(baseBeforSystems);
+            _client = client;
 
-                List<BaseSystem> afterSystems = new List<BaseSystem>();
-                afterSystems.Add(new SendEntityPositionSystem(_network.Server));
-                if (baseAfterSystems != null)
-                    afterSystems.AddRange(baseAfterSystems);
+            List<BaseSystem> beforSystems = new List<BaseSystem>();
+            beforSystems.Add(new ReceiveEntityPositionSystem(_client));
+            if (baseBeforSystems != null)
+                beforSystems.AddRange(baseBeforSystems);
 
-                _serverSimulation = new Simulation(beforSystems,afterSystems);
+            List<BaseSystem> afterSystems = new List<BaseSystem>();
+            afterSystems.Add(new SendEntityPositionSystem(_client));
+            if (baseAfterSystems != null)
+                afterSystems.AddRange(baseAfterSystems);
 
-                _server = new NetworkWorld(_network.Server,_serverSimulation);
-            }
-
-            {//Client
-                List<BaseSystem> beforSystems = new List<BaseSystem>();
-                beforSystems.Add(new ReceiveEntityPositionSystem(_network));
-                if (baseBeforSystems != null)
-                    beforSystems.AddRange(baseBeforSystems);
-
-                List<BaseSystem> afterSystems = new List<BaseSystem>();
-                afterSystems.Add(new SendEntityPositionSystem(_network));
-                if (baseAfterSystems != null)
-                    afterSystems.AddRange(baseAfterSystems);
-
-               ClientSimulation = new Simulation(beforSystems,afterSystems);
-
-                _client = new NetworkWorld(_network,ClientSimulation);
-            }
-
-            Connect();
-
+            BaseSimulation = new Simulation(beforSystems,afterSystems);
         }
 
         public void ChangeMap(Map map)
         {
-            //ClientSimulation.ChangeMap(map);
+            //BaseSimulation.ChangeMap(map);
             //_server.ChangeMap(map);
         }
 
         public void CreateEntity(string definitionName)
         {
             //_server.CreateEntity(definitionName);
-            //ClientSimulation.CreateEntity(definitionName);
+            //BaseSimulation.CreateEntity(definitionName);
         }
 
         public void CreateEntity(EntityDefinition defintion)
         {
             //_server.CreateEntity(defintion);
-            //ClientSimulation.CreateEntity(defintion);
+            //BaseSimulation.CreateEntity(defintion);
         }
 
         public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
-            if (ConnectionState == ConnectState.Local)
-            {
-                return ClientSimulation.CreatePlayer(input, transform);
-            }
-            else
-            {
-                var playerId = ClientSimulation.CreatePlayer(input, transform);
-                return playerId;
-            }
+            throw  new NotImplementedException();
         }
 
         public void Update(GameTime gameTime)
         {
-            ClientSimulation.Update(gameTime);
-           _serverSimulation.Update(gameTime);
+            BaseSimulation.Update(gameTime);
         }
 
-        public void Connect()
+        /*
+        public void CreateWorld(string name)
         {
-            _client.Connect();
-        }
+            if (ConnectionState == ConnectState.Local)
+            {
+                BaseSimulation = new Simulation(baseBeforSystems,baseAfterSystems);
+            }
+            else
+            {
+                { //Server
+                    List<BaseSystem> beforSystems = new List<BaseSystem>();
+                    beforSystems.Add(new ReceiveEntityPositionSystem(_client.Server));
+                    if (baseBeforSystems != null)
+                        beforSystems.AddRange(baseBeforSystems);
 
-        public void Disconnect()
-        {
-            _client.Disconnect();
+                    List<BaseSystem> afterSystems = new List<BaseSystem>();
+                    afterSystems.Add(new SendEntityPositionSystem(_client.Server));
+                    if (baseAfterSystems != null)
+                        afterSystems.AddRange(baseAfterSystems);
+
+                    _serverSimulation = new Simulation(beforSystems,afterSystems);
+
+                    _server = new NetworkWorld(_client.Server,_serverSimulation);
+                }
+
+                {//Client
+                    List<BaseSystem> beforSystems = new List<BaseSystem>();
+                    beforSystems.Add(new ReceiveEntityPositionSystem(_client));
+                    if (baseBeforSystems != null)
+                        beforSystems.AddRange(baseBeforSystems);
+
+                    List<BaseSystem> afterSystems = new List<BaseSystem>();
+                    afterSystems.Add(new SendEntityPositionSystem(_client));
+                    if (baseAfterSystems != null)
+                        afterSystems.AddRange(baseAfterSystems);
+
+                    BaseSimulation = new Simulation(beforSystems,afterSystems);
+
+                    _client = new NetworkWorld(_client,BaseSimulation);
+                }
+            }
         }
+        */
     }
 }

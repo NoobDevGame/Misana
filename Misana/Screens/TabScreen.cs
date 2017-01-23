@@ -17,7 +17,7 @@ namespace Misana.Screens
             Controls.Add(panel);
 
             /*
-            foreach(var player in manager.Game.SimulationComponent.World.Players)
+            foreach(var player in manager.Game.SimulationComponent.Simulation.Players)
             {
                 panel.Controls.Add(new Label(manager) { Text = player.Name, VerticalAlignment = VerticalAlignment.Top });
             }

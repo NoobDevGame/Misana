@@ -77,7 +77,7 @@ namespace Misana.Screens
             {
                 //manager.Game.SimulationComponent.CreateSinglePlayerSimulation((GameMode)Enum.Parse(typeof(GameMode), (string)gamemodeSelect.SelectedItem),manager.Game.PlayerComponent.PlayerTexture,manager.Game.PlayerComponent.PlayerName);
                 var path = maps.FirstOrDefault(t => Path.GetFileNameWithoutExtension(t) == mapList.SelectedItem);
-                manager.Game.Simulation.StartMap(MapLoader.LoadPath(path));
+                manager.Game.Simulation.StartLocalGame(MapLoader.LoadPath(path));
                 manager.NavigateToScreen(new GameScreen(manager));
             };
             grid.AddControl(playButton, 0, 2);

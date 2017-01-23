@@ -9,6 +9,8 @@ namespace Misana.Network
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
+        public bool IsConnected { get; private set; }
+
         private string name;
 
         public InternNetworkClient()
@@ -71,5 +73,17 @@ namespace Misana.Network
 
             return result;
         }
+
+        public void Connect()
+        {
+            IsConnected = true;
+        }
+
+        public void Disconnect()
+        {
+            IsConnected = false;
+        }
+
+
     }
 }

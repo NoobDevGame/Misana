@@ -49,7 +49,7 @@ namespace Misana.Screens
             };
             playerList.MinWidth = 200;
             playerList.Margin = new Border(5, 0, 0, 5);
-            //foreach (var p in manager.Game.SimulationComponent.World.Players)
+            //foreach (var p in manager.Game.SimulationComponent.Simulation.Players)
             //    playerList.Items.Add(p.Name);
             grid.AddControl(playerList, 2, 0, 1, 2);
 
@@ -78,10 +78,10 @@ namespace Misana.Screens
             base.OnUpdate(gameTime);
 
             /*
-            if(Manager.Game.SimulationComponent.World.Players.Count() != playerList.Items.Count)
+            if(Manager.Game.SimulationComponent.Simulation.Players.Count() != playerList.Items.Count)
             {
                 playerList.Items.Clear();
-                foreach (var p in Manager.Game.SimulationComponent.World.Players)
+                foreach (var p in Manager.Game.SimulationComponent.Simulation.Players)
                     playerList.Items.Add(p.Name);
             }
             */

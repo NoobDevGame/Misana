@@ -3,6 +3,7 @@
     public enum ConnectState
     {
         Local,
+        Server,
         Connected,
     }
 }

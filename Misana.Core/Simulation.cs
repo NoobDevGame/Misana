@@ -17,7 +17,7 @@ using Misana.Core.Systems.StatusSystem;
 
 namespace Misana.Core
 {
-    public class Simulation : ISimulation
+    class Simulation : ISimulation
     {
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
