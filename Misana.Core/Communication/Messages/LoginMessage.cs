@@ -2,13 +2,13 @@
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition]
+    [MessageDefinition(ResponseType = typeof(LoginResponeMessage))]
     public struct LoginRequestMessage
     {
 
     }
 
-    [MessageDefinition]
+    [MessageDefinition(IsRespone = true)]
     public struct LoginResponeMessage
     {
 

@@ -7,9 +7,9 @@ namespace Misana.Core.Communication.Systems
 {
     public class SendEntityPositionSystem : BaseSystemR1<TransformComponent>
     {
-        private INetworkClient _client;
+        private NetworkClient _client;
 
-        public SendEntityPositionSystem(INetworkClient client)
+        public SendEntityPositionSystem(NetworkClient client)
         {
             _client = client;
         }

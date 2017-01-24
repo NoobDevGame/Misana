@@ -1,20 +1,33 @@
 ﻿namespace Misana.Network
 {
-    internal struct MessageHeader
+    public struct MessageHeader
     {
         public MessageHeaderState State;
-        public int MessageIndex;
+        public int MessageTypeIndex;
 
-        public MessageHeader(MessageHeaderState state,int messageIndex)
+        public byte MessageId;
+
+        public MessageHeader(int messageTypeIndex,MessageHeaderState state)
         {
             State = state;
-            MessageIndex = messageIndex;
+            MessageTypeIndex = messageTypeIndex;
+            MessageId = 0;
         }
 
-        public MessageHeader(MessageInformation information,int messageIndex)
+        public MessageHeader(int messageTypeIndex,byte messageId)
         {
-            State = information.State;
-            MessageIndex = messageIndex;
+            MessageTypeIndex = messageTypeIndex;
+            State = 0;
+            MessageId = messageId;
         }
+
+        public MessageHeader(int messageTypeIndex,byte messageId,MessageHeaderState state)
+        {
+            State = state;
+            MessageTypeIndex = messageTypeIndex;
+            MessageId = messageId;
+        }
+
+
     }
 }

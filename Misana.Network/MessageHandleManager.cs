@@ -22,11 +22,12 @@ namespace Misana.Network
                 where type.IsValueType && !type.IsEnum
                 let attribute = type.GetCustomAttribute<MessageDefinitionAttribute>(false)
                 where attribute != null
-                select type;
+                select new {Type = type,Attribute = attribute};
 
             foreach (var @struct in structs)
             {
-                RegisterType(@struct);
+                RegisterType(@struct.Type);
+                CreateMessageHandle(@struct.Type).Initialize(@struct.Attribute);
             }
         }
 

@@ -2,13 +2,13 @@
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition]
+    [MessageDefinition( ResponseType = typeof(CreateWorldResponeMessage))]
     public struct CreateWorldRequestMessage
     {
 
     }
 
-    [MessageDefinition]
+    [MessageDefinition(IsRespone = true)]
     public struct CreateWorldResponeMessage
     {
 

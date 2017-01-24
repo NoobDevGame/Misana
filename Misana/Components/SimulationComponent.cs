@@ -29,7 +29,7 @@ namespace Misana.Components
 
         private GameHost host;
         private GameHost serverHost;
-        private InternNetworkClient networkClient;
+        private NetworkClient networkClient;
 
         public SimulationComponent(MisanaGame game) : base(game)
         {
@@ -51,7 +51,7 @@ namespace Misana.Components
             NameRenderSystem = new NameRenderSystem(Game);
             //NameRenderSystem.LoadContent();
 
-            networkClient = new InternNetworkClient();
+            networkClient = new NetworkClient();
 
             List<BaseSystem> renderSystems = new List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
@@ -62,11 +62,11 @@ namespace Misana.Components
             serverHost = new GameHost(GameHostMode.Server, networkClient.Server,null,null);
         }
 
-        public void StartLocalGame(Map m)
+        public async void StartLocalGame(Map m)
         {
-            host.Connect();
+            await host.Connect();
 
-            Simulation = host.CreateWorld("LocalWorld");
+            Simulation = await host.CreateWorld("LocalWorld");
 
             Simulation.Entities.RegisterAdditionHook<SpriteInfoComponent>(
                 (em, e, si) => {

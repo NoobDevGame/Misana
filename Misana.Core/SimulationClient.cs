@@ -22,10 +22,10 @@ namespace Misana.Core
         public SimulationState State => BaseSimulation.State;
 
 
-        private INetworkClient _client;
+        private NetworkClient _client;
 
 
-        public SimulationClient(INetworkClient client,List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
+        public SimulationClient(NetworkClient client,List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
         {
             _client = client;
 

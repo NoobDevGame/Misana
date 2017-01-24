@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Misana.Network
 {
-    public class InternNetworkClient : INetworkClient
+    public class NetworkClient
     {
-        public InternNetworkClient Server { get; private set; }
+
+        public NetworkClient Server { get; private set; }
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
@@ -13,13 +14,13 @@ namespace Misana.Network
 
         private string name;
 
-        public InternNetworkClient()
+        public NetworkClient()
         {
             name = "client";
-            Server = new InternNetworkClient(this);
+            Server = new NetworkClient(this);
         }
 
-        private InternNetworkClient(InternNetworkClient server)
+        private NetworkClient(NetworkClient server)
         {
             name = "server";
             Server = server;
@@ -28,7 +29,7 @@ namespace Misana.Network
         private void ReceiveData(byte[] data)
         {
             var header = MessageHandle.DeserializeHeader(ref data);
-            var index = header.MessageIndex;
+            var index = header.MessageTypeIndex;
 
             if (!_messageHandles.ExistHandle(index))
             {
@@ -38,20 +39,36 @@ namespace Misana.Network
             var handle = _messageHandles.GetHandle(index);
             var message = handle.Derserialize(ref data);
 
-            handle.SetMessage(message);
+            handle.SetMessage(message,header);
         }
 
-        public void RegisterOnMessageCallback<T>(Action<T> callback)
+        public void RegisterOnMessageCallback<T>(MessageReceiveCallback<T> callback)
             where T : struct
         {
             _messageHandles.GetHandle<T>().RegisterCallback(callback);
         }
 
-        public void SendMessage<T>(ref T message) where T : struct
+        public MessageWaitObject SendMessage<T>(ref T message) where T : struct
         {
             var index = MessageHandle<T>.Index;
 
-            var data = MessageHandle<T>.Serialize(new MessageInformation(), ref message);
+            MessageWaitObject waitObject = null;
+
+            var data = MessageHandle<T>.Serialize(ref message,out waitObject);
+
+            waitObject?.Start();
+
+            Server.ReceiveData(data);
+
+            return waitObject;
+        }
+
+        public void SendMessage<T>(ref T message,byte messageid) where T : struct
+        {
+            var index = MessageHandle<T>.Index;
+
+            var data = MessageHandle<T>.Serialize(ref message,messageid);
+
             Server.ReceiveData(data);
         }
 
@@ -74,7 +91,7 @@ namespace Misana.Network
             return result;
         }
 
-        public void Connect()
+        public async Task Connect()
         {
             IsConnected = true;
         }
@@ -83,7 +100,6 @@ namespace Misana.Network
         {
             IsConnected = false;
         }
-
 
     }
 }
