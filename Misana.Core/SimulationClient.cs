@@ -79,20 +79,20 @@ namespace Misana.Core
             }
             else
             {
-                { //Server
+                { //Outer
                     List<BaseSystem> beforSystems = new List<BaseSystem>();
-                    beforSystems.Add(new ReceiveEntityPositionSystem(_client.Server));
+                    beforSystems.Add(new ReceiveEntityPositionSystem(_client.Outer));
                     if (baseBeforSystems != null)
                         beforSystems.AddRange(baseBeforSystems);
 
                     List<BaseSystem> afterSystems = new List<BaseSystem>();
-                    afterSystems.Add(new SendEntityPositionSystem(_client.Server));
+                    afterSystems.Add(new SendEntityPositionSystem(_client.Outer));
                     if (baseAfterSystems != null)
                         afterSystems.AddRange(baseAfterSystems);
 
                     _serverSimulation = new Simulation(beforSystems,afterSystems);
 
-                    _server = new NetworkWorld(_client.Server,_serverSimulation);
+                    _server = new NetworkWorld(_client.Outer,_serverSimulation);
                 }
 
                 {//Client

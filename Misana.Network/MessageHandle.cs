@@ -85,7 +85,7 @@ namespace Misana.Network
 
         public abstract object Derserialize(ref byte[] data);
 
-        public abstract void SetMessage(object value,MessageHeader header);
+        public abstract void SetMessage(object value,MessageHeader header,NetworkClient client);
 
         public abstract bool TryGetValue(out object message);
 
@@ -119,7 +119,7 @@ namespace Misana.Network
         private static MessageWaitObject[] reciveWaitHandles;
         private static MessageWaitObject[] sendWaitHandles;
 
-        public static bool IsRespone { get;  private set; }
+        public static bool IsResponse { get;  private set; }
 
         public MessageHandle()
             : base(typeof(T))
@@ -129,7 +129,7 @@ namespace Misana.Network
 
         public override void Initialize(MessageDefinitionAttribute attribute)
         {
-            IsRespone = attribute.IsRespone;
+            IsResponse = attribute.IsResponse;
 
             if (attribute.ResponseType != null)
             {
@@ -140,7 +140,7 @@ namespace Misana.Network
 
         public static byte[] Serialize(ref T data,out MessageWaitObject waitObject)
         {
-            if (IsRespone)
+            if (IsResponse)
                 throw new NotSupportedException("For Requestmessages only");
 
             var messageId = (byte)(Interlocked.Increment(ref MessageId) % byte.MaxValue);
@@ -152,8 +152,8 @@ namespace Misana.Network
 
         public static byte[] Serialize(ref T data,byte messageId)
         {
-            if (!IsRespone)
-                throw new NotSupportedException("For Responemessages only");
+            if (!IsResponse)
+                throw new NotSupportedException("For Responsemessages only");
 
             return MessageHandle.Serialize<T>(new MessageHeader(Index.Value,messageId),ref data);
         }
@@ -206,13 +206,13 @@ namespace Misana.Network
             return result;
         }
 
-        public void SetMessage(T message,MessageHeader header)
+        public void SetMessage(T message,MessageHeader header,NetworkClient client)
         {
             reciveWaitHandles?[header.MessageId].Release(message);
 
             if (_callback != null)
             {
-                _callback.Invoke(message,header);
+                _callback.Invoke(message,header,client);
                 return;
             }
 
@@ -222,9 +222,9 @@ namespace Misana.Network
             }
         }
 
-        public override void SetMessage(object value,MessageHeader header)
+        public override void SetMessage(object value,MessageHeader header,NetworkClient client)
         {
-            SetMessage((T)value,header);
+            SetMessage((T)value,header,client);
         }
 
         public void RegisterCallback(MessageReceiveCallback<T> callback)

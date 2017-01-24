@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Misana.Network
@@ -6,7 +7,11 @@ namespace Misana.Network
     public class NetworkClient
     {
 
-        public NetworkClient Server { get; private set; }
+        private static int clientId = 0;
+        public int ClientId { get; } = Interlocked.Increment(ref clientId);
+
+
+        public NetworkClient Outer { get; private set; }
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
@@ -17,13 +22,13 @@ namespace Misana.Network
         public NetworkClient()
         {
             name = "client";
-            Server = new NetworkClient(this);
+            Outer = new NetworkClient(this);
         }
 
-        private NetworkClient(NetworkClient server)
+        private NetworkClient(NetworkClient outer)
         {
-            name = "server";
-            Server = server;
+            name = "outer";
+            Outer = outer;
         }
 
         private void ReceiveData(byte[] data)
@@ -39,7 +44,7 @@ namespace Misana.Network
             var handle = _messageHandles.GetHandle(index);
             var message = handle.Derserialize(ref data);
 
-            handle.SetMessage(message,header);
+            handle.SetMessage(message,header,this);
         }
 
         public void RegisterOnMessageCallback<T>(MessageReceiveCallback<T> callback)
@@ -58,7 +63,7 @@ namespace Misana.Network
 
             waitObject?.Start();
 
-            Server.ReceiveData(data);
+            Outer.ReceiveData(data);
 
             return waitObject;
         }
@@ -69,7 +74,7 @@ namespace Misana.Network
 
             var data = MessageHandle<T>.Serialize(ref message,messageid);
 
-            Server.ReceiveData(data);
+            Outer.ReceiveData(data);
         }
 
         public bool TryGetMessage<T>(out T? message) where T : struct

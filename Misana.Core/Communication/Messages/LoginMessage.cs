@@ -1,16 +1,30 @@
-﻿using Misana.Network;
+﻿using System.Runtime.InteropServices;
+using Misana.Network;
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition(ResponseType = typeof(LoginResponeMessage))]
+    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
+    [MessageDefinition(ResponseType = typeof(LoginResponseMessage))]
     public struct LoginRequestMessage
     {
 
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string Name;
+
+        public LoginRequestMessage(string name)
+        {
+            Name = name;
+        }
     }
 
-    [MessageDefinition(IsRespone = true)]
-    public struct LoginResponeMessage
+    [MessageDefinition(IsResponse = true)]
+    public struct LoginResponseMessage
     {
+        public int Id;
 
+        public LoginResponseMessage(int id)
+        {
+            Id = id;
+        }
     }
 }

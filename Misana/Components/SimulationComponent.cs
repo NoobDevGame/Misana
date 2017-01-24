@@ -59,12 +59,12 @@ namespace Misana.Components
             renderSystems.Add(NameRenderSystem);
 
             host = new GameHost(GameHostMode.Local,networkClient, null,renderSystems);
-            serverHost = new GameHost(GameHostMode.Server, networkClient.Server,null,null);
+            serverHost = new GameHost(GameHostMode.Server, networkClient.Outer,null,null);
         }
 
         public async void StartLocalGame(Map m)
         {
-            await host.Connect();
+            await host.Connect("Test Player");
 
             Simulation = await host.CreateWorld("LocalWorld");
 

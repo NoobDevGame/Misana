@@ -6,6 +6,6 @@ namespace Misana.Network
     public class MessageDefinitionAttribute : Attribute
     {
         public Type ResponseType { get; set; }
-        public bool IsRespone { get; set; }
+        public bool IsResponse { get; set; }
     }
 }

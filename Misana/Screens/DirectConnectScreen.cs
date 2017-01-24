@@ -13,7 +13,7 @@ namespace Misana.Screens
             StackPanel stack = new StackPanel(manager);
             Controls.Add(stack);
 
-            stack.Controls.Add(new Label(manager) { Text = "Server Address: ", HorizontalAlignment = HorizontalAlignment.Left });
+            stack.Controls.Add(new Label(manager) { Text = "Outer Address: ", HorizontalAlignment = HorizontalAlignment.Left });
 
             Textbox ipInput = new Textbox(manager);
             ipInput.HorizontalAlignment = HorizontalAlignment.Stretch;

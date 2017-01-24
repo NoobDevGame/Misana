@@ -4,5 +4,6 @@
     {
         Local,
         Server,
+        Hybrid
     }
 }
