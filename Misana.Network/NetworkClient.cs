@@ -77,21 +77,26 @@ namespace Misana.Network
             Outer.ReceiveData(data);
         }
 
-        public bool TryGetMessage<T>(out T? message) where T : struct
+        public bool TryGetMessage<T>(out T message) where T : struct
         {
             var index = MessageHandle<T>.Index;
 
             var handler = _messageHandles.GetHandle(index.Value);
             if (handler == null)
             {
-                message = null;
+                message = default(T);
                 return false;
             }
 
             object objMessage = null;
             var result = handler.TryGetValue(out objMessage);
 
-            message = (T?) objMessage;
+            if (objMessage != null)
+                message = (T)objMessage;
+            else
+                message = default(T);
+            
+
 
             return result;
         }

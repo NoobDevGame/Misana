@@ -17,7 +17,7 @@ using Misana.Core.Systems.StatusSystem;
 
 namespace Misana.Core
 {
-    class Simulation : ISimulation
+    public class Simulation : ISimulation
     {
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
@@ -32,6 +32,7 @@ namespace Misana.Core
 
         public Simulation(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
+
             State = SimulationState.Unloaded;
 
             _collidingMoverSystem = new EntityCollidingMoverSystem();
@@ -58,7 +59,7 @@ namespace Misana.Core
             Entities = EntityManager.Create("LocalWorld",systems);
         }
 
-        public void ChangeMap(Map map)
+        public async Task ChangeMap(Map map)
         {
             CurrentMap = map;
 
@@ -110,7 +111,19 @@ namespace Misana.Core
             entityBuilder.Commit(Entities);
         }
 
-        public int CreatePlayer(PlayerInputComponent input, TransformComponent transform)
+        public void CreateEntity(EntityDefinition defintion,int entityId)
+        {
+            var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
+            entityBuilder.Commit(Entities,entityId);
+        }
+
+        public void CreateEntity(int defintionId, int entityId)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == defintionId).Value;
+            CreateEntity(definition,entityId);
+        }
+
+        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
             var playerDefinition = CurrentMap.GlobalEntityDefinitions["Player"];
 
@@ -123,41 +136,41 @@ namespace Misana.Core
                 .Add(input)
                 ;
 
-            /*
-            var bow = new EntityBuilder()
-                .Add<WieldableComponent>(wieldable => {
-                    wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect {
-                        Builder = new EntityBuilder()
-                            .Add<EntityColliderComponent>(pcoll => {
-                                pcoll.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) { ApplyTo = ApplicableTo.Other });
-                                //pcoll.OnCollisionEvents.Add(new ApplyEffectOnCollisionEvent(new RemoveEntityEffect()) {ApplyTo = ApplicableTo.Self});
-                            })
-                            .Add<SpriteInfoComponent>(),
-                        Radius = 0.3f,
-                        Expiration = 1500,
-                        Speed = 0.25f
-
-                    }) { CoolDown = TimeSpan.FromMilliseconds(250) });
-                })
-                .Add<SpriteInfoComponent>()
-                .Add<WieldedComponent>(x => x.Offset = new Vector2(0.5f,0.5f))
-                .Add<FacingComponent>()
-                .Add<TransformComponent>(
-                    x => {
-                        x.ParentEntityId = playerId;
-                        x.Position = new Vector2(0.3f,0.3f);
-                    })
-                .Commit(Entities);
-            */
-
             var playerId = playerBuilder.Commit(Entities).Id;
 
             return playerId;
         }
 
+        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId)
+        {
+            var playerDefinition = CurrentMap.GlobalEntityDefinitions["Player"];
+
+            transform.CurrentArea = CurrentMap.StartArea;
+            transform.Position = new Vector2(5, 3);
+
+            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder())
+                    .Add<FacingComponent>()
+                    .Add(transform)
+                    .Add(input)
+                ;
+
+            playerBuilder.Commit(Entities,playerId);
+
+            return playerId;
+        }
+
+        public async Task Start()
+        {
+            State = SimulationState.Running;
+
+        }
+
         public void Update(GameTime gameTime)
         {
-            Entities.Update(gameTime);
+            if (State == SimulationState.Running)
+                Entities.Update(gameTime);
         }
+
+
     }
 }

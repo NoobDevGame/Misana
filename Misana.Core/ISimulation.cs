@@ -1,4 +1,5 @@
-﻿using Misana.Core.Components;
+﻿using System.Threading.Tasks;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
 using Misana.Core.Maps;
@@ -13,12 +14,19 @@ namespace Misana.Core
 
         SimulationState State { get; }
 
-        void ChangeMap(Map map);
+        Task ChangeMap(Map map);
 
         void CreateEntity(string definitionName);
         void CreateEntity(EntityDefinition defintion);
-        int CreatePlayer( PlayerInputComponent input, TransformComponent transform);
+        void CreateEntity(int defintionId, int entityId);
 
+        Task<int> CreatePlayer( PlayerInputComponent input, TransformComponent transform);
+        Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId);
+
+        Task Start();
         void Update(GameTime gameTime);
+
+
+
     }
 }

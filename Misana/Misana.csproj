@@ -94,7 +94,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Content\Maps\map.mm">
+    <None Include="Content\Maps\Multi.mm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\Tilesheets\TileSheetCharacters.json">

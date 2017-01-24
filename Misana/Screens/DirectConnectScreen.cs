@@ -36,11 +36,11 @@ namespace Misana.Screens
                     if (splt.Length > 1)
                         int.TryParse(splt[1], out port);
                     //manager.Game.NetworkComponent.Connect(splt[0], port,manager.Game.PlayerComponent.PlayerName,manager.Game.PlayerComponent.PlayerTexture);
-                    manager.NavigateToScreen(new ConnectingScreen(manager));
+                    //manager.NavigateToScreen(new ConnectingScreen(manager));
                 }
                 catch (Exception ex)
                 {
-                    manager.NavigateToScreen(new ConnectingScreen(manager, true, "Connection Error"));
+                    //manager.NavigateToScreen(new ConnectingScreen(manager, true, "Connection Error"));
                 }
             };
             stack.Controls.Add(connectButton);

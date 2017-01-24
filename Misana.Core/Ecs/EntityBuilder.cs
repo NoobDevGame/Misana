@@ -56,6 +56,19 @@ namespace Misana.Core.Ecs
             return e;
         }
 
+        public Entity Commit(EntityManager manager, int entityId)
+        {
+            if (_components == null)
+                throw new InvalidOperationException();
+
+            var e = new Entity(entityId, _components, manager);
+            manager.AddEntity(e);
+
+            _components = null;
+
+            return e;
+        }
+
         public EntityBuilder CommitAndReturnCopy(EntityManager manager)
         {
             int id;
@@ -85,5 +98,7 @@ namespace Misana.Core.Ecs
 
             return eb;
         }
+
+
     }
 }

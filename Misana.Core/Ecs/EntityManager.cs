@@ -27,7 +27,7 @@ namespace Misana.Core.Ecs
         public readonly int Index;
 
         private int _entityId;
-        private int _maxEntityId;
+        private int _maxEntityId = short.MaxValue;
 
         public GameTime GameTime;
 
@@ -121,16 +121,13 @@ namespace Misana.Core.Ecs
             Systems = systems;
         }
         
-        public static EntityManager Create(string name, List<BaseSystem> systems,int startIndex = 0, int maxCount = int.MaxValue)
+        public static EntityManager Create(string name, List<BaseSystem> systems)
         {
 
             var manager =  new EntityManager(systems)
             {
                 Name = name,
             };
-
-            manager._entityId = startIndex;
-            manager._maxEntityId = startIndex + maxCount;
 
             return manager;
         }
@@ -301,7 +298,7 @@ namespace Misana.Core.Ecs
         public int NextId()
         {
             var id = Interlocked.Increment(ref _entityId);
-            if (id > _entityManagerIndex)
+            if (id > _maxEntityId)
                 throw new IndexOutOfRangeException("Entity out of Range");
             return id;
         }

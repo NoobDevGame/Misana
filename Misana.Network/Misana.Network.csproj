@@ -44,13 +44,13 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="MessageHandleList.cs" />
     <Compile Include="MessageWaitObject.cs" />
-    <Compile Include="NetworkClient.cs" />
     <Compile Include="MessageDefinitionAttribute.cs" />
     <Compile Include="MessageHandle.cs" />
     <Compile Include="MessageHandleManager.cs" />
     <Compile Include="MessageHeader.cs" />
     <Compile Include="MessageHeaderState.cs" />
     <Compile Include="MessageIdPair.cs" />
+    <Compile Include="NetworkClient.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

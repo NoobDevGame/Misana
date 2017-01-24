@@ -96,7 +96,6 @@ namespace Misana.Network
         where T : struct
     {
         private static int? index;
-
         public static int? Index
         {
             get
@@ -116,7 +115,7 @@ namespace Misana.Network
 
         private MessageReceiveCallback<T> _callback;
 
-        private static MessageWaitObject[] reciveWaitHandles;
+        private static MessageWaitObject[] receiveWaitHandles;
         private static MessageWaitObject[] sendWaitHandles;
 
         public static bool IsResponse { get;  private set; }
@@ -160,14 +159,14 @@ namespace Misana.Network
 
         public override void SetCallbackHandles(ref MessageWaitObject[] waitObjects)
         {
-            if (reciveWaitHandles == null)
+            if (receiveWaitHandles == null)
             {
-                reciveWaitHandles = new MessageWaitObject[byte.MaxValue+1];
+                receiveWaitHandles = new MessageWaitObject[byte.MaxValue+1];
                 for (int i = 0; i < byte.MaxValue +1; i++)
-                    reciveWaitHandles[i] = new MessageWaitObject();
+                    receiveWaitHandles[i] = new MessageWaitObject();
             }
 
-            waitObjects = reciveWaitHandles;
+            waitObjects = receiveWaitHandles;
         }
 
         public static T Deserialize(ref byte[] data)
@@ -208,7 +207,7 @@ namespace Misana.Network
 
         public void SetMessage(T message,MessageHeader header,NetworkClient client)
         {
-            reciveWaitHandles?[header.MessageId].Release(message);
+            receiveWaitHandles?[header.MessageId].Release(message);
 
             if (_callback != null)
             {

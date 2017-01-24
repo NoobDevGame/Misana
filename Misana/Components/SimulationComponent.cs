@@ -27,8 +27,8 @@ namespace Misana.Components
         public HealthRenderSystem HealthRenderSystem;
         public NameRenderSystem NameRenderSystem;
 
-        private GameHost host;
-        private GameHost serverHost;
+        private ClientGameHost host;
+        private ServerGameHost serverHost;
         private NetworkClient networkClient;
 
         public SimulationComponent(MisanaGame game) : base(game)
@@ -58,12 +58,14 @@ namespace Misana.Components
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
 
-            host = new GameHost(GameHostMode.Local,networkClient, null,renderSystems);
-            serverHost = new GameHost(GameHostMode.Server, networkClient.Outer,null,null);
+            host = new ClientGameHost(networkClient, null,renderSystems);
+            serverHost = new ServerGameHost(networkClient.Outer);
         }
 
-        public async void StartLocalGame(Map m)
+        public async Task StartLocalGame(Map m)
         {
+            //await Task.Delay(2000);
+
             await host.Connect("Test Player");
 
             Simulation = await host.CreateWorld("LocalWorld");
@@ -101,9 +103,10 @@ namespace Misana.Components
                (em, e, si) => e.Remove<RenderHealthComponent>()
            );
             
-            Simulation.ChangeMap(m);
+            await Simulation.ChangeMap(m);
 
-            Game.Player.PlayerId = Simulation.CreatePlayer(Game.Player.Input, Game.Player.Transform);
+            Game.Player.PlayerId = await Simulation.CreatePlayer(Game.Player.Input, Game.Player.Transform);
+            await Simulation.Start();
 
         }
 

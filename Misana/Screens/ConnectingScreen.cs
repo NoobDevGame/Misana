@@ -1,4 +1,7 @@
-﻿using Misana.Components;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using engenious;
+using Misana.Components;
 using MonoGameUi;
 
 namespace Misana.Screens
@@ -9,8 +12,11 @@ namespace Misana.Screens
 
         ScreenComponent Manager;
 
-        public ConnectingScreen(ScreenComponent manager, bool error = false, string message = "Connecting..." ) : base(manager)
+        private Task waitTask;
+
+        public ConnectingScreen(ScreenComponent manager,Task waitTask, bool error = false, string message = "Connecting..." ) : base(manager)
         {
+            this.waitTask = waitTask;
             Manager = manager;
 
             infoLabel = new Label(manager);
@@ -26,6 +32,14 @@ namespace Misana.Screens
         private void Connect()
         {
             //Connection here
+        }
+
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            if (waitTask.IsCompleted)
+            {
+                Manager.NavigateToScreen(new GameScreen(Manager));
+            }
         }
 
         private void ConnectionError()

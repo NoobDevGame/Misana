@@ -44,12 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Communication\ConnectState.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
-    <Compile Include="Communication\Messages\CreateWorldRequestMessage.cs" />
+    <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
+    <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
+    <Compile Include="Communication\NetworkPlayer.cs" />
+    <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
@@ -113,12 +115,12 @@
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
-    <Compile Include="GameHostMode.cs" />
+    <Compile Include="ClientGameHost_Server.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />
     <Compile Include="ISimulation.cs" />
-    <Compile Include="GameHost.cs" />
+    <Compile Include="ClientGameHost.cs" />
     <Compile Include="Maps\Area.cs" />
     <Compile Include="Maps\Layer.cs" />
     <Compile Include="Maps\Map.cs" />
@@ -135,6 +137,7 @@
     <Compile Include="MessageManager.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServerGameHost.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
