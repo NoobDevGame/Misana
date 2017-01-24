@@ -95,7 +95,7 @@ namespace Misana.Network
                 message = (T)objMessage;
             else
                 message = default(T);
-            
+
 
 
             return result;

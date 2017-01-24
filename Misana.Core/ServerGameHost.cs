@@ -13,7 +13,7 @@ namespace Misana.Core
 
         private readonly NetworkClient client;
 
-        private List<ISimulation> simulations  = new List<ISimulation>();
+        private List<NetworkSimulation> simulations  = new List<NetworkSimulation>();
 
         //TODO: Dictionary weg
         protected Dictionary<int,NetworkPlayer> players = new Dictionary<int, NetworkPlayer>();
@@ -42,6 +42,8 @@ namespace Misana.Core
                 return;
             }
 
+            simulation.BaseSimulation.Start();
+
             networkClient.SendMessage(ref response,header.MessageId);
 
         }
@@ -61,7 +63,7 @@ namespace Misana.Core
 
             var map = MapLoader.Load(message.Name);
 
-            simulation.ChangeMap(map);
+            simulation.BaseSimulation.ChangeMap(map);
 
 
             networkClient.SendMessage(ref response,header.MessageId);
@@ -70,7 +72,7 @@ namespace Misana.Core
         private void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
         {
             var simulation = players[networkClient.ClientId].Simulation;
-            simulation.CreateEntity(message.DefinitionId, message.EntityId);
+            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId);
 
             var responseMessage = new CreateEntityMessageResponse(true);
             networkClient.SendMessage(ref responseMessage,header.MessageId);
@@ -91,7 +93,7 @@ namespace Misana.Core
             var networkPlayer = players[client.ClientId];
 
 
-            var simulation = new NetworkSimulation(networkPlayer,null,null);
+            var simulation = new NetworkSimulation(networkPlayer,this.client,null,null);
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);
 
@@ -109,7 +111,7 @@ namespace Misana.Core
         {
             foreach (var simulation in simulations)
             {
-                simulation.Update(gameTime);
+                simulation.BaseSimulation.Update(gameTime);
             }
         }
     }
