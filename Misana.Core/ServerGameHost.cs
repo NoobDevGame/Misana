@@ -84,6 +84,9 @@ namespace Misana.Core
             var responseMessage = new CreateEntityMessageResponse(true);
             networkClient.SendResponseMessage(ref responseMessage,header.MessageId);
 
+            var callbackmessage = new OnCreateEntityMessage(message.EntityId,message.DefinitionId);
+            simulation.Players.SendMessage(ref callbackmessage,networkClient.ClientId);
+
         }
 
         protected virtual void OnLoginRequest(LoginMessageRequest message, MessageHeader header,NetworkClient client)
@@ -108,6 +111,7 @@ namespace Misana.Core
 
             CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,startIndex,entityCount );
             client.SendResponseMessage(ref messageResponse,header.MessageId);
+
         }
 
 

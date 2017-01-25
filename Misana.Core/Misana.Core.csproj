@@ -47,15 +47,18 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
+    <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
+    <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
     <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ServerReceiveEntityPositionSystem.cs" />
+    <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\CreateComponent.cs" />
@@ -163,7 +166,6 @@
     <Compile Include="Systems\WieldedSystem.cs" />
     <Compile Include="Systems\WieldedWieldableSystem.cs" />
     <Compile Include="Vector2.cs" />
-    <Compile Include="WorldInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Misana.Contracts\Misana.Contracts.csproj">

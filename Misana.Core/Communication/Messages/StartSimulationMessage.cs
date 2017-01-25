@@ -17,4 +17,10 @@ namespace Misana.Core.Communication.Messages
             Result = result;
         }
     }
+
+    [MessageDefinition(ResponseType = typeof(StartSimulationMessageResponse))]
+    public struct OnStartSimulationMessage
+    {
+
+    }
 }
