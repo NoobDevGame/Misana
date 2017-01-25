@@ -132,8 +132,8 @@ namespace Misana.Editor.Controls
             public TilesheetRenderer(Tilesheet tilesheet)
             {
                 this.tilesheet = tilesheet;
-                this.Height = tilesheet.Texture.Height;
-                this.Width = tilesheet.Texture.Width;
+                this.Height = tilesheet.Texture.Height *2;
+                this.Width = tilesheet.Texture.Width *2;
 
                 DoubleBuffered = true;
             }

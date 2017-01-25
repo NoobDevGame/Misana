@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using WeifenLuo.WinFormsUI.Docking;
+using System.Windows.Forms;
 
 namespace Misana.Editor.Helper
 {
@@ -44,6 +45,9 @@ namespace Misana.Editor.Helper
             EntityComponentToolbox ect = new EntityComponentToolbox(mainForm);
             AddWindow(ect);
 
+            LogWindow lw = new LogWindow(mainForm);
+            AddWindow(lw);
+
             if (File.Exists("layout.xml"))
             {
                 using (FileStream fs = File.Open("layout.xml", FileMode.Open))
@@ -77,6 +81,33 @@ namespace Misana.Editor.Helper
                 ShowWindow(ex);
                 ShowWindow(ect);
             }
+        }
+
+        public ToolStripMenuItem GetViewMenu()
+        {
+            ToolStripMenuItem viewMenu = new ToolStripMenuItem("View");
+            
+            foreach(var window in Windows.Where(t => typeof(SingleInstanceDockWindow).IsAssignableFrom(t.GetType())))
+            {
+                ToolStripMenuItem wItem = new ToolStripMenuItem(window.Text);
+                wItem.Checked = !window.IsHidden;
+                window.VisibleChanged += (s, e) => wItem.Checked = !window.IsHidden;
+                wItem.Click += (s, e)=>{
+                    wItem.Checked = !wItem.Checked;
+
+                    if (wItem.Checked)
+                        ShowWindow(window);
+                    else
+                        window.Hide();
+                };
+                viewMenu.DropDownItems.Add(wItem);
+            }
+
+            ToolStripMenuItem saveItem = new ToolStripMenuItem("Save Layout");
+            saveItem.Click += (s, e) => SaveLayout();
+            viewMenu.DropDownItems.Add(new ToolStripSeparator());
+            viewMenu.DropDownItems.Add(saveItem);
+            return viewMenu;
         }
 
         public void SaveLayout()

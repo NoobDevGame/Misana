@@ -5,7 +5,7 @@
         public int Id { get; }
         public Tile[] Tiles { get; }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
         public Layer(int id,Tile[] tiles)
         {

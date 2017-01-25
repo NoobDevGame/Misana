@@ -394,6 +394,9 @@ namespace Misana.Editor.Controls
         {
             var edef = (EntityDefinition)drgevent.Data.GetData(typeof(EntityDefinition));
 
+            if (edef == null)
+                return;
+
             //var x = (drgevent.X-this.ClientRectangle.X) / 32;
             //var y = (drgevent.Y-this.ClientRectangle.Y) / 32;
 

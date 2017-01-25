@@ -117,6 +117,8 @@ namespace Misana.Core.Maps.MapSerializers
         {
             var id = br.ReadInt32();
 
+            var name = br.ReadString();
+
             var length = br.ReadInt32();
 
             var tiles = new Tile[length];
@@ -127,7 +129,7 @@ namespace Misana.Core.Maps.MapSerializers
                 tiles[i] = t;
             }
 
-            return new Layer(id, tiles);
+            return new Layer(id, name, tiles);
         }
 
         private Tile DeserializeTile(BinaryReader br)
@@ -217,7 +219,7 @@ namespace Misana.Core.Maps.MapSerializers
         private void SerializeLayer(Layer layer, BinaryWriter bw)
         {
             bw.Write(layer.Id);
-
+            bw.Write(layer.Name);
             bw.Write(layer.Tiles.Length);
             foreach (var tile in layer.Tiles)
             {

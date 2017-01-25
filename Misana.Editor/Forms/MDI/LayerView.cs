@@ -45,11 +45,10 @@ namespace Misana.Editor.Forms.MDI
 
             foreach (Layer l in a.Layers)
             {
-                ListViewItem lvi = new ListViewItem(l.Id.ToString());
+                ListViewItem lvi = new ListViewItem(l.Name);
+                lvi.Tag = l;
 
-                lvi.Tag = l.Id;
-
-                lvi.SubItems.Add(l.Name);
+                lvi.SubItems.Add(l.Id.ToString());
 
                 lvi.Checked = true;
 
@@ -59,31 +58,52 @@ namespace Misana.Editor.Forms.MDI
             }
         }
 
+        private int[] GetSelectedIDs()
+        {
+            if (listView.SelectedItems.Count == 0)
+                return null;
+
+            return listView.SelectedItems.Cast<ListViewItem>().Select(t => ((Layer)t.Tag).Id).ToArray();
+        }
+
         private void listView_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            if (HiddenLayers.Contains((int)listView.Items[e.Index].Tag) && e.NewValue == CheckState.Checked)
-                HiddenLayers.Remove((int)listView.Items[e.Index].Tag);
-            else if (!HiddenLayers.Contains((int)listView.Items[e.Index].Tag) && e.NewValue == CheckState.Unchecked)
-                HiddenLayers.Add((int)listView.Items[e.Index].Tag);
+            var ids = GetSelectedIDs();
 
-            mainForm.EventBus.Publish(new LayerVisibilityChangedEvent((int)listView.Items[e.Index].Tag));
+            if (ids == null)
+                return;
+
+            if (HiddenLayers.Contains(ids[0]) && e.NewValue == CheckState.Checked)
+                HiddenLayers.Remove(ids[0]);
+            else if (!HiddenLayers.Contains(ids[0]) && e.NewValue == CheckState.Unchecked)
+                HiddenLayers.Add(ids[0]);
+
+            mainForm.EventBus.Publish(new LayerVisibilityChangedEvent(ids[0]));
         }
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
         {
+            var ids = GetSelectedIDs();
+
+            if (ids == null)
+                return;
+
             if (listView.SelectedItems.Count == 0)
                 return;
 
-            if (HiddenLayers.Contains((int)listView.SelectedItems[0].Tag))
-                HiddenLayers.Remove((int)listView.SelectedItems[0].Tag);
+            if (HiddenLayers.Contains((ids[0])))
+                HiddenLayers.Remove(ids[0]);
 
-            mainForm.EventBus.Publish(new SelectedLayerChangedEvent((int)listView.SelectedItems[0].Tag));
+            mainForm.EventBus.Publish(new SelectedLayerChangedEvent(ids[0]));
 
             
         }
 
         private void button_addLayer_Click(object sender, EventArgs e)
         {
+            if (area == null)
+                return;
+
             var maxId = 0;
             if(area.Layers.Count > 0)
                 maxId = area.Layers.Max(t => t.Id);
@@ -101,6 +121,49 @@ namespace Misana.Editor.Forms.MDI
         private void toolStripButton_toggleEntities_CheckedChanged(object sender, EventArgs e)
         {
             mainForm.EventBus.Publish(new EntityVisibilityChangedEvent(toolStripButton_toggleEntities.Checked));
+        }
+
+        private void listView_MouseClick(object sender, MouseEventArgs e)
+        {
+            if(e.Button == MouseButtons.Right && listView.SelectedItems.Count != 0)
+            {
+                contextMenuStrip_layer.Show(listView.PointToScreen(e.Location));
+            }
+        }
+
+        private void toolStripMenuItem_rename_Click(object sender, EventArgs e)
+        {
+            if(listView.SelectedItems.Count == 1)
+            {
+                listView.SelectedItems[0].BeginEdit();
+            }
+        }
+
+        private void toolStripMenuItem_remove_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedItems.Count == 0)
+                return;
+
+            bool changed = false;
+            foreach(ListViewItem lvi in listView.SelectedItems)
+            {
+                if (lvi.Tag != null)
+                {
+                    area.Layers.Remove((Layer)lvi.Tag);
+                    changed = true;
+                }
+            }
+            mainForm.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
+        }
+
+        private void listView_AfterLabelEdit(object sender, LabelEditEventArgs e)
+        {
+            if (listView.SelectedItems.Count == 0)
+                return;
+
+            ((Layer)listView.SelectedItems[0].Tag).Name = e.Label;
+
+            mainForm.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
         }
     }
 }
