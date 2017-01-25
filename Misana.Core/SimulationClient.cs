@@ -59,19 +59,48 @@ namespace Misana.Core
              await BaseSimulation.ChangeMap(map);
         }
 
-        public void CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            //_server.CreateEntity(definitionName);
-            //BaseSimulation.CreateEntity(definitionName);
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            CreateEntity(definition,createCallback,createdCallback);
         }
 
-        public void CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            //_server.CreateEntity(defintion);
-            //BaseSimulation.CreateEntity(defintion);
+            var entityId = Interlocked.Increment(ref entiytIndex);
+
+
+            var message = new CreateEntityMessageRequest(entityId,definition.Id);
+            _client.SendRequestMessage(ref message).SetCallback<CreateEntityMessageResponse>(r =>
+            {
+                if (!r.Result)
+                    return;
+                var newCreatedCallback = createdCallback + OnEntityCreated;
+
+                BaseSimulation.CreateEntity(definition.Id,entityId,createCallback,newCreatedCallback);
+            });
+
         }
 
-        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform)
+        public void CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            throw new NotSupportedException();
+        }
+
+        private void OnEntityCreated(Entity entity)
+        {
+            var createComponent = entity.Get<CreateComponent>();
+
+            if (createComponent != null)
+            {
+                foreach (var createEvent in createComponent.OnCreateEvent)
+                {
+                    createEvent.Apply(Entities,entity,null,this);
+                }
+            }
+        }
+
+        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
 
             var playerId = Interlocked.Increment(ref entiytIndex);
@@ -84,12 +113,16 @@ namespace Misana.Core
             if (!response.Result)
                 throw new NotSupportedException();
 
-             await BaseSimulation.CreatePlayer(input, transform,playerId);
+            var newCreatedCallback = createdCallback + OnEntityCreated;
+
+            await BaseSimulation.CreatePlayer(input, transform,playerId, createCallback, newCreatedCallback);
 
             return playerId;
         }
 
-        public Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId)
+
+
+        public Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             throw new NotSupportedException();
         }
@@ -103,11 +136,6 @@ namespace Misana.Core
                 throw new NotSupportedException();
 
             await BaseSimulation.Start();
-        }
-
-        public void CreateEntity(int defintionId, int entityId)
-        {
-            throw new NotSupportedException();
         }
 
         public void Update(GameTime gameTime)

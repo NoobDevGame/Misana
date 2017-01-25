@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Maps;
@@ -8,25 +7,33 @@ using Misana.Network;
 
 namespace Misana.Core
 {
-    public class ServerGameHost
+    public class ServerGameHost : NetworkListener
     {
 
-        private readonly NetworkClient client;
 
-        private System.Collections.Generic.List<NetworkSimulation> simulations  = new System.Collections.Generic.List<NetworkSimulation>();
+        private List<NetworkSimulation> simulations  = new List<NetworkSimulation>();
 
         //TODO: Dictionary weg
         protected Dictionary<int,NetworkPlayer> players = new Dictionary<int, NetworkPlayer>();
         public IEnumerable<NetworkPlayer> Players => players.Select(i => i.Value);
 
-        public ServerGameHost(NetworkClient client)
+        public ServerGameHost()
         {
-            this.client = client;
-            client.RegisterOnMessageCallback<LoginMessageRequest>(OnLoginRequest);
-            client.RegisterOnMessageCallback<CreateWorldMessageRequest>(OnCreateWorld);
-            client.RegisterOnMessageCallback<CreateEntityMessageRequest>(OnCreateEntityRequest);
-            client.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
-            client.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
+
+        }
+
+        protected override void OnConnectClient(NetworkClient newClient)
+        {
+            newClient.RegisterOnMessageCallback<LoginMessageRequest>(OnLoginRequest);
+            newClient.RegisterOnMessageCallback<CreateWorldMessageRequest>(OnCreateWorld);
+            newClient.RegisterOnMessageCallback<CreateEntityMessageRequest>(OnCreateEntityRequest);
+            newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
+            newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
+        }
+
+        protected override void OnDisconnectClient(NetworkClient oldClient)
+        {
+            base.OnDisconnectClient(oldClient);
         }
 
         private void OnStartRequest(StartSimulationMessageRequest message, MessageHeader header, NetworkClient networkClient)
@@ -72,10 +79,13 @@ namespace Misana.Core
         private void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
         {
             var simulation = players[networkClient.ClientId].Simulation;
-            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId);
+            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId,null, null);
 
             var responseMessage = new CreateEntityMessageResponse(true);
             networkClient.SendResponseMessage(ref responseMessage,header.MessageId);
+
+            var callbackmessage = new OnCreateEntityMessage(message.EntityId,message.DefinitionId);
+            simulation.Players.SendMessage(ref callbackmessage,networkClient.ClientId);
 
         }
 
@@ -92,8 +102,7 @@ namespace Misana.Core
         {
             var networkPlayer = players[client.ClientId];
 
-
-            var simulation = new NetworkSimulation(networkPlayer,this.client,null,null);
+            var simulation = new NetworkSimulation(networkPlayer,client,null,null);
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);
 
@@ -102,6 +111,7 @@ namespace Misana.Core
 
             CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,startIndex,entityCount );
             client.SendResponseMessage(ref messageResponse,header.MessageId);
+
         }
 
 

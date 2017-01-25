@@ -25,4 +25,17 @@ namespace Misana.Core.Communication.Messages
             Result = result;
         }
     }
+
+    [MessageDefinition()]
+    public struct OnCreateEntityMessage
+    {
+        public int EntityId;
+        public int DefinitionId;
+
+        public OnCreateEntityMessage(int entityId, int definitionId)
+        {
+            EntityId = entityId;
+            DefinitionId = definitionId;
+        }
+    }
 }

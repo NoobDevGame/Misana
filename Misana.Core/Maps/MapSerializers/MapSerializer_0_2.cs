@@ -10,6 +10,8 @@ namespace Misana.Core.Maps.MapSerializers
     {
         public override Version MapVersion => new Version(0,2);
 
+        public int entityIndex = 0;
+
         protected override Map Deserialize(BinaryReader br)
         {
             var mapName = br.ReadString();
@@ -38,7 +40,7 @@ namespace Misana.Core.Maps.MapSerializers
 
             var startIndex = areas.ToList().FindIndex(t => t.Id == startAreaId);
 
-            var map = new Map(mapName, areas[startIndex], areas.ToList());
+            var map = new Map(mapName, areas[startIndex], areas.ToList(),entityIndex);
 
             map.GlobalEntityDefinitions = globalEntityDefinitions;
 
@@ -96,7 +98,7 @@ namespace Misana.Core.Maps.MapSerializers
 
         private EntityDefinition DeserializeEntityDefinition(BinaryReader br)
         {
-            EntityDefinition definition = new EntityDefinition();
+            EntityDefinition definition = new EntityDefinition(++entityIndex);
 
             definition.Name =  br.ReadString();
 

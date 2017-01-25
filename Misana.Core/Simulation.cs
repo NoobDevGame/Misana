@@ -86,34 +86,52 @@ namespace Misana.Core
             }
         }
 
-        public void CreateEntity(string definitionName)
+        public void CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var definition = CurrentMap.GlobalEntityDefinitions["Player"];
-            CreateEntity(definition);
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            CreateEntity(definition,createCallback, createdCallback);
         }
 
-        public void CreateEntity(EntityDefinition defintion)
+        public void CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
             if (Mode == SimulationMode.Local || Mode == SimulationMode.Server)
                 entityBuilder.Add<SendComponent>();
 
-            entityBuilder.Commit(Entities);
+            createCallback?.Invoke(entityBuilder);
+
+            var entity = entityBuilder.Commit(Entities);
+
+            createdCallback?.Invoke(entity);
+
+            var createComponent = entity.Get<CreateComponent>();
+
+            if (createComponent != null)
+            {
+                foreach (var createEvent in createComponent.OnCreateEvent)
+                {
+                    createEvent.Apply(Entities,entity,null,this);
+                }
+            }
         }
 
-        public void CreateEntity(EntityDefinition defintion,int entityId)
+        public void CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
-            entityBuilder.Commit(Entities,entityId);
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
+
+            createCallback?.Invoke(entityBuilder);
+
+            var entity = entityBuilder.Commit(Entities,entityId);
+            createdCallback?.Invoke(entity);
         }
 
-        public void CreateEntity(int defintionId, int entityId)
+        public void CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == defintionId).Value;
-            CreateEntity(definition,entityId);
+            CreateEntity(definition,entityId,createCallback,createdCallback);
         }
 
-        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform)
+        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform,Action<EntityBuilder> createCallback,Action<Entity> createdCallback)
         {
             if (Mode == SimulationMode.Server || Mode == SimulationMode.Local)
                 throw new NotSupportedException();
@@ -132,12 +150,26 @@ namespace Misana.Core
             if (Mode == SimulationMode.Local)
                 playerBuilder.Add<SendComponent>();
 
-            var playerId = playerBuilder.Commit(Entities).Id;
+            createCallback?.Invoke(playerBuilder);
 
-            return playerId;
+            var player = playerBuilder.Commit(Entities);
+
+            createdCallback?.Invoke(player);
+
+            var createComponent = player.Get<CreateComponent>();
+
+            if (createComponent != null)
+            {
+                foreach (var createEvent in createComponent.OnCreateEvent)
+                {
+                    createEvent.Apply(Entities,player,null,this);
+                }
+            }
+
+            return player.Id;
         }
 
-        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId)
+        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             if (Mode == SimulationMode.Server || Mode == SimulationMode.SinglePlayer)
                 throw new NotSupportedException();
@@ -156,7 +188,11 @@ namespace Misana.Core
             if (Mode == SimulationMode.Local)
                 playerBuilder.Add<SendComponent>();
 
-            playerBuilder.Commit(Entities,playerId);
+            createCallback?.Invoke(playerBuilder);
+
+            var entity =  playerBuilder.Commit(Entities,playerId);
+
+            createdCallback?.Invoke(entity);
 
             return playerId;
         }

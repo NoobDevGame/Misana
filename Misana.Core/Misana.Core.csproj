@@ -47,17 +47,21 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
+    <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
+    <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
     <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ServerReceiveEntityPositionSystem.cs" />
+    <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
+    <Compile Include="Components\CreateComponent.cs" />
     <Compile Include="Components\SpriteInfoComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityInteractalComponent.cs" />
@@ -87,17 +91,23 @@
     <Compile Include="Ecs\EntityBuilder.cs" />
     <Compile Include="Ecs\Changes\EntityChange.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\CreateDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityInteractableDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\FacingDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\WieldableDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\WieldedDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\WieldingDefinition.cs" />
     <Compile Include="Entities\ComponentDefinition.cs" />
     <Compile Include="Events\Entities\AddComponentEvent.cs" />
     <Compile Include="Events\Entities\ApplicableTo.cs" />
@@ -117,7 +127,6 @@
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
-    <Compile Include="ClientGameHost_Server.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />
@@ -157,7 +166,6 @@
     <Compile Include="Systems\WieldedSystem.cs" />
     <Compile Include="Systems\WieldedWieldableSystem.cs" />
     <Compile Include="Vector2.cs" />
-    <Compile Include="WorldInformation.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Misana.Contracts\Misana.Contracts.csproj">

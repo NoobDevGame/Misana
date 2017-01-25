@@ -4,6 +4,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
@@ -21,7 +22,9 @@ namespace Misana.Core.Maps
 
         public Dictionary<string,EntityDefinition> GlobalEntityDefinitions { get; set; } = new Dictionary<string, EntityDefinition>();
 
-        public Map(string name, Area startArea, List<Area> areas)
+        private int entityIndex = 0;
+
+        public Map(string name, Area startArea, List<Area> areas, int index)
         {
             if (startArea == null)
                 throw new ArgumentNullException(nameof(startArea));
@@ -35,6 +38,7 @@ namespace Misana.Core.Maps
             Name = name;
             StartArea = startArea;
             Areas = areas;
+            entityIndex = index;
         }
 
         private Map() {}
@@ -42,6 +46,11 @@ namespace Misana.Core.Maps
         public Area GetAreaById(int areaId)
         {
             return Areas.First(i => i.Id == areaId);
+        }
+
+        public int GetNextDefinitionId()
+        {
+            return Interlocked.Increment(ref entityIndex);
         }
     }
 }

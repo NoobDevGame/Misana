@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Misana.Network
@@ -10,6 +11,8 @@ namespace Misana.Network
         public bool IsLocked { get; private set; }
 
         private object message;
+
+        private Action<object> callback;
 
         internal void Start()
         {
@@ -30,11 +33,26 @@ namespace Misana.Network
             return message;
         }
 
+        public void SetCallback<T>(Action<T> callback)
+        {
+            if (IsLocked)
+            {
+                this.callback += (o) => callback((T) o);
+            }
+            else
+            {
+                callback((T) message);
+            }
+        }
+
         internal void Release(object message)
         {
             this.message = message;
             Semaphore.Release();
+            callback?.Invoke(message);
+            callback = null;
             IsLocked = false;
+
         }
     }
 }

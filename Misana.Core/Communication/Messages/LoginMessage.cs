@@ -7,7 +7,6 @@ namespace Misana.Core.Communication.Messages
     [MessageDefinition(ResponseType = typeof(LoginMessageResponse))]
     public struct LoginMessageRequest
     {
-
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Name;
 
