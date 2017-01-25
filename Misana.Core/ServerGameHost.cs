@@ -2,6 +2,7 @@
 using System.Linq;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Components;
 using Misana.Core.Maps;
 using Misana.Network;
 
@@ -29,6 +30,43 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<CreateEntityMessageRequest>(OnCreateEntityRequest);
             newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
             newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
+            newClient.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
+        }
+
+        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        {
+            var simulation = players[client.ClientId].Simulation;
+            var em = simulation.BaseSimulation.Entities;
+            var owner = em.GetEntityById(message.OwnerId);
+            var wielded = em.GetEntityById(message.WieldedId);
+
+            if (wielded == null || owner == null)
+                return;
+
+            var ownerWielding = owner.Get<WieldingComponent>();
+            var ownerTransform = owner.Get<TransformComponent>();
+
+            if (ownerWielding == null || ownerTransform == null)
+                return;
+
+            if (ownerWielding.RightHandEntityId != message.WieldedId)
+                return;
+
+            var wieldedTransform = wielded.Get<TransformComponent>();
+
+            if (wieldedTransform == null)
+                return;
+
+            wielded.Remove<WieldedComponent>().Add<DroppedItemComponent>();
+
+            ownerWielding.TwoHanded = false;
+            ownerWielding.RightHandEntityId = 0;
+
+            wieldedTransform.Radius /= 2;
+            wieldedTransform.ParentEntityId = 0;
+            wieldedTransform.Position = ownerTransform.Position;
+
+            simulation.Players.SendMessage(ref message);
         }
 
         protected override void OnDisconnectClient(NetworkClient oldClient)

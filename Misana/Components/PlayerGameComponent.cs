@@ -60,6 +60,8 @@ namespace Misana.Components
 
 
             Input.Interact = keyboard.IsKeyDown(Keys.Space) || keyboard.IsKeyDown(Keys.E);
+            Input.Drop = keyboard.IsKeyDown(Keys.Q);
+            Input.PickUp = keyboard.IsKeyDown(Keys.F);
 
             Input.MousePosition =new Vector2(mouse.X,mouse.Y);
 
