@@ -46,7 +46,41 @@ namespace Misana.Core
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
-            BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems);
+            BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,client);
+            client.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
+        }
+
+        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        {
+            var em = BaseSimulation.Entities;
+            var owner = em.GetEntityById(message.OwnerId);
+            var wielded = em.GetEntityById(message.WieldedId);
+
+            if (wielded == null || owner == null)
+                return;
+
+            var ownerWielding = owner.Get<WieldingComponent>();
+            var ownerTransform = owner.Get<TransformComponent>();
+
+            if (ownerWielding == null || ownerTransform == null)
+                return;
+
+            if (ownerWielding.RightHandEntityId != message.WieldedId)
+                return;
+
+            var wieldedTransform = wielded.Get<TransformComponent>();
+
+            if (wieldedTransform == null)
+                return;
+
+            wielded.Remove<WieldedComponent>().Add<DroppedItemComponent>();
+
+            ownerWielding.TwoHanded = false;
+            ownerWielding.RightHandEntityId = 0;
+
+            wieldedTransform.Radius /= 2;
+            wieldedTransform.ParentEntityId = 0;
+            wieldedTransform.Position = ownerTransform.Position;
         }
 
         public async Task ChangeMap(Map map)

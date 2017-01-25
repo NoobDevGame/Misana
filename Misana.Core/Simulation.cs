@@ -15,6 +15,7 @@ using Misana.Core.Events.OnUse;
 using Misana.Core.Maps;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
+using Misana.Network;
 
 namespace Misana.Core
 {
@@ -24,6 +25,7 @@ namespace Misana.Core
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
         private WieldedWieldableSystem _wieldedWieldableSystem;
+        private PositionTrackingSystem _positionTrackingSystem;
 
         public EntityManager Entities { get; private set; }
 
@@ -33,19 +35,22 @@ namespace Misana.Core
 
         public SimulationMode Mode { get; private set; }
 
-        public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
+        public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems, INetworkSender sender)
         {
+            _positionTrackingSystem = new PositionTrackingSystem();
+            _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
             State = SimulationState.Unloaded;
-
-            _collidingMoverSystem = new EntityCollidingMoverSystem();
+            
             _interactionSystem = new EntityInteractionSystem();
             _wieldedWieldableSystem = new WieldedWieldableSystem();
 
             List<BaseSystem> systems = new List<BaseSystem>();
             if (beforSystems != null)
                 systems.AddRange(beforSystems);
-            systems.Add(new InputSystem());
+
+            systems.Add(_positionTrackingSystem);
+            systems.Add(new InputSystem(_positionTrackingSystem, sender));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
@@ -70,6 +75,8 @@ namespace Misana.Core
             _collidingMoverSystem.ChangeSimulation(this);
             _interactionSystem.ChangeSimulation(this);
             _wieldedWieldableSystem.ChangeSimulation(this);
+            _positionTrackingSystem.ChangeMap(map);
+
 
             foreach (var area in CurrentMap.Areas)
             {

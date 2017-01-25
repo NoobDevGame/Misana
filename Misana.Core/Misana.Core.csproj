@@ -47,6 +47,7 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
+    <Compile Include="Communication\Messages\DropWieldedMessage.cs" />
     <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
@@ -61,6 +62,8 @@
     <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
+    <Compile Include="Components\DroppedItemComponent.cs" />
+    <Compile Include="Components\InventoryComponent.cs" />
     <Compile Include="Components\CreateComponent.cs" />
     <Compile Include="Components\SpriteInfoComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
@@ -153,6 +156,7 @@
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="SimulationClient.cs" />
+    <Compile Include="Systems\PositionTrackingSystem.cs" />
     <Compile Include="SimulationMode.cs" />
     <Compile Include="SimulationState.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />

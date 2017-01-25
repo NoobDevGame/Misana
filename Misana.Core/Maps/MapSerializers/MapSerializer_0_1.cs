@@ -70,9 +70,7 @@ namespace Misana.Core.Maps.MapSerializers
         private Layer DeserializeLayer(BinaryReader br)
         {
             var id = br.ReadInt32();
-
-            var name = br.ReadString();
-
+            
             var length = br.ReadInt32();
 
             var tiles = new Tile[length];
@@ -83,7 +81,7 @@ namespace Misana.Core.Maps.MapSerializers
                 tiles[i] = t;
             }
 
-            return new Layer(id, name ,tiles);
+            return new Layer(id ,tiles);
         }
 
         private Tile DeserializeTile(BinaryReader br)

@@ -13,6 +13,8 @@ namespace Misana.Core.Components
         public Vector2 Facing;
         public bool Attacking;
         public bool Interact;
+        public bool Drop;
+        public bool PickUp;
 
         public Vector2 MousePosition;
 
