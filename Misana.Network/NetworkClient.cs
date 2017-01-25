@@ -98,23 +98,15 @@ namespace Misana.Network
 
             var index = MessageHandle<T>.Index;
 
-            var handler = _messageHandles.GetHandle(index.Value);
+            var handler = (MessageHandle<T>)_messageHandles.GetHandle(index.Value);
             if (handler == null)
             {
                 senderClient = null;
                 message = default(T);
                 return false;
             }
-
-            object objMessage = null;
-            var result = handler.TryGetValue(out objMessage,out senderClient);
-
-            if (objMessage != null)
-                message = (T)objMessage;
-            else
-                message = default(T);
-
-            return result;
+            
+            return handler.TryGetValue(out message,out senderClient);
         }
 
         public bool TryGetMessage<T>(out T message) where T : struct

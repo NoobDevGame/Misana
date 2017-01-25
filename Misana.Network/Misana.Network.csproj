@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlockAllocator.cs" />
     <Compile Include="BroadcastList.cs" />
     <Compile Include="Delegates.cs" />
     <Compile Include="INetworkReceiver.cs" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace Misana.Core
+namespace Misana.Network
 {
     public static class BlockAllocator
     {

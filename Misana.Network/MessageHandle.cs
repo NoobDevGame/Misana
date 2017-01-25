@@ -27,17 +27,19 @@ namespace Misana.Network
             byte[] arr = new byte[dataSize + headerSize];
 
             {
-                IntPtr ptr = Marshal.AllocHGlobal(headerSize);
+                int actual;
+                var ptr = BlockAllocator.Alloc(headerSize, out actual);
                 Marshal.StructureToPtr(header, ptr, true);
                 Marshal.Copy(ptr, arr, 0, headerSize);
-                Marshal.FreeHGlobal(ptr);
+                BlockAllocator.Free(ptr, actual);
             }
 
             {
-                IntPtr ptr = Marshal.AllocHGlobal(dataSize);
+                int actual;
+                var ptr = BlockAllocator.Alloc(dataSize, out actual);
                 Marshal.StructureToPtr(data, ptr, true);
                 Marshal.Copy(ptr, arr, headerSize, dataSize);
-                Marshal.FreeHGlobal(ptr);
+                BlockAllocator.Free(ptr, actual);
             }
             return arr;
         }
@@ -52,14 +54,14 @@ namespace Misana.Network
 
         public static MessageHeader DeserializeHeader(ref byte[] data)
         {
-
-            IntPtr ptr = Marshal.AllocHGlobal(headerSize);
+            int actual;
+            var ptr = BlockAllocator.Alloc(headerSize, out actual);
 
             Marshal.Copy(data, 0, ptr, headerSize);
 
 
             var header = Marshal.PtrToStructure<MessageHeader>(ptr);
-            Marshal.FreeHGlobal(ptr);
+            BlockAllocator.Free(ptr, actual);
 
             return header;
         }
@@ -73,13 +75,14 @@ namespace Misana.Network
         {
             int dataSize = Marshal.SizeOf(type);
 
-            IntPtr ptr = Marshal.AllocHGlobal(dataSize);
+            int actual;
+            var ptr = BlockAllocator.Alloc(dataSize, out actual);
 
             Marshal.Copy(data,headerSize, ptr, dataSize);
 
 
             var result  = Marshal.PtrToStructure(ptr,type);
-            Marshal.FreeHGlobal(ptr);
+            BlockAllocator.Free(ptr, actual);
 
             return result;
         }
@@ -87,9 +90,7 @@ namespace Misana.Network
         public abstract object Derserialize(ref byte[] data);
 
         public abstract void SetMessage(object value,MessageHeader header,NetworkClient client);
-
-        public abstract bool TryGetValue(out object message, out INetworkClient senderClient);
-
+        
         public abstract void SetCallbackHandles(ref MessageWaitObject[] waitObjects);
     }
 
@@ -193,7 +194,7 @@ namespace Misana.Network
             return Deserialize(ref data);
         }
 
-        public bool TryGetValue(out T? message,out INetworkClient senderClient)
+        public bool TryGetValue(out T message,out INetworkClient senderClient)
         {
             if (messages.Count > 0)
             {
@@ -212,18 +213,8 @@ namespace Misana.Network
 
 
             senderClient = null;
-            message = null;
+            message = default(T);
             return false;
-        }
-
-        public override bool TryGetValue(out object message, out INetworkClient senderClient)
-        {
-            T? value;
-            var result = TryGetValue(out value,out senderClient);
-
-            message = value;
-
-            return result;
         }
 
         public void SetMessage(T message,MessageHeader header,NetworkClient client)
