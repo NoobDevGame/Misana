@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using engenious;
 using engenious.Content;
@@ -119,6 +120,8 @@ namespace MonoGameUi
             //TouchEnabled = true;
             DoubleClickDelay = DEFAULTDOUBLECLICKDELAY;
 
+            _pressedKeys = ((Keys[]) Enum.GetValues(typeof(Keys))).Select(k => (int)k).Distinct().Select(idx => UnpressedKeyTimestamp).ToArray();
+
 #if !ANDROID
 
             Game.KeyPress += (s, e) =>
@@ -198,7 +201,11 @@ namespace MonoGameUi
 
         internal DragEventArgs DraggingArgs { get; private set; }
 
-        private Dictionary<Keys, double> pressedKeys = new Dictionary<Keys, double>();
+        //private Dictionary<Keys, double> pressedKeys = new Dictionary<Keys, double>();
+
+        private double[] _pressedKeys;
+
+        private const double UnpressedKeyTimestamp = -1d;
 
         /// <summary>
         /// Handling aller Eingaben, Mausbewegungen und Updaten aller Screens und Controls.
@@ -479,11 +486,14 @@ namespace MonoGameUi
                     bool alt = keyboard.IsKeyDown(Keys.LeftAlt) | keyboard.IsKeyDown(Keys.RightAlt);
 
                     KeyEventArgs args;
-                    foreach (Keys key in Enum.GetValues(typeof(Keys)))
+
+                    for (int i = 0; i < _pressedKeys.Length; i++)
                     {
+                        var key = (Keys) i; 
                         if (keyboard.IsKeyDown(key))
                         {
-                            if (!pressedKeys.ContainsKey(key))
+                            // ReSharper disable once CompareOfFloatsByEqualityOperator
+                            if (_pressedKeys[i] != UnpressedKeyTimestamp)
                             {
                                 // Taste ist neu
 
@@ -510,8 +520,7 @@ namespace MonoGameUi
                                     Alt = alt
                                 };
                                 root.InternalKeyPress(args);
-                                pressedKeys.Add(key, gameTime.TotalGameTime.TotalMilliseconds + 500);
-
+                                _pressedKeys[i] = gameTime.TotalGameTime.TotalMilliseconds + 500;
 
 
                                 // Spezialfall Tab-Taste (falls nicht verarbeitet wurde)
@@ -524,7 +533,7 @@ namespace MonoGameUi
                             else
                             {
                                 // Taste ist immernoch gedrückt
-                                if (pressedKeys[key] <= gameTime.TotalGameTime.TotalMilliseconds)
+                                if (_pressedKeys[i] <= gameTime.TotalGameTime.TotalMilliseconds)
                                 {
                                     args = new KeyEventArgs()
                                     {
@@ -539,13 +548,14 @@ namespace MonoGameUi
                                         if (KeyPress != null)
                                             KeyPress(args);
                                     }
-                                    pressedKeys[key] = gameTime.TotalGameTime.TotalMilliseconds + 50;
+                                    _pressedKeys[(int)key] = gameTime.TotalGameTime.TotalMilliseconds + 50;
                                 }
                             }
                         }
                         else
                         {
-                            if (pressedKeys.ContainsKey(key))
+                            // ReSharper disable once CompareOfFloatsByEqualityOperator
+                            if (_pressedKeys[i] != UnpressedKeyTimestamp)
                             {
                                 // Taste losgelassen
                                 args = new KeyEventArgs()
@@ -556,12 +566,11 @@ namespace MonoGameUi
                                     Alt = alt
                                 };
                                 root.InternalKeyUp(args);
-                                pressedKeys.Remove(key);
+                                _pressedKeys[i] = UnpressedKeyTimestamp;
 
                                 if (!args.Handled)
                                 {
-                                    if (KeyUp != null)
-                                        KeyUp(args);
+                                    KeyUp?.Invoke(args);
                                 }
 
                             }
