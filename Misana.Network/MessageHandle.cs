@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Ports;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -87,7 +88,7 @@ namespace Misana.Network
 
         public abstract void SetMessage(object value,MessageHeader header,NetworkClient client);
 
-        public abstract bool TryGetValue(out object message);
+        public abstract bool TryGetValue(out object message, out INetworkClient senderClient);
 
         public abstract void SetCallbackHandles(ref MessageWaitObject[] waitObjects);
     }
@@ -95,6 +96,19 @@ namespace Misana.Network
     internal sealed class MessageHandle<T> : MessageHandle
         where T : struct
     {
+        private class MessageInfo
+        {
+            public T Message { get; }
+            public INetworkClient Client { get; }
+
+
+            public MessageInfo(T message,INetworkClient client)
+            {
+                Message = message;
+                Client = client;
+            }
+        }
+
         private static int? index;
         public static int? Index
         {
@@ -110,7 +124,7 @@ namespace Misana.Network
 
         public static int MessageId;
 
-        private Queue<T> messages = new Queue<T>();
+        private Queue<MessageInfo> messages = new Queue<MessageInfo>();
         private object messagesLockObject = new object();
 
         private MessageReceiveCallback<T> _callback;
@@ -179,26 +193,33 @@ namespace Misana.Network
             return Deserialize(ref data);
         }
 
-        public bool TryGetValue(out T? message)
+        public bool TryGetValue(out T? message,out INetworkClient senderClient)
         {
             if (messages.Count > 0)
             {
+                MessageInfo info = null;
                 lock (messagesLockObject)
                 {
-                    message = messages.Dequeue();
+                    info = messages.Dequeue();
+
                 }
+
+                message = info.Message;
+                senderClient = info.Client;
 
                 return true;
             }
 
+
+            senderClient = null;
             message = null;
             return false;
         }
 
-        public override bool TryGetValue(out object message)
+        public override bool TryGetValue(out object message, out INetworkClient senderClient)
         {
             T? value;
-            var result = TryGetValue(out value);
+            var result = TryGetValue(out value,out senderClient);
 
             message = value;
 
@@ -217,7 +238,7 @@ namespace Misana.Network
 
             lock (messagesLockObject)
             {
-                messages.Enqueue(message);
+                messages.Enqueue(new MessageInfo(message,client));
             }
         }
 

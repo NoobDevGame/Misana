@@ -2,26 +2,30 @@
 
 namespace Misana.Core.Communication
 {
-    public class NetworkPlayer
+    public class NetworkPlayer : INetworkSender , INetworkClient
     {
-        public NetworkPlayer(string name, NetworkClient client, int id)
+        public NetworkPlayer(string name, NetworkClient client)
         {
             Name = name;
             Client = client;
-            Id = id;
         }
 
         public string Name { get; private set; }
 
         public NetworkClient Client { get; private set; }
 
-        public int Id { get; private set; }
+        public int ClientId => Client.ClientId;
 
         public NetworkSimulation Simulation { get; private set; }
 
         public void SetSimulation(NetworkSimulation simulation)
         {
             Simulation = simulation;
+        }
+
+        public void SendMessage<T>(ref T message) where T : struct
+        {
+            Client.SendMessage(ref message);
         }
     }
 }

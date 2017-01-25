@@ -9,7 +9,7 @@ namespace Misana.Core.Communication
     {
         public NetworkPlayer Owner { get; private set; }
 
-        public List<NetworkPlayer> Players { get;  private set; } = new List<NetworkPlayer>();
+        public BroadcastList<NetworkPlayer> Players { get; private set; } = new BroadcastList<NetworkPlayer>();
 
         public Simulation BaseSimulation { get; private set; }
 
@@ -20,7 +20,7 @@ namespace Misana.Core.Communication
             Players.Add(owner);
 
             List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(client));
+            beforSystems.Add(new ServerReceiveEntityPositionSystem(client,Players));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 

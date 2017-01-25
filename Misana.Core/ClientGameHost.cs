@@ -36,7 +36,7 @@ namespace Misana.Core
             await client.Connect();
 
             LoginMessageRequest message = new LoginMessageRequest(name);
-            var responseMessage = await client.SendMessage(ref message).Wait<LoginMessageResponse>();
+            var responseMessage = await client.SendRequestMessage(ref message).Wait<LoginMessageResponse>();
 
         }
 
@@ -53,7 +53,7 @@ namespace Misana.Core
             if (client.IsConnected)
             {
                 CreateWorldMessageRequest message = new CreateWorldMessageRequest();
-                var waitobject = client.SendMessage(ref message);
+                var waitobject = client.SendRequestMessage(ref message);
 
                 var responseMessage = await waitobject.Wait<CreateWorldMessageResponse>();
 

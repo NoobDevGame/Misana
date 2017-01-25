@@ -55,6 +55,7 @@
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
+    <Compile Include="Communication\Systems\ServerReceiveEntityPositionSystem.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\SpriteInfoComponent.cs" />

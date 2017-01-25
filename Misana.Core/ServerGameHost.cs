@@ -35,16 +35,16 @@ namespace Misana.Core
 
             var simulation = players[networkClient.ClientId].Simulation;
 
-            if (simulation.Owner.Id != networkClient.ClientId)
+            if (simulation.Owner.ClientId != networkClient.ClientId)
             {
                 response.Result = false;
-                networkClient.SendMessage(ref response,header.MessageId);
+                networkClient.SendResponseMessage(ref response,header.MessageId);
                 return;
             }
 
             simulation.BaseSimulation.Start();
 
-            networkClient.SendMessage(ref response,header.MessageId);
+            networkClient.SendResponseMessage(ref response,header.MessageId);
 
         }
 
@@ -54,10 +54,10 @@ namespace Misana.Core
 
             var simulation = players[networkClient.ClientId].Simulation;
 
-            if (simulation.Owner.Id != networkClient.ClientId)
+            if (simulation.Owner.ClientId != networkClient.ClientId)
             {
                 response.Result = false;
-                networkClient.SendMessage(ref response,header.MessageId);
+                networkClient.SendResponseMessage(ref response,header.MessageId);
                 return;
             }
 
@@ -66,7 +66,7 @@ namespace Misana.Core
             simulation.BaseSimulation.ChangeMap(map);
 
 
-            networkClient.SendMessage(ref response,header.MessageId);
+            networkClient.SendResponseMessage(ref response,header.MessageId);
         }
 
         private void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
@@ -75,7 +75,7 @@ namespace Misana.Core
             simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId);
 
             var responseMessage = new CreateEntityMessageResponse(true);
-            networkClient.SendMessage(ref responseMessage,header.MessageId);
+            networkClient.SendResponseMessage(ref responseMessage,header.MessageId);
 
         }
 
@@ -83,9 +83,9 @@ namespace Misana.Core
         {
             var responseMessage = new LoginMessageResponse(client.ClientId);
 
-            players.Add(client.ClientId,new NetworkPlayer(message.Name,client,client.ClientId));
+            players.Add(client.ClientId,new NetworkPlayer(message.Name,client));
 
-            client.SendMessage(ref responseMessage,header.MessageId);
+            client.SendResponseMessage(ref responseMessage,header.MessageId);
         }
 
         protected virtual void OnCreateWorld(CreateWorldMessageRequest message,MessageHeader header,NetworkClient client)
@@ -101,7 +101,7 @@ namespace Misana.Core
             var entityCount = short.MaxValue;
 
             CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,startIndex,entityCount );
-            client.SendMessage(ref messageResponse,header.MessageId);
+            client.SendResponseMessage(ref messageResponse,header.MessageId);
         }
 
 

@@ -41,7 +41,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BroadcastList.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="IBroadcastSender.cs" />
+    <Compile Include="INetworkClient.cs" />
+    <Compile Include="INetworkSender.cs" />
     <Compile Include="MessageHandleList.cs" />
     <Compile Include="MessageWaitObject.cs" />
     <Compile Include="MessageDefinitionAttribute.cs" />

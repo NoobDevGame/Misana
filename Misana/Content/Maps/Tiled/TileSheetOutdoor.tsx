@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset name="TilePositionSheetOutdoor" tilewidth="16" tileheight="16" spacing="1" tilecount="1767" columns="57">
- <image source="../../TilePositionSheetOutdoor.png" width="968" height="526"/>
+<tileset name="TilePositionSheetOutdoor" tilewclientIdth="16" tileheight="16" spacing="1" tilecount="1767" columns="57">
+ <image source="../../TilePositionSheetOutdoor.png" wclientIdth="968" height="526"/>
  <terraintypes>
   <terrain name="Water-Gras" tile="-1"/>
  </terraintypes>

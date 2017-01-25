@@ -53,7 +53,7 @@ namespace Misana.Core
         public async Task ChangeMap(Map map)
         {
             var message = new ChangeMapMessageRequest(map.Name);
-            var respone = await _client.SendMessage(ref message).Wait<ChangeMapMessageResponse>();
+            var respone = await _client.SendRequestMessage(ref message).Wait<ChangeMapMessageResponse>();
             if (!respone.Result)
                 throw new NotSupportedException();
 
@@ -80,7 +80,7 @@ namespace Misana.Core
             var definition = CurrentMap.GlobalEntityDefinitions["Player"];
 
             var message = new CreateEntityMessageRequest(playerId,definition.Id);
-            var response = await _client.SendMessage(ref message).Wait<CreateEntityMessageResponse>();
+            var response = await _client.SendRequestMessage(ref message).Wait<CreateEntityMessageResponse>();
 
             if (!response.Result)
                 throw new NotSupportedException();
@@ -98,7 +98,7 @@ namespace Misana.Core
         public async Task Start()
         {
             var message = new StartSimulationMessageRequest();
-            var response = await _client.SendMessage(ref message).Wait<StartSimulationMessageResponse>();
+            var response = await _client.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
 
             if (!response.Result)
                 throw new NotSupportedException();

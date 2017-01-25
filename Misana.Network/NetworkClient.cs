@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Network
 {
-    public class NetworkClient
+    public class NetworkClient : INetworkSender, INetworkClient
     {
 
         private static int clientId = 0;
@@ -53,7 +53,7 @@ namespace Misana.Network
             _messageHandles.GetHandle<T>().RegisterCallback(callback);
         }
 
-        public MessageWaitObject SendMessage<T>(ref T message) where T : struct
+        public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
         {
             var index = MessageHandle<T>.Index;
 
@@ -68,7 +68,12 @@ namespace Misana.Network
             return waitObject;
         }
 
-        public void SendMessage<T>(ref T message,byte messageid) where T : struct
+        public void SendMessage<T>(ref T message) where T : struct
+        {
+            SendRequestMessage(ref message);
+        }
+
+        public void SendResponseMessage<T>(ref T message,byte messageid) where T : struct
         {
             var index = MessageHandle<T>.Index;
 
@@ -77,19 +82,21 @@ namespace Misana.Network
             Outer.ReceiveData(data);
         }
 
-        public bool TryGetMessage<T>(out T message) where T : struct
+        public bool TryGetMessage<T>(out T message, out INetworkClient senderClient)
+            where T : struct
         {
             var index = MessageHandle<T>.Index;
 
             var handler = _messageHandles.GetHandle(index.Value);
             if (handler == null)
             {
+                senderClient = null;
                 message = default(T);
                 return false;
             }
 
             object objMessage = null;
-            var result = handler.TryGetValue(out objMessage);
+            var result = handler.TryGetValue(out objMessage,out senderClient);
 
             if (objMessage != null)
                 message = (T)objMessage;
@@ -101,6 +108,14 @@ namespace Misana.Network
             return result;
         }
 
+        public bool TryGetMessage<T>(out T message) where T : struct
+        {
+            INetworkClient client;
+            return TryGetMessage(out message, out client);
+        }
+
+
+
         public async Task Connect()
         {
             IsConnected = true;
@@ -110,6 +125,8 @@ namespace Misana.Network
         {
             IsConnected = false;
         }
+
+
 
     }
 }
