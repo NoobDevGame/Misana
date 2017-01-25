@@ -280,11 +280,38 @@ namespace Misana.Core.Ecs
 
             if (_entityMap.TryGetValue(id, out e))
             {
-                _entityMap.Remove(id);
-                _entitiesToRemove.Add(e);
+                RemoveEntity(e);
             }
 
             return e;
+        }
+
+        public void RemoveEntity(Entity e)
+        {
+            if (_entityMap.Remove(e.Id))
+            {
+                _entitiesToRemove.Add(e);
+            }
+        }
+
+        public Entity DetachEntity(int id)
+        {
+            Entity e;
+
+            if (_entityMap.TryGetValue(id, out e))
+            {
+                DetachEntity(e);
+            }
+
+            return e;
+        }
+
+        public void DetachEntity(Entity e)
+        {
+            if (_entityMap.Remove(e.Id))
+            {
+                _entitiesToRemove.Add(e, true);
+            }
         }
 
         public Entity GetEntityById(int id)
