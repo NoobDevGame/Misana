@@ -24,6 +24,7 @@ namespace Misana.Core
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
         private WieldedWieldableSystem _wieldedWieldableSystem;
+        private PositionTrackingSystem _positionTrackingSystem;
 
         public EntityManager Entities { get; private set; }
 
@@ -35,6 +36,8 @@ namespace Misana.Core
 
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
         {
+            _positionTrackingSystem = new PositionTrackingSystem();
+            _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
             State = SimulationState.Unloaded;
 
@@ -45,7 +48,9 @@ namespace Misana.Core
             List<BaseSystem> systems = new List<BaseSystem>();
             if (beforSystems != null)
                 systems.AddRange(beforSystems);
-            systems.Add(new InputSystem());
+
+            systems.Add(_positionTrackingSystem);
+            systems.Add(new InputSystem(_positionTrackingSystem));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
@@ -70,6 +75,8 @@ namespace Misana.Core
             _collidingMoverSystem.ChangeSimulation(this);
             _interactionSystem.ChangeSimulation(this);
             _wieldedWieldableSystem.ChangeSimulation(this);
+            _positionTrackingSystem.ChangeMap(map);
+
 
             foreach (var area in CurrentMap.Areas)
             {

@@ -154,6 +154,7 @@
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="SimulationClient.cs" />
     <Compile Include="BlockAllocator.cs" />
+    <Compile Include="Systems\PositionTrackingSystem.cs" />
     <Compile Include="SimulationMode.cs" />
     <Compile Include="SimulationState.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />

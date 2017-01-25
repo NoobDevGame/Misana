@@ -82,6 +82,19 @@ namespace Misana.Core
             return (position1 - position2).Length();
         }
 
+        public static Vector2 Min(Vector2 a, Vector2 b)
+        {
+            return a.Length() < b.Length() ? a : b;
+        }
 
+        public static Vector2 Max(Vector2 a, Vector2 b)
+        {
+            return a.Length() < b.Length() ? b : a;
+        }
+
+        public bool IsValid()
+        {
+            return !float.IsNaN(X) && !float.IsNaN(Y);
+        }
     }
 }

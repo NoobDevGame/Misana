@@ -12,7 +12,7 @@ namespace Misana.Core.Ecs
 
         protected int Capacity = InitialSize;
         protected int Count = 0;
-        protected Entity[] Entities = new Entity[InitialSize];
+        public Entity[] Entities = new Entity[InitialSize];
 
         protected readonly Dictionary<Entity, int> IndexMap = new Dictionary<Entity, int>(InitialSize);
 
