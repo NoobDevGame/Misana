@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -6,29 +8,26 @@ namespace Misana.Network
 {
     public class NetworkClient : INetworkSender, INetworkReceiver, INetworkClient
     {
+        private readonly NetworkListener _listener;
+        private NetworkClient _outerClient;
 
         private static int clientId = 0;
         public int ClientId { get; } = Interlocked.Increment(ref clientId);
 
 
-        public NetworkClient Outer { get; private set; }
-
         private MessageHandleList _messageHandles = new MessageHandleList();
 
         public bool IsConnected { get; private set; }
 
-        private string name;
-
-        public NetworkClient()
+        internal NetworkClient(NetworkListener listener)
         {
-            name = "client";
-            Outer = new NetworkClient(this);
+            _listener = listener;
         }
 
-        private NetworkClient(NetworkClient outer)
+        internal NetworkClient(NetworkClient client)
         {
-            name = "outer";
-            Outer = outer;
+            IsConnected = true;
+            _outerClient = client;
         }
 
         private void ReceiveData(byte[] data)
@@ -55,6 +54,9 @@ namespace Misana.Network
 
         public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
         {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
             var index = MessageHandle<T>.Index;
 
             MessageWaitObject waitObject = null;
@@ -63,28 +65,37 @@ namespace Misana.Network
 
             waitObject?.Start();
 
-            Outer.ReceiveData(data);
+            _outerClient.ReceiveData(data);
 
             return waitObject;
         }
 
         public void SendMessage<T>(ref T message) where T : struct
         {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
             SendRequestMessage(ref message);
         }
 
         public void SendResponseMessage<T>(ref T message,byte messageid) where T : struct
         {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
             var index = MessageHandle<T>.Index;
 
             var data = MessageHandle<T>.Serialize(ref message,messageid);
 
-            Outer.ReceiveData(data);
+            _outerClient.ReceiveData(data);
         }
 
         public bool TryGetMessage<T>(out T message, out INetworkClient senderClient)
             where T : struct
         {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
             var index = MessageHandle<T>.Index;
 
             var handler = _messageHandles.GetHandle(index.Value);
@@ -103,27 +114,38 @@ namespace Misana.Network
             else
                 message = default(T);
 
-
-
             return result;
         }
 
         public bool TryGetMessage<T>(out T message) where T : struct
         {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
             INetworkClient client;
             return TryGetMessage(out message, out client);
         }
 
-
-
         public async Task Connect()
         {
+            if (IsConnected)
+                throw new InvalidOperationException("Client is connected");
+
+            _outerClient = _listener.CreateClient(this);
+
             IsConnected = true;
         }
 
         public void Disconnect()
         {
+            if (false && !IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
+
             IsConnected = false;
+
+            _outerClient.Disconnect();
+            _outerClient = null;
         }
 
 

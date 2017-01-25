@@ -9,7 +9,7 @@ using Misana.Network;
 
 namespace Misana.Core
 {
-    public partial class ClientGameHost : ServerGameHost
+    public class ClientGameHost
     {
         private readonly NetworkClient client;
         private readonly System.Collections.Generic.List<BaseSystem> _beforSystems;
@@ -22,7 +22,6 @@ namespace Misana.Core
 
 
         public ClientGameHost(NetworkClient client, System.Collections.Generic.List<BaseSystem> beforSystems, System.Collections.Generic.List<BaseSystem> afterSystems)
-            :base(client)
         {
             this.client = client;
             _beforSystems = beforSystems;
@@ -72,7 +71,7 @@ namespace Misana.Core
             return simulation;
         }
 
-        public override void Update(GameTime gameTime)
+        public void Update(GameTime gameTime)
         {
             if (Simulation == null)
                 return;

@@ -51,15 +51,18 @@ namespace Misana.Components
             NameRenderSystem = new NameRenderSystem(Game);
             //NameRenderSystem.LoadContent();
 
-            networkClient = new NetworkClient();
+
 
             System.Collections.Generic.List<BaseSystem> renderSystems = new System.Collections.Generic.List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
 
+            serverHost = new ServerGameHost();
+
+            networkClient = serverHost.NewDummyClient();
             host = new ClientGameHost(networkClient, null,renderSystems);
-            serverHost = new ServerGameHost(networkClient.Outer);
+
         }
 
         public async Task StartLocalGame(Map map)

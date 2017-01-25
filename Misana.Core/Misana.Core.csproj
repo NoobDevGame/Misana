@@ -117,7 +117,6 @@
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
-    <Compile Include="ClientGameHost_Server.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />

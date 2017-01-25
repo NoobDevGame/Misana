@@ -56,6 +56,7 @@
     <Compile Include="MessageHeaderState.cs" />
     <Compile Include="MessageIdPair.cs" />
     <Compile Include="NetworkClient.cs" />
+    <Compile Include="NetworkListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
