@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using engenious;
 using Misana.Components;
@@ -13,10 +14,12 @@ namespace Misana.Screens
         ScreenComponent Manager;
 
         private Task waitTask;
+        private readonly Func<ScreenComponent,Screen> _completeCallback;
 
-        public ConnectingScreen(ScreenComponent manager,Task waitTask, bool error = false, string message = "Connecting..." ) : base(manager)
+        public ConnectingScreen(ScreenComponent manager,Task waitTask,Func<ScreenComponent,Screen> completeCallback, bool error = false, string message = "Connecting..." ) : base(manager)
         {
             this.waitTask = waitTask;
+            _completeCallback = completeCallback;
             Manager = manager;
 
             infoLabel = new Label(manager);
@@ -38,7 +41,7 @@ namespace Misana.Screens
         {
             if (waitTask.IsCompleted)
             {
-                Manager.NavigateToScreen(new GameScreen(Manager));
+                Manager.NavigateToScreen(_completeCallback(Manager));
             }
         }
 

@@ -58,6 +58,8 @@ namespace Misana.Screens
             startButton.Height = 40;
             startButton.LeftMouseClick += (s, e) =>
             {
+                var task = manager.Game.Simulation.StartWorld();
+                manager.NavigateToScreen(new ConnectingScreen(manager, task, m => new GameScreen(m)));
                 //manager.Game.NetworkComponent.StartWorld();
             };
             grid.AddControl(startButton, 0, 1);

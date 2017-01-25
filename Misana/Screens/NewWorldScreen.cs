@@ -1,12 +1,8 @@
-﻿using MonoGameUi;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Misana.Components;
+﻿using Misana.Components;
+using Misana.Core.Maps;
+using MonoGameUi;
 
-namespace NoobFight.Screens
+namespace Misana.Screens
 {
     internal class NewWorldScreen : Screen
     {
@@ -85,6 +81,9 @@ namespace NoobFight.Screens
             playButton.Margin = Border.All(10);
             playButton.LeftMouseClick += (s, e) =>
             {
+                var map = MapLoader.Load("Multi");
+                var task = manager.Game.Simulation.CreateWorld(nameInput.Text,map);
+                manager.NavigateToScreen(new ConnectingScreen(manager, task, m => new LobbyScreen(m)));
                 //manager.Game.NetworkComponent.CreateWorld(nameInput.Text, (GameMode)Enum.Parse(typeof(GameMode), gamemodeSelect.SelectedItem));
             };
             grid.AddControl(playButton, 0, 3);

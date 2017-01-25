@@ -8,7 +8,7 @@ namespace Misana.Screens
     {
         Listbox<string> worldList;
 
-        public WorldSelectScreen(ScreenComponent manager, string[] worlds) : base(manager)
+        public WorldSelectScreen(ScreenComponent manager) : base(manager)
         {
             Grid grid = new Grid(manager);
             grid.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -32,12 +32,6 @@ namespace Misana.Screens
             };
             grid.AddControl(worldList, 0, 0, 2 ,1);
 
-            foreach(var world in worlds)
-            {
-                worldList.Items.Add(world);
-
-            }
-
             worldList.SelectFirst();
 
             Button joinButton = Button.TextButton(manager, "Join");
@@ -50,7 +44,7 @@ namespace Misana.Screens
             };
             grid.AddControl(joinButton, 0, 1);
 
-            Button createButton = Button.TextButton(manager, "Create Simulation");
+            Button createButton = Button.TextButton(manager, "Create World");
             createButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             createButton.Height = 50;
             createButton.MinWidth = 300;

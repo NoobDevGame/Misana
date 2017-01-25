@@ -62,13 +62,20 @@ namespace Misana.Components
             serverHost = new ServerGameHost(networkClient.Outer);
         }
 
-        public async Task StartLocalGame(Map m)
+        public async Task StartLocalGame(Map map)
         {
-            //await Task.Delay(2000);
+            await CreateWorld("LcoalWorld",map);
+            await StartWorld();
+        }
 
-            await host.Connect("Test Player");
+        public async Task ConnectToServer(string name)
+        {
+            await host.Connect(name);
+        }
 
-            Simulation = await host.CreateWorld("LocalWorld");
+        public async Task CreateWorld(string name, Map map)
+        {
+            Simulation = await host.CreateWorld(name);
 
             Simulation.Entities.RegisterAdditionHook<SpriteInfoComponent>(
                 (em, e, si) => {
@@ -100,14 +107,16 @@ namespace Misana.Components
             );
 
             Simulation.Entities.RegisterRemovalHook<HealthComponent>(
-               (em, e, si) => e.Remove<RenderHealthComponent>()
-           );
-            
-            await Simulation.ChangeMap(m);
+                (em, e, si) => e.Remove<RenderHealthComponent>()
+            );
 
+            await Simulation.ChangeMap(map);
+        }
+
+        public async Task StartWorld()
+        {
             Game.Player.PlayerId = await Simulation.CreatePlayer(Game.Player.Input, Game.Player.Transform);
             await Simulation.Start();
-
         }
 
         public override void Update(engenious.GameTime gameTime)
