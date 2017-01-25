@@ -14,13 +14,12 @@ namespace Misana.Core.Communication
         public Simulation BaseSimulation { get; private set; }
 
         public NetworkSimulation(NetworkPlayer owner,NetworkClient client, List<BaseSystem> baseBeforSystems, List<BaseSystem> baseAfterSystems)
-            : base()
         {
             Owner = owner;
             Players.Add(owner);
 
             List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ServerReceiveEntityPositionSystem(client,Players));
+            beforSystems.Add(new ServerReceiveEntityPositionSystem(Players,Players));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 

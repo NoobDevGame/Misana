@@ -2,7 +2,7 @@
 
 namespace Misana.Core.Communication
 {
-    public class NetworkPlayer : INetworkSender , INetworkClient
+    public class NetworkPlayer : INetworkSender ,INetworkReceiver, INetworkClient
     {
         public NetworkPlayer(string name, NetworkClient client)
         {
@@ -26,6 +26,11 @@ namespace Misana.Core.Communication
         public void SendMessage<T>(ref T message) where T : struct
         {
             Client.SendMessage(ref message);
+        }
+
+        public bool TryGetMessage<T>(out T message, out INetworkClient senderClient) where T : struct
+        {
+            return Client.TryGetMessage(out message, out senderClient);
         }
     }
 }

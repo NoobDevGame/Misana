@@ -12,16 +12,16 @@ namespace Misana.Core
     public partial class ClientGameHost : ServerGameHost
     {
         private readonly NetworkClient client;
-        private readonly List<BaseSystem> _beforSystems;
-        private readonly List<BaseSystem> _afterSystems;
+        private readonly System.Collections.Generic.List<BaseSystem> _beforSystems;
+        private readonly System.Collections.Generic.List<BaseSystem> _afterSystems;
 
-        private readonly List<ISimulation> _serverSimulations = new List<ISimulation>();
+        private readonly System.Collections.Generic.List<ISimulation> _serverSimulations = new System.Collections.Generic.List<ISimulation>();
 
         public ISimulation Simulation { get; private set; }
 
 
 
-        public ClientGameHost(NetworkClient client,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
+        public ClientGameHost(NetworkClient client, System.Collections.Generic.List<BaseSystem> beforSystems, System.Collections.Generic.List<BaseSystem> afterSystems)
             :base(client)
         {
             this.client = client;

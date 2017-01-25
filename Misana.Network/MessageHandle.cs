@@ -93,22 +93,9 @@ namespace Misana.Network
         public abstract void SetCallbackHandles(ref MessageWaitObject[] waitObjects);
     }
 
-    internal sealed class MessageHandle<T> : MessageHandle
+    internal sealed partial class MessageHandle<T> : MessageHandle
         where T : struct
     {
-        private class MessageInfo
-        {
-            public T Message { get; }
-            public INetworkClient Client { get; }
-
-
-            public MessageInfo(T message,INetworkClient client)
-            {
-                Message = message;
-                Client = client;
-            }
-        }
-
         private static int? index;
         public static int? Index
         {
@@ -123,6 +110,19 @@ namespace Misana.Network
         }
 
         public static int MessageId;
+
+        private class MessageInfo
+        {
+            public T Message { get; }
+            public INetworkClient Client { get; }
+
+
+            public MessageInfo(T message,INetworkClient client)
+            {
+                Message = message;
+                Client = client;
+            }
+        }
 
         private Queue<MessageInfo> messages = new Queue<MessageInfo>();
         private object messagesLockObject = new object();

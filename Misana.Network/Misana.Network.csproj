@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BroadcastList.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="INetworkReceiver.cs" />
     <Compile Include="IBroadcastSender.cs" />
     <Compile Include="INetworkClient.cs" />
     <Compile Include="INetworkSender.cs" />

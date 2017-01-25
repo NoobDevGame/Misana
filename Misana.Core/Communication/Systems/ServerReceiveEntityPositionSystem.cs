@@ -8,12 +8,11 @@ namespace Misana.Core.Communication.Systems
 {
     public class ServerReceiveEntityPositionSystem : BaseSystemR1<TransformComponent>
     {
-        private readonly NetworkClient client;
+        private readonly INetworkReceiver client;
 
         private readonly IBroadcastSender sender;
 
-
-        public ServerReceiveEntityPositionSystem(NetworkClient client,IBroadcastSender sender)
+        public ServerReceiveEntityPositionSystem(INetworkReceiver client,IBroadcastSender sender)
         {
             this.client = client;
             this.sender = sender;

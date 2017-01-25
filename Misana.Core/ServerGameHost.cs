@@ -13,7 +13,7 @@ namespace Misana.Core
 
         private readonly NetworkClient client;
 
-        private List<NetworkSimulation> simulations  = new List<NetworkSimulation>();
+        private System.Collections.Generic.List<NetworkSimulation> simulations  = new System.Collections.Generic.List<NetworkSimulation>();
 
         //TODO: Dictionary weg
         protected Dictionary<int,NetworkPlayer> players = new Dictionary<int, NetworkPlayer>();

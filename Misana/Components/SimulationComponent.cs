@@ -53,7 +53,7 @@ namespace Misana.Components
 
             networkClient = new NetworkClient();
 
-            List<BaseSystem> renderSystems = new List<BaseSystem>();
+            System.Collections.Generic.List<BaseSystem> renderSystems = new System.Collections.Generic.List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);

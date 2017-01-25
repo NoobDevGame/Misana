@@ -30,19 +30,18 @@ namespace Misana.Core
 
 
         public SimulationClient(NetworkClient client,
-            int entiytIndex, int entityCount,
-            List<BaseSystem> baseBeforSystems,List<BaseSystem> baseAfterSystems)
+            int entiytIndex, int entityCount, System.Collections.Generic.List<BaseSystem> baseBeforSystems, System.Collections.Generic.List<BaseSystem> baseAfterSystems)
         {
             _client = client;
             this.entiytIndex = entiytIndex;
             maxEntityIndex = entityCount + entiytIndex;
 
-            List<BaseSystem> beforSystems = new List<BaseSystem>();
+            System.Collections.Generic.List<BaseSystem> beforSystems = new System.Collections.Generic.List<BaseSystem>();
             beforSystems.Add(new ReceiveEntityPositionSystem(_client));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 
-            List<BaseSystem> afterSystems = new List<BaseSystem>();
+            System.Collections.Generic.List<BaseSystem> afterSystems = new System.Collections.Generic.List<BaseSystem>();
             afterSystems.Add(new SendEntityPositionSystem(_client));
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
