@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Network
 {
-    public class NetworkClient : INetworkSender, INetworkClient
+    public class NetworkClient : INetworkSender, INetworkReceiver, INetworkClient
     {
 
         private static int clientId = 0;
