@@ -29,7 +29,7 @@ namespace Misana.Core.Communication
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
+            BaseSimulation = new Simulation(SimulationMode.Server, beforSystems,afterSystems);
         }
     }
 }

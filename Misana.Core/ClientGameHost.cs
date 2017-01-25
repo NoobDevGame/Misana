@@ -64,7 +64,7 @@ namespace Misana.Core
             }
             else
             {
-                simulation = new Simulation(_beforSystems,_afterSystems);
+                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems);
             }
 
             Simulation = simulation;

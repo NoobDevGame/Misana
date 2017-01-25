@@ -47,7 +47,7 @@ namespace Misana.Core
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
-            BaseSimulation = new Simulation(beforSystems,afterSystems);
+            BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems);
         }
 
         public async Task ChangeMap(Map map)

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
     <Compile Include="SimulationClient.cs" />
+    <Compile Include="SimulationMode.cs" />
     <Compile Include="SimulationState.cs" />
     <Compile Include="Systems\BlockCollidingMoverSystem.cs" />
     <Compile Include="Systems\EntityCollidingMoverSystem.cs" />

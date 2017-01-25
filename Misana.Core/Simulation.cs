@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Communication.Components;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Effects.BaseEffects;
@@ -30,9 +31,11 @@ namespace Misana.Core
 
         public SimulationState State { get; private set; }
 
-        public Simulation(List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
-        {
+        public SimulationMode Mode { get; private set; }
 
+        public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems)
+        {
+            Mode = mode;
             State = SimulationState.Unloaded;
 
             _collidingMoverSystem = new EntityCollidingMoverSystem();
@@ -72,31 +75,15 @@ namespace Misana.Core
             {
                 foreach (var entity in area.Entities)
                 {
-                    EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition).Commit(Entities);
+
+                    var entityBuilder = EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition);
+
+                    if (Mode == SimulationMode.Server)
+                        entityBuilder.Add<SendComponent>();
+
+                    entityBuilder.Commit(Entities);
                 }
             }
-
-            EntityDefinition testDefinition = new EntityDefinition("DamageDealer");
-            testDefinition.Definitions.Add(new TransformDefinition(new Vector2(2.5f,2.5f),CurrentMap.StartArea, 0.5f));
-
-            testDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(0,0)));
-
-            var colliderDef = new EntityColliderDefinition();
-            colliderDef.OnCollisionEvents.Add(new MultiEvent(new Events.Conditions.FlagCondition("DamageDealer_Flag",true),
-                    new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other},
-                    new ApplyEffectEvent(new TeleportEffect(5, 5, CurrentMap.StartArea.Id)) { ApplyTo = ApplicableTo.Other },
-                    new ApplyEffectEvent(new SetEntityFlagEffect("DamageDealer_Flag")) { ApplyTo = ApplicableTo.Other }) {ApplyTo = ApplicableTo.Both,Debounce = TimeSpan.FromMilliseconds(250)}
-            );
-            testDefinition.Definitions.Add(colliderDef);
-
-            var interactDef = new EntityInteractableDefinition();
-            interactDef.OnInteractEvents.Add(new ApplyEffectEvent(new DamageEffect(20f)) { ApplyTo = ApplicableTo.Other,Debounce = TimeSpan.FromSeconds(1),CoolDown = TimeSpan.FromMilliseconds(250)});
-            testDefinition.Definitions.Add(interactDef);
-
-
-
-            EntityCreator.CreateEntity(Entities, CurrentMap, testDefinition)
-                .Commit(Entities);
         }
 
         public void CreateEntity(string definitionName)
@@ -108,6 +95,9 @@ namespace Misana.Core
         public void CreateEntity(EntityDefinition defintion)
         {
             var entityBuilder = EntityCreator.CreateEntity(defintion, CurrentMap, new EntityBuilder());
+            if (Mode == SimulationMode.Local || Mode == SimulationMode.Server)
+                entityBuilder.Add<SendComponent>();
+
             entityBuilder.Commit(Entities);
         }
 
@@ -125,6 +115,9 @@ namespace Misana.Core
 
         public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform)
         {
+            if (Mode == SimulationMode.Server || Mode == SimulationMode.Local)
+                throw new NotSupportedException();
+
             var playerDefinition = CurrentMap.GlobalEntityDefinitions["Player"];
 
             transform.CurrentArea = CurrentMap.StartArea;
@@ -136,6 +129,9 @@ namespace Misana.Core
                 .Add(input)
                 ;
 
+            if (Mode == SimulationMode.Local)
+                playerBuilder.Add<SendComponent>();
+
             var playerId = playerBuilder.Commit(Entities).Id;
 
             return playerId;
@@ -143,6 +139,9 @@ namespace Misana.Core
 
         public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId)
         {
+            if (Mode == SimulationMode.Server || Mode == SimulationMode.SinglePlayer)
+                throw new NotSupportedException();
+
             var playerDefinition = CurrentMap.GlobalEntityDefinitions["Player"];
 
             transform.CurrentArea = CurrentMap.StartArea;
@@ -154,6 +153,9 @@ namespace Misana.Core
                     .Add(input)
                 ;
 
+            if (Mode == SimulationMode.Local)
+                playerBuilder.Add<SendComponent>();
+
             playerBuilder.Commit(Entities,playerId);
 
             return playerId;
@@ -162,7 +164,6 @@ namespace Misana.Core
         public async Task Start()
         {
             State = SimulationState.Running;
-
         }
 
         public void Update(GameTime gameTime)
