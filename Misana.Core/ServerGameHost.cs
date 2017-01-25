@@ -79,7 +79,7 @@ namespace Misana.Core
         private void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
         {
             var simulation = players[networkClient.ClientId].Simulation;
-            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId);
+            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId,null, null);
 
             var responseMessage = new CreateEntityMessageResponse(true);
             networkClient.SendResponseMessage(ref responseMessage,header.MessageId);

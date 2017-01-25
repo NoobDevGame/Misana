@@ -1,9 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using Misana.Core.Components;
+using Misana.Core.Effects.BaseEffects;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
+using Misana.Core.Events.Entities;
 using Misana.Core.Maps.MapSerializers;
 
 namespace Misana.Core.Maps
@@ -41,7 +44,7 @@ namespace Misana.Core.Maps
             }
             if (!map.GlobalEntityDefinitions.ContainsKey("Player"))
             {
-                EntityDefinition playerDefinition = new EntityDefinition();
+                EntityDefinition playerDefinition = new EntityDefinition(map.GetNextDefinitionId());
                 playerDefinition.Definitions.Add(new HealthDefinition());
                 playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
                 playerDefinition.Definitions.Add(new MotionComponentDefinition());
@@ -50,7 +53,24 @@ namespace Misana.Core.Maps
                 playerDefinition.Definitions.Add(new EntityFlagDefintion());
                 playerDefinition.Definitions.Add(new EntityInteractableDefinition());
                 playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(5, 3),map.StartArea,0.5f));
+                playerDefinition.Definitions.Add(new WieldingDefinition());
+
+                var createDefinition = new CreateDefinition();
+                createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow",true)){ApplyTo = ApplicableTo.Self});
+
+                playerDefinition.Definitions.Add(createDefinition);
                 map.GlobalEntityDefinitions.Add("Player",playerDefinition);
+
+                EntityDefinition bowDefinition = new EntityDefinition(map.GetNextDefinitionId());
+                bowDefinition.Definitions.Add(new WieldableDefinition());
+                bowDefinition.Definitions.Add(new CharacterRenderDefinition());
+                bowDefinition.Definitions.Add(new WieldedDefinition(0.5f,0.5f));
+                bowDefinition.Definitions.Add(new FacingDefinition());
+                bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f,0.3f),map.StartArea));
+
+                map.GlobalEntityDefinitions.Add("Bow",bowDefinition);
+                //TODO:BowDebug
+
             }
 
             return map;
@@ -89,7 +109,7 @@ namespace Misana.Core.Maps
                 areas[i] = TiledMapConverter.LoadArea(tiledareas[i],i+1);
             }
 
-            return new Map(name,areas.First(),areas.ToList());
+            return new Map(name,areas.First(),areas.ToList(),0);
         }
     }
 }

@@ -26,7 +26,7 @@ namespace Misana.Core.Maps.MapSerializers
 
             var startIndex = areas.ToList().FindIndex(t => t.Id == startAreaId);
 
-            return new Map(name, areas[startIndex], areas.ToList());
+            return new Map(name, areas[startIndex], areas.ToList(),0);
         }
 
         private Area DeserializeArea(BinaryReader br)

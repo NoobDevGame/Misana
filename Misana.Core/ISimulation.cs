@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
@@ -16,17 +17,14 @@ namespace Misana.Core
 
         Task ChangeMap(Map map);
 
-        void CreateEntity(string definitionName);
-        void CreateEntity(EntityDefinition defintion);
-        void CreateEntity(int defintionId, int entityId);
+        void CreateEntity(string definitionName,Action<EntityBuilder> createCallback,Action<Entity> createdCallback);
+        void CreateEntity(EntityDefinition definition,Action<EntityBuilder> createCallback,Action<Entity> createdCallback);
+        void CreateEntity(int defintionId, int entityId,Action<EntityBuilder> createCallback,Action<Entity> createdCallback);
 
-        Task<int> CreatePlayer( PlayerInputComponent input, TransformComponent transform);
-        Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId);
+        Task<int> CreatePlayer( PlayerInputComponent input, TransformComponent transform,Action<EntityBuilder> createCallback,Action<Entity> createdCallback);
+        Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId,Action<EntityBuilder> createCallback,Action<Entity> createdCallback);
 
         Task Start();
         void Update(GameTime gameTime);
-
-
-
     }
 }

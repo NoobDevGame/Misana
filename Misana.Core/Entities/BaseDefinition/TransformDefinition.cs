@@ -31,6 +31,13 @@ namespace Misana.Core.Entities.BaseDefinition
             Radius = radius;
         }
 
+        public TransformDefinition(Vector2 position,Area area)
+        {
+            Position = position;
+            AreaId = area.Id;
+            Radius = 0.5f;
+        }
+
         public TransformDefinition(Area area, float radius)
         {
             Position = area.SpawnPoint;

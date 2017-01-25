@@ -100,5 +100,10 @@ namespace Misana.Core.Ecs
         }
 
 
+        public T Get<T>()
+            where T :Component, new ()
+        {
+            return (T) _components[ComponentRegistry<T>.Index];
+        }
     }
 }
