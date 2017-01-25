@@ -19,6 +19,7 @@ namespace Misana.Network
         public async Task<object> Wait()
         {
             await Semaphore.WaitAsync();
+            Semaphore.Release();
             return message;
         }
 
