@@ -54,17 +54,18 @@ namespace Misana.Core.Ecs
 
             if (idx == Count - 1)
             {
-                Entities[idx] = null;
                 Remove(idx, null);
+                Entities[idx] = null;
             }
             else
             {
                 var swapIndex = Count - 1;
+                Remove(idx, swapIndex);
                 Entities[idx] = Entities[swapIndex];
                 Entities[swapIndex] = null;
                 IndexMap.Remove(e);
                 IndexMap[Entities[idx]] = idx;
-                Remove(idx, swapIndex);
+                
             }
 
             Count--;
@@ -103,18 +104,18 @@ namespace Misana.Core.Ecs
 
                 if (idx == Count - 1)
                 {
+                    Remove(idx, null);
                     Entities[idx] = null;
                     IndexMap.Remove(e);
-                    Remove(idx, null);
                 }
                 else
                 {
                     var swapIndex = Count - 1;
+                    Remove(idx, swapIndex);
                     Entities[idx] = Entities[swapIndex];
                     Entities[swapIndex] = null;
                     IndexMap.Remove(e);
                     IndexMap[Entities[idx]] = idx;
-                    Remove(idx, swapIndex);
                 }
 
                 Count--;
