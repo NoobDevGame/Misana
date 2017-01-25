@@ -255,6 +255,18 @@ namespace Misana.Editor.Controls
                 selectionStartBuffer = new Index2(e.X / 32, e.Y / 32);
                 tempSelectionStart = selectionStartBuffer;
             }
+            else if(Mode == AreaMode.Fill && SelectedLayer != null && tilesheetName != null && tilesheetTileIndex != null)
+            {
+                if (!Area.Tilesheets.ContainsValue(tilesheetName))
+                    Area.AddTilesheet(tilesheetName);
+
+                foreach(var t in Area.Layers[(int)SelectedLayer].Tiles)
+                {
+                    t.TilesheetID = Area.Tilesheets.FirstOrDefault(x => x.Value == tilesheetName).Key;
+                    t.TextureID = tilesheetTileID;
+                }
+                Invalidate();
+            }
 
         }
 

@@ -160,7 +160,7 @@ namespace Misana.Editor.Controls
             protected override void OnMouseClick(MouseEventArgs e)
             {
                 base.OnMouseClick(e);
-                Selection = new Index2(e.X / (tilesheet.TileWidth * 2), e.Y / (tilesheet.TileHeight * 2));
+                Selection = new Index2(e.X / ((tilesheet.TileWidth + tilesheet.Spacing) * 2), e.Y / ((tilesheet.TileHeight + tilesheet.Spacing) * 2));
             }
         }
 

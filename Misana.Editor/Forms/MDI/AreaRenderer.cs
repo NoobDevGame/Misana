@@ -51,6 +51,10 @@ namespace Misana.Editor.Forms.MDI
             {
                 areaRenderControl.Mode = AreaRenderControl.AreaMode.Paint;
             }
+            else if(button_mode_fill.Checked == true)
+            {
+                areaRenderControl.Mode = AreaRenderControl.AreaMode.Fill;
+            }
         }
 
         private void button_toggle_spawnpoint_CheckStateChanged(object sender, EventArgs e)
