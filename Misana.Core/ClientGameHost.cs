@@ -56,11 +56,11 @@ namespace Misana.Core
                 if (!responseMessage.Result)
                     throw  new NotSupportedException();
 
-                simulation =  new SimulationClient(client,client,responseMessage.EntityStartIndex,responseMessage.EntityStartIndex,_beforSystems,_afterSystems);
+                simulation =  new SimulationClient(client, client, responseMessage.EntityStartIndex,responseMessage.EntityStartIndex,_beforSystems,_afterSystems);
             }
             else
             {
-                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems, client,client);
+                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems,new EmptyNetworkSender(), new EmptyNetworkReceive());
             }
 
             Simulation = simulation;

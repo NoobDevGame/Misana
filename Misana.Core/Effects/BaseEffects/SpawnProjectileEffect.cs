@@ -2,6 +2,7 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Effects.Messages;
 
 namespace Misana.Core.Effects.BaseEffects
 {
@@ -54,6 +55,11 @@ namespace Misana.Core.Effects.BaseEffects
                     offset += w.ParentPosition;
             }
 
+            OnCreateProjectileEffectMessage onCreateProjectileEffectMessage = new OnCreateProjectileEffectMessage(Speed,Radius,Expiration,transform.CurrentArea.Id,move,transform.Position +  offset);
+            simulation.EffectMessenger.SendMessage(ref onCreateProjectileEffectMessage,true);
+
+
+            /*
             if (simulation.Mode == SimulationMode.SinglePlayer)
             {
                 EntityBuilder builder = new EntityBuilder();
@@ -74,6 +80,7 @@ namespace Misana.Core.Effects.BaseEffects
 
                 return;
             }
+            */
 
             /*
             var builder = Builder.Copy()

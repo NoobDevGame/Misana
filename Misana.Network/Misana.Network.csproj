@@ -58,6 +58,8 @@
     <Compile Include="MessageIdPair.cs" />
     <Compile Include="NetworkClient.cs" />
     <Compile Include="NetworkListener.cs" />
+    <Compile Include="EmptyNetworkReceive.cs" />
+    <Compile Include="EmptyNetworkSender.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

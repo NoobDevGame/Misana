@@ -43,7 +43,7 @@ namespace Misana.Core
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
             , INetworkSender sender,INetworkReceiver receiver)
         {
-            EffectMessenger = new NetworkEffectMessenger(sender,receiver);
+            EffectMessenger = new NetworkEffectMessenger(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
