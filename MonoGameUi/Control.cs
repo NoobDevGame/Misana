@@ -1825,8 +1825,7 @@ namespace MonoGameUi
             if (!args.Handled)
             {
                 OnKeyDown(args);
-                if (KeyDown != null)
-                    KeyDown(this, args);
+                KeyDown?.Invoke(this, args);
             }
         }
 
@@ -1844,8 +1843,7 @@ namespace MonoGameUi
             if (!args.Handled)
             {
                 OnKeyPress(args);
-                if (KeyPress != null)
-                    KeyPress(this, args);
+                KeyPress?.Invoke(this, args);
             }
         }
 
@@ -1863,8 +1861,7 @@ namespace MonoGameUi
             if (!args.Handled)
             {
                 OnKeyTextPress(args);
-                if (KeyTextPress != null)
-                    KeyTextPress(this, args);
+                KeyTextPress?.Invoke(this, args);
             }
         }
 
@@ -1882,8 +1879,7 @@ namespace MonoGameUi
             if (!args.Handled)
             {
                 OnKeyUp(args);
-                if (KeyUp != null)
-                    KeyUp(this, args);
+                KeyUp?.Invoke(this, args);
             }
         }
 
@@ -1905,7 +1901,10 @@ namespace MonoGameUi
         /// <param name="args">Zusätzliche Daten zum Event.</param>
         protected virtual void OnKeyPress(KeyEventArgs args) { }
 
-        protected virtual void OnKeyTextPress(KeyTextEventArgs args) { }
+        protected virtual void OnKeyTextPress(KeyTextEventArgs args)
+        {
+            
+        }
 
         /// <summary>
         /// Wird aufgerufen, wenn eine Taste gedrückt wird.

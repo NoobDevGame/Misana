@@ -28,17 +28,18 @@ namespace Misana.Screens
 
         protected override void OnKeyDown(KeyEventArgs args)
         {
-            base.OnKeyDown(args);
             if (args.Key == Keys.Tab)
                 Manager.NavigateToScreen(new TabScreen(Manager));
+
+            base.OnKeyDown(args);
         }
 
         protected override void OnKeyUp(KeyEventArgs args)
         {
-            base.OnKeyUp(args);
-
             if (Manager.ActiveScreen is TabScreen)
                 Manager.NavigateBack();
+
+            base.OnKeyUp(args);
         }
 
         protected override void OnUpdate(engenious.GameTime gameTime)

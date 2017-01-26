@@ -220,6 +220,9 @@ namespace MonoGameUi
 
                 if (MouseEnabled)
                 {
+
+                    
+
                     MouseState mouse = Mouse.GetState();
 
                     // Mausposition anhand des Mouse Modes ermitteln
@@ -229,19 +232,20 @@ namespace MonoGameUi
                             mousePosition.X - (GraphicsDevice.Viewport.Width / 2),
                             mousePosition.Y - (GraphicsDevice.Viewport.Height / 2));
 
+                    MouseEventArgs mouseEventArgs = MouseEventArgsPool.Take();
+
+                    mouseEventArgs.MouseMode = MouseMode;
+                    mouseEventArgs.GlobalPosition = mousePosition;
+                    mouseEventArgs.LocalPosition = mousePosition;
+
                     // Mouse Move
                     if (mousePosition != lastMousePosition)
                     {
-                        MouseEventArgs moveArgs = new MouseEventArgs()
-                        {
-                            MouseMode = MouseMode,
-                            GlobalPosition = mousePosition,
-                            LocalPosition = mousePosition,
-                        };
+                        mouseEventArgs.Handled = false;
 
-                        root.InternalMouseMove(moveArgs);
-                        if (!moveArgs.Handled && MouseMove != null)
-                            MouseMove(moveArgs);
+                        root.InternalMouseMove(mouseEventArgs);
+                        if (!mouseEventArgs.Handled)
+                            MouseMove?.Invoke(mouseEventArgs);
 
                         // Start Drag Handling
                         if (mouse.LeftButton == ButtonState.Pressed &&
@@ -256,8 +260,8 @@ namespace MonoGameUi
                             draggingId = null;
 
                             root.InternalStartDrag(DraggingArgs);
-                            if (!DraggingArgs.Handled && StartDrag != null)
-                                StartDrag(DraggingArgs);
+                            if (!DraggingArgs.Handled)
+                                StartDrag?.Invoke(DraggingArgs);
                         }
 
                         // Drop move
@@ -276,8 +280,8 @@ namespace MonoGameUi
                             };
 
                             root.InternalDropMove(args);
-                            if (!args.Handled && DropMove != null)
-                                DropMove(args);
+                            if (!args.Handled)
+                                DropMove?.Invoke(args);
                         }
                     }
 
@@ -286,17 +290,12 @@ namespace MonoGameUi
                     {
                         if (!lastLeftMouseButtonPressed)
                         {
-                            MouseEventArgs leftDownArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
+                            mouseEventArgs.Handled = false;
 
                             // Linke Maustaste wurde neu gedrückt
-                            root.InternalLeftMouseDown(leftDownArgs);
-                            if (!leftDownArgs.Handled && LeftMouseDown != null)
-                                LeftMouseDown(leftDownArgs);
+                            root.InternalLeftMouseDown(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                LeftMouseDown?.Invoke(mouseEventArgs);
                         }
                         lastLeftMouseButtonPressed = true;
                     }
@@ -317,8 +316,8 @@ namespace MonoGameUi
                                 };
 
                                 root.InternalEndDrop(args);
-                                if (!args.Handled && EndDrop != null)
-                                    EndDrop(args);
+                                if (!args.Handled)
+                                    EndDrop?.Invoke(args);
                             }
 
                             // Discard Dragging Infos
@@ -326,31 +325,21 @@ namespace MonoGameUi
                             draggingId = null;
 
                             // Linke Maustaste wurde losgelassen
-                            MouseEventArgs leftClickArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
+                            mouseEventArgs.Handled = false;
 
-                            root.InternalLeftMouseClick(leftClickArgs);
-                            if (!leftClickArgs.Handled && LeftMouseClick != null)
-                                LeftMouseClick(leftClickArgs);
+                            root.InternalLeftMouseClick(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                LeftMouseClick?.Invoke(mouseEventArgs);
 
                             if (lastLeftClick.HasValue &&
                                 gameTime.TotalGameTime - lastLeftClick.Value < TimeSpan.FromMilliseconds(DoubleClickDelay))
                             {
                                 // Double Left Click
-                                MouseEventArgs leftDoubleClickArgs = new MouseEventArgs
-                                {
-                                    MouseMode = MouseMode,
-                                    GlobalPosition = mousePosition,
-                                    LocalPosition = mousePosition
-                                };
+                                mouseEventArgs.Handled = false;
 
-                                root.InternalLeftMouseDoubleClick(leftDoubleClickArgs);
-                                if (!leftDoubleClickArgs.Handled && LeftMouseDoubleClick != null)
-                                    LeftMouseDoubleClick(leftDoubleClickArgs);
+                                root.InternalLeftMouseDoubleClick(mouseEventArgs);
+                                if (!mouseEventArgs.Handled)
+                                    LeftMouseDoubleClick?.Invoke(mouseEventArgs);
 
                                 lastLeftClick = null;
                             }
@@ -360,16 +349,11 @@ namespace MonoGameUi
                             }
 
                             // Mouse Up
-                            MouseEventArgs leftUpArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
+                            mouseEventArgs.Handled = false;
 
-                            root.InternalLeftMouseUp(leftUpArgs);
-                            if (!leftUpArgs.Handled && LeftMouseUp != null)
-                                LeftMouseUp(leftUpArgs);
+                            root.InternalLeftMouseUp(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                LeftMouseUp?.Invoke(mouseEventArgs);
                         }
                         lastLeftMouseButtonPressed = false;
                     }
@@ -380,16 +364,11 @@ namespace MonoGameUi
                         if (!lastRightMouseButtonPressed)
                         {
                             // Rechte Maustaste neu gedrückt
-                            MouseEventArgs rightDownArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
+                            mouseEventArgs.Handled = false;
 
-                            root.InternalRightMouseDown(rightDownArgs);
-                            if (!rightDownArgs.Handled && RightMouseDown != null)
-                                RightMouseDown(rightDownArgs);
+                            root.InternalRightMouseDown(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                RightMouseDown?.Invoke(mouseEventArgs);
                         }
                         lastRightMouseButtonPressed = true;
                     }
@@ -398,30 +377,20 @@ namespace MonoGameUi
                         if (lastRightMouseButtonPressed)
                         {
                             // Rechte Maustaste losgelassen
-                            MouseEventArgs rightClickArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
-                            root.InternalRightMouseClick(rightClickArgs);
-                            if (!rightClickArgs.Handled && RightMouseClick != null)
-                                RightMouseClick(rightClickArgs);
+                            mouseEventArgs.Handled = false;
+                            root.InternalRightMouseClick(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                RightMouseClick?.Invoke(mouseEventArgs);
 
                             if (lastRightClick.HasValue &&
                                 gameTime.TotalGameTime - lastRightClick.Value < TimeSpan.FromMilliseconds(DoubleClickDelay))
                             {
                                 // Double Left Click
-                                MouseEventArgs rightDoubleClickArgs = new MouseEventArgs
-                                {
-                                    MouseMode = MouseMode,
-                                    GlobalPosition = mousePosition,
-                                    LocalPosition = mousePosition
-                                };
+                                mouseEventArgs.Handled = false;
 
-                                root.InternalRightMouseDoubleClick(rightDoubleClickArgs);
-                                if (!rightDoubleClickArgs.Handled && RightMouseDoubleClick != null)
-                                    RightMouseDoubleClick(rightDoubleClickArgs);
+                                root.InternalRightMouseDoubleClick(mouseEventArgs);
+                                if (!mouseEventArgs.Handled)
+                                    RightMouseDoubleClick?.Invoke(mouseEventArgs);
 
                                 lastRightClick = null;
                             }
@@ -430,15 +399,11 @@ namespace MonoGameUi
                                 lastRightClick = gameTime.TotalGameTime;
                             }
 
-                            MouseEventArgs rightUpArgs = new MouseEventArgs
-                            {
-                                MouseMode = MouseMode,
-                                GlobalPosition = mousePosition,
-                                LocalPosition = mousePosition
-                            };
-                            root.InternalRightMouseUp(rightUpArgs);
-                            if (!rightUpArgs.Handled && RightMouseUp != null)
-                                RightMouseUp(rightUpArgs);
+                            mouseEventArgs.Handled = false;
+
+                            root.InternalRightMouseUp(mouseEventArgs);
+                            if (!mouseEventArgs.Handled)
+                                RightMouseUp?.Invoke(mouseEventArgs);
                         }
                         lastRightMouseButtonPressed = false;
                     }
@@ -456,8 +421,8 @@ namespace MonoGameUi
                             Steps = diff
                         };
                         root.InternalMouseScroll(scrollArgs);
-                        if (!scrollArgs.Handled && MouseScroll != null)
-                            MouseScroll(scrollArgs);
+                        if (!scrollArgs.Handled)
+                            MouseScroll?.Invoke(scrollArgs);
 
                         lastMouseWheelValue = mouse.ScrollWheelValue;
                     }
@@ -471,6 +436,8 @@ namespace MonoGameUi
                     {
                         Mouse.SetPosition(GraphicsDevice.Viewport.Width / 2, GraphicsDevice.Viewport.Height / 2);
                     }
+
+                    MouseEventArgsPool.Release(mouseEventArgs);
                 }
 
                 #endregion
@@ -497,31 +464,33 @@ namespace MonoGameUi
                             {
                                 // Taste ist neu
 
-                                args = new KeyEventArgs()
-                                {
-                                    Key = key,
-                                    Shift = shift,
-                                    Ctrl = ctrl,
-                                    Alt = alt
-                                };
+                                args = KeyEventArgsPool.Take();
+
+                                args.Key = key;
+                                args.Shift = shift;
+                                args.Ctrl = ctrl;
+                                args.Alt = alt;
+
                                 root.InternalKeyDown(args);
 
                                 if (!args.Handled)
                                 {
-                                    if (KeyDown != null)
-                                        KeyDown(args);
+                                    KeyDown?.Invoke(args);
                                 }
 
-                                args = new KeyEventArgs()
-                                {
-                                    Key = key,
-                                    Shift = shift,
-                                    Ctrl = ctrl,
-                                    Alt = alt
-                                };
+                                KeyEventArgsPool.Release(args);
+
+                                args = KeyEventArgsPool.Take();
+
+                                args.Key = key;
+                                args.Shift = shift;
+                                args.Ctrl = ctrl;
+                                args.Alt = alt;
+
                                 root.InternalKeyPress(args);
                                 _pressedKeys[i] = gameTime.TotalGameTime.TotalMilliseconds + 500;
 
+                                KeyEventArgsPool.Release(args);
 
                                 // Spezialfall Tab-Taste (falls nicht verarbeitet wurde)
                                 if (key == Keys.Tab && !args.Handled)
@@ -535,20 +504,22 @@ namespace MonoGameUi
                                 // Taste ist immernoch gedrückt
                                 if (_pressedKeys[i] <= gameTime.TotalGameTime.TotalMilliseconds)
                                 {
-                                    args = new KeyEventArgs()
-                                    {
-                                        Key = key,
-                                        Shift = shift,
-                                        Ctrl = ctrl,
-                                        Alt = alt
-                                    };
+                                    args = KeyEventArgsPool.Take();
+
+                                    args.Key = key;
+                                    args.Shift = shift;
+                                    args.Ctrl = ctrl;
+                                    args.Alt = alt;
+
                                     root.InternalKeyPress(args);
                                     if (!args.Handled)
                                     {
-                                        if (KeyPress != null)
-                                            KeyPress(args);
+                                        KeyPress?.Invoke(args);
                                     }
-                                    _pressedKeys[(int)key] = gameTime.TotalGameTime.TotalMilliseconds + 50;
+
+                                    KeyEventArgsPool.Release(args);
+
+                                    _pressedKeys[i] = gameTime.TotalGameTime.TotalMilliseconds + 50;
                                 }
                             }
                         }
@@ -558,13 +529,13 @@ namespace MonoGameUi
                             if (_pressedKeys[i] != UnpressedKeyTimestamp)
                             {
                                 // Taste losgelassen
-                                args = new KeyEventArgs()
-                                {
-                                    Key = key,
-                                    Shift = shift,
-                                    Ctrl = ctrl,
-                                    Alt = alt
-                                };
+                                args = KeyEventArgsPool.Take();
+
+                                args.Key = key;
+                                args.Shift = shift;
+                                args.Ctrl = ctrl;
+                                args.Alt = alt;
+
                                 root.InternalKeyUp(args);
                                 _pressedKeys[i] = UnpressedKeyTimestamp;
 
@@ -573,6 +544,7 @@ namespace MonoGameUi
                                     KeyUp?.Invoke(args);
                                 }
 
+                                KeyEventArgsPool.Release(args);
                             }
                         }
                     }
