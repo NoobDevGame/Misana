@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
@@ -25,6 +26,40 @@ namespace Misana.Core.Communication
             this.receiver = receiver;
 
             RegisterCallback<OnCreateProjectileEffectMessage>(OnCreateProjectileEffect);
+            RegisterCallback<DropWieldedMessage>(OnDropWielded);
+        }
+
+        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        {
+            var em = simulation.Entities;
+            var owner = em.GetEntityById(message.OwnerId);
+            var wielded = em.GetEntityById(message.WieldedId);
+
+            if (wielded == null || owner == null)
+                return;
+
+            var ownerWielding = owner.Get<WieldingComponent>();
+            var ownerTransform = owner.Get<TransformComponent>();
+
+            if (ownerWielding == null || ownerTransform == null)
+                return;
+
+            if (ownerWielding.RightHandEntityId != message.WieldedId)
+                return;
+
+            var wieldedTransform = wielded.Get<TransformComponent>();
+
+            if (wieldedTransform == null)
+                return;
+
+            wielded.Remove<WieldedComponent>().Add<DroppedItemComponent>();
+
+            ownerWielding.TwoHanded = false;
+            ownerWielding.RightHandEntityId = 0;
+
+            wieldedTransform.Radius /= 2;
+            wieldedTransform.ParentEntityId = 0;
+            wieldedTransform.Position = ownerTransform.Position;
         }
 
         private void OnCreateProjectileEffect(OnCreateProjectileEffectMessage message, MessageHeader header, NetworkClient client)

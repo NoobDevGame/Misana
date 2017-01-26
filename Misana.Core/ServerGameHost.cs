@@ -30,9 +30,17 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<CreateEntityMessageRequest>(OnCreateEntityRequest);
             newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
             newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
-            newClient.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
+
+            newClient.RegisterOnMessageCallback<DropWieldedMessage>(OnBroadcast);
         }
 
+        private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+            where T : struct
+        {
+            var simulation = players[client.ClientId].Simulation;
+            simulation.Players.SendMessage(ref message);
+        }
+        /*
         private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
         {
             var simulation = players[client.ClientId].Simulation;
@@ -68,6 +76,7 @@ namespace Misana.Core
 
             simulation.Players.SendMessage(ref message);
         }
+        */
 
         protected override void OnDisconnectClient(NetworkClient oldClient)
         {

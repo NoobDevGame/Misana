@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.IO;
 using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
@@ -12,6 +13,7 @@ namespace Misana.Core.Effects.BaseEffects
     {
         public string DefinitionName { get; set; }
         public bool SetParent { get; set; }
+        public bool Weapon { get; set; }
 
         public CreateEntityEffect()
         {
@@ -22,6 +24,7 @@ namespace Misana.Core.Effects.BaseEffects
         {
             DefinitionName = definitionName;
             SetParent = setParent;
+            Weapon = true;
         }
 
         public override async void Apply(Entity entity, ISimulation simulation)
@@ -36,7 +39,14 @@ namespace Misana.Core.Effects.BaseEffects
                     {
                         transform.ParentEntityId = entity.Id;
                     }
-                }, null);
+                },
+                e =>{
+                    var wielding = entity.Get<WieldingComponent>();
+                    if (Weapon && wielding != null)
+                    {
+                        wielding.RightHandEntityId = e.Id;
+                    }
+                });
             }
             else if (simulation.Mode == SimulationMode.Server)
             {
@@ -48,7 +58,14 @@ namespace Misana.Core.Effects.BaseEffects
                     {
                         transform.ParentEntityId = entity.Id;
                     }
-                }, null);
+                },
+                e =>{
+                    var wielding = entity.Get<WieldingComponent>();
+                    if (Weapon && wielding != null)
+                    {
+                        wielding.RightHandEntityId = e.Id;
+                    }
+                });
 
                 OnCreateEntityEffectMessage message = new OnCreateEntityEffectMessage(id);
                 simulation.EffectMessenger.SendMessage(ref message);
@@ -69,6 +86,12 @@ namespace Misana.Core.Effects.BaseEffects
 
                             if (entity.Get<SendComponent>() != null)
                                 b.Add<SendComponent>();
+
+                            var wielding = entity.Get<WieldingComponent>();
+                            if (Weapon && wielding != null)
+                            {
+                                wielding.RightHandEntityId = message.EntityId;
+                            }
 
                         }
                     }, null);

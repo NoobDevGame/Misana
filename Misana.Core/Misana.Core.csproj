@@ -47,7 +47,6 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
-    <Compile Include="Communication\Messages\DropWieldedMessage.cs" />
     <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
+    <Compile Include="Effects\Messages\DropWieldedEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
