@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Threading;
 using Misana.Core.Communication.Messages;
@@ -26,14 +27,35 @@ namespace Misana.Core.Communication
             this.receiver = receiver;
 
             RegisterCallback<OnCreateProjectileEffectMessage>(OnCreateProjectileEffect);
-            RegisterCallback<DropWieldedMessage>(OnDropWielded);
+            RegisterCallback<OnDropWieldedEffectMessage>(OnDropWielded);
+            RegisterCallback<OnPickupEffectMessage>(OnEffectPickup);
         }
 
-        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        private void OnEffectPickup(OnPickupEffectMessage effectMessage, MessageHeader header, NetworkClient client)
+        {
+            var parentEntity = simulation.Entities.GetEntityById(effectMessage.ParentEntityId);
+            var entity = simulation.Entities.GetEntityById(effectMessage.EntityId);
+
+            var wieldedTransform = entity.Get<TransformComponent>();
+            wieldedTransform.ParentEntityId = parentEntity.Id;
+            wieldedTransform.Position = Vector2.Zero;
+            entity.Remove<DroppedItemComponent>();
+            wieldedTransform.Radius *= 2;
+
+            var w = ComponentRegistry<WieldedComponent>.Take();
+            simulation.Entities.Add(entity, w, false);
+
+            var wielding = parentEntity.Get<WieldingComponent>();
+
+            wielding.RightHandEntityId = entity.Id;
+            wielding.TwoHanded = true;
+        }
+
+        private void OnDropWielded(OnDropWieldedEffectMessage effectMessage, MessageHeader header, NetworkClient client)
         {
             var em = simulation.Entities;
-            var owner = em.GetEntityById(message.OwnerId);
-            var wielded = em.GetEntityById(message.WieldedId);
+            var owner = em.GetEntityById(effectMessage.OwnerId);
+            var wielded = em.GetEntityById(effectMessage.WieldedId);
 
             if (wielded == null || owner == null)
                 return;
@@ -44,7 +66,7 @@ namespace Misana.Core.Communication
             if (ownerWielding == null || ownerTransform == null)
                 return;
 
-            if (ownerWielding.RightHandEntityId != message.WieldedId)
+            if (ownerWielding.RightHandEntityId != effectMessage.WieldedId)
                 return;
 
             var wieldedTransform = wielded.Get<TransformComponent>();

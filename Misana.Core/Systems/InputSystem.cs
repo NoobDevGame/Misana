@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Effects.Messages;
 using Misana.Network;
 
 namespace Misana.Core.Systems
@@ -13,12 +14,12 @@ namespace Misana.Core.Systems
     public class InputSystem : BaseSystemR3O1<PlayerInputComponent, MotionComponent, TransformComponent, FacingComponent>
     {
         private readonly PositionTrackingSystem _positionTrackingSystem;
-        private readonly INetworkSender _sender;
+        private readonly Simulation _simulation;
 
-        public InputSystem(PositionTrackingSystem positionTrackingSystem, INetworkSender sender)
+        public InputSystem(PositionTrackingSystem positionTrackingSystem, Simulation simulation)
         {
             _positionTrackingSystem = positionTrackingSystem;
-            _sender = sender;
+            _simulation = simulation;
         }
 
         protected override void Update(Entity e, PlayerInputComponent r1, MotionComponent r2, TransformComponent r3, FacingComponent o1)
@@ -40,12 +41,12 @@ namespace Misana.Core.Systems
                        
                         if (wieldedEntity != null)
                         {
-                            var msg = new DropWieldedMessage {
+                            var msg = new OnDropWieldedEffectMessage {
                                 OwnerId = e.Id,
                                 WieldedId = wieldedEntity.Id,
                                 TwoHanded = wieldedEntity.Id
                             };
-                            _sender.SendMessage(ref msg);
+                            _simulation.EffectMessenger.SendMessage(ref msg,true);
 
                             wielding.RightHandEntityId = 0;
                         }
@@ -70,17 +71,8 @@ namespace Misana.Core.Systems
 
                         if (wielding.RightHandEntityId == 0)
                         {
-                            var wieldedTransform = entity.Get<TransformComponent>();
-                            wieldedTransform.ParentEntityId = e.Id;
-                            wieldedTransform.Position = Vector2.Zero;
-                            entity.Remove<DroppedItemComponent>();
-                            wieldedTransform.Radius *= 2;
-
-                            var w = ComponentRegistry<WieldedComponent>.Take();
-                            Manager.Add(entity, w, false);
-
-                            wielding.RightHandEntityId = entity.Id;
-                            wielding.TwoHanded = true;
+                           OnPickupEffectMessage message = new OnPickupEffectMessage(e.Id,id);
+                           _simulation.EffectMessenger.SendMessage(ref message,true);
                         }
                     }
                 }

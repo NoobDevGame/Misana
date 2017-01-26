@@ -57,7 +57,7 @@ namespace Misana.Core
                 systems.AddRange(beforSystems);
 
             systems.Add(_positionTrackingSystem);
-            systems.Add(new InputSystem(_positionTrackingSystem, sender));
+            systems.Add(new InputSystem(_positionTrackingSystem,this));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());

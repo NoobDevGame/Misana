@@ -98,9 +98,10 @@
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
-    <Compile Include="Effects\Messages\DropWieldedEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnDropWieldedEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnPickupEffectMessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />

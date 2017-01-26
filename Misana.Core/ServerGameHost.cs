@@ -3,6 +3,7 @@ using System.Linq;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
+using Misana.Core.Effects.Messages;
 using Misana.Core.Maps;
 using Misana.Network;
 
@@ -31,7 +32,8 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
             newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
 
-            newClient.RegisterOnMessageCallback<DropWieldedMessage>(OnBroadcast);
+            newClient.RegisterOnMessageCallback<OnDropWieldedEffectMessage>(OnNoOwnerBroadcast);
+            newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
         }
 
         private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
@@ -40,8 +42,16 @@ namespace Misana.Core
             var simulation = players[client.ClientId].Simulation;
             simulation.Players.SendMessage(ref message);
         }
+
+        private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+            where T : struct
+        {
+            var simulation = players[client.ClientId].Simulation;
+            simulation.Players.SendMessage(ref message,client.ClientId);
+        }
+
         /*
-        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        private void OnDropWielded(OnDropWieldedEffectMessage message, MessageHeader header, NetworkClient client)
         {
             var simulation = players[client.ClientId].Simulation;
             var em = simulation.BaseSimulation.Entities;
