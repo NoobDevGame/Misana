@@ -8,6 +8,7 @@ using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
 using Misana.Core.Events;
 using Misana.Core.Events.Entities;
+using Misana.Core.Events.OnUse;
 using Misana.Core.Maps.MapSerializers;
 
 namespace Misana.Core.Maps
@@ -68,7 +69,9 @@ namespace Misana.Core.Maps
                 map.GlobalEntityDefinitions.Add("Player",playerDefinition);
 
                 EntityDefinition bowDefinition = new EntityDefinition(map.GetNextDefinitionId());
-                bowDefinition.Definitions.Add(new WieldableDefinition());
+                var wieldable = new WieldableDefinition();
+                wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect() ));
+                bowDefinition.Definitions.Add(wieldable);
                 bowDefinition.Definitions.Add(new CharacterRenderDefinition());
                 bowDefinition.Definitions.Add(new WieldedDefinition(0.5f,0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());

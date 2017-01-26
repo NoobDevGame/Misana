@@ -7,10 +7,16 @@ namespace Misana.Core.Effects.BaseEffects
 {
     public class SpawnProjectileEffect : EffectDefinition
     {
-        public EntityBuilder Builder;
         public float Speed;
         public float Radius;
         public float Expiration;
+
+        public SpawnProjectileEffect()
+        {
+            Radius = 0.3f;
+            Expiration = 1500;
+            Speed = 0.25f;
+        }
 
         public override void Apply(Entity entity, ISimulation simulation)
         {
@@ -47,8 +53,29 @@ namespace Misana.Core.Effects.BaseEffects
                 if (w != null)
                     offset += w.ParentPosition;
             }
-            
 
+            if (simulation.Mode == SimulationMode.SinglePlayer)
+            {
+                EntityBuilder builder = new EntityBuilder();
+                builder.Add<MotionComponent>(x => x.Move = move * simulation.Entities.GameTime.ElapsedTime.TotalSeconds)
+                    .Add<ProjectileComponent>(x => x.Move = move)
+                    .Add<SpriteInfoComponent>()
+                    .Add<TransformComponent>(t => {
+                        t.CurrentArea = transform.CurrentArea;
+                        t.Radius = Radius;
+                        t.Position = transform.Position +  offset;
+                    })
+                    ;
+
+                if (Expiration > 0)
+                    builder.Add<ExpiringComponent>(x => x.TimeLeft = TimeSpan.FromMilliseconds(Expiration));
+
+                builder.Commit(entity.Manager);
+
+                return;
+            }
+
+            /*
             var builder = Builder.Copy()
                 .Add<MotionComponent>(x => x.Move = move * simulation.Entities.GameTime.ElapsedTime.TotalSeconds)
                 .Add<ProjectileComponent>(x => x.Move = move)
@@ -63,16 +90,17 @@ namespace Misana.Core.Effects.BaseEffects
                 builder.Add<ExpiringComponent>(x => x.TimeLeft = TimeSpan.FromMilliseconds(Expiration));
 
             builder.Commit(entity.Manager);
+            */
         }
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
-            throw new NotImplementedException();
+
         }
 
         public override void Deserialize(Version version, BinaryReader br)
         {
-            throw new NotImplementedException();
+
         }
     }
 }
