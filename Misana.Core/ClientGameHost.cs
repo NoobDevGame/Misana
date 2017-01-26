@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -80,6 +81,7 @@ namespace Misana.Core
                 transfrom.CopyTo(playerTransform);
                 b.Add(playerTransform);
                 b.Add(playerInput);
+                b.Add<SendComponent>();
             }, null);
         }
     }

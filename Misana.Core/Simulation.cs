@@ -114,8 +114,6 @@ namespace Misana.Core
         public async Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
-            if (Mode == SimulationMode.Local || Mode == SimulationMode.Server)
-                entityBuilder.Add<SendComponent>();
 
             createCallback?.Invoke(entityBuilder);
 

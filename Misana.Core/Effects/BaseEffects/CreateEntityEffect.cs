@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -58,13 +59,17 @@ namespace Misana.Core.Effects.BaseEffects
                 var result = simulation.EffectMessenger.TryGetMessage(out message);
                 if (result)
                 {
-                    var id = await simulation.CreateEntity(DefinitionName,message.EntityId,e =>
+                    var id = await simulation.CreateEntity(DefinitionName,message.EntityId,b =>
                     {
-                        var transform = e.Get<TransformComponent>();
+                        var transform = b.Get<TransformComponent>();
 
                         if (SetParent && transform != null)
                         {
                             transform.ParentEntityId = entity.Id;
+
+                            if (entity.Get<SendComponent>() != null)
+                                b.Add<SendComponent>();
+
                         }
                     }, null);
                 }
