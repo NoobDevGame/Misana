@@ -28,6 +28,7 @@ namespace MonoGameUi
     internal class ControlCollection : ItemCollection<Control>, IControlCollection
     {
         private Control[] inZOrder = new Control[0];
+        private Control[] againstZOrder = new Control[0];
 
         protected Control Owner { get; private set; }
 
@@ -63,7 +64,8 @@ namespace MonoGameUi
             item.Parent = Owner;
             ReorderTab();
             ReorderZ(item);
-
+            item.PathDirty = true;
+            Owner.PathDirty = true;
         }
 
         public override void Clear()
@@ -77,8 +79,9 @@ namespace MonoGameUi
                 temp[i].SetFocus(null);
                 temp[i].Parent = null;
                 temp[i].ZOrderChanged -= item_ZOrderChanged;
+                temp[i].PathDirty = true;
             }
-
+            Owner.PathDirty = true;
             ReorderZ(null);
         }
 
@@ -107,6 +110,8 @@ namespace MonoGameUi
             item.Parent = Owner;
             ReorderTab();
             ReorderZ(item);
+            item.PathDirty = true;
+            Owner.PathDirty = true;
         }
 
         public override bool Remove(Control item)
@@ -120,6 +125,9 @@ namespace MonoGameUi
 
                 ReorderTab();
                 ReorderZ(null);
+
+                item.PathDirty = true;
+                Owner.PathDirty = true;
                 return true;
             }
 
@@ -130,14 +138,18 @@ namespace MonoGameUi
         {
             // Fokus entfernen
             Control c = this[index];
-            if (c != null) c.SetFocus(null);
+            if (c != null)
+            {
+                c.SetFocus(null);
+                base.RemoveAt(index);
 
-            base.RemoveAt(index);
-
-            c.Parent = null;
-            c.ZOrderChanged -= item_ZOrderChanged;
-            ReorderTab();
-            ReorderZ(null);
+                c.Parent = null;
+                c.ZOrderChanged -= item_ZOrderChanged;
+                ReorderTab();
+                ReorderZ(null);
+                c.PathDirty = true;
+                Owner.PathDirty = true;
+            }
         }
 
         private void ReorderTab()
@@ -171,6 +183,7 @@ namespace MonoGameUi
                 c.TabOrder = index++;
 
             inZOrder = this.OrderBy(c => c.ZOrder).ToArray();
+            againstZOrder = inZOrder.Reverse().ToArray();
         }
 
         /// <summary>
@@ -179,7 +192,7 @@ namespace MonoGameUi
         /// <returns></returns>
         public Control[] InZOrder()
         {
-            return inZOrder.ToArray();
+            return inZOrder;
         }
 
         /// <summary>
@@ -188,9 +201,7 @@ namespace MonoGameUi
         /// <returns></returns>
         public Control[] AgainstZOrdner()
         {
-            var localOrder = inZOrder.ToArray();
-            Array.Reverse(localOrder);
-            return localOrder;
+            return againstZOrder;
         }
     }
 }

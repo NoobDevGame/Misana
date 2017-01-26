@@ -479,6 +479,7 @@ namespace MonoGameUi
             }
         }
 
+        private Control[] _rootPath;
         /// <summary>
         /// Liefert den Control-Path von Root zum aktuellen Control.
         /// </summary>
@@ -486,20 +487,26 @@ namespace MonoGameUi
         {
             get
             {
-                // Collect Path
-                List<Control> result = new List<Control>();
-                Control pointer = this;
-                do
+                if (PathDirty)
                 {
-                    result.Add(pointer);
-                    pointer = pointer.Parent;
-                } while (pointer != null);
+                    // Collect Path
+                    List<Control> result = new List<Control>();
+                    Control pointer = this;
+                    do
+                    {
+                        result.Add(pointer);
+                        pointer = pointer.Parent;
+                    } while (pointer != null);
 
-                // Invertieren
-                Control[] path = new Control[result.Count];
-                for (int i = 0; i < result.Count; i++)
-                    path[i] = result[result.Count - i - 1];
-                return path;
+                    // Invertieren
+                    Control[] path = new Control[result.Count];
+                    for (int i = 0; i < result.Count; i++)
+                        path[i] = result[result.Count - i - 1];
+
+                    _rootPath = path;
+                    PathDirty = false;
+                }
+                return _rootPath;
             }
         }
 
@@ -1002,7 +1009,7 @@ namespace MonoGameUi
         public bool HasInvalidDimensions()
         {
             bool result = invalidDimensions;
-            foreach (var child in Children.ToArray())
+            foreach (var child in Children)
                 result |= child.HasInvalidDimensions();
             return result;
         }
@@ -1930,6 +1937,7 @@ namespace MonoGameUi
         private int tabOrder = 0;
 
         private int zOrder = 0;
+        public bool PathDirty = true;
 
         /// <summary>
         /// Legt fest, ob das Control per Tab zu erreichen ist.
