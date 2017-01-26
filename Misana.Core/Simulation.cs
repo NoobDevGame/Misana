@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Communication;
 using Misana.Core.Communication.Components;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -22,7 +23,7 @@ namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
-        private readonly INetworkSender _sender;
+        public NetworkEffectMessenger EffectMessenger { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
@@ -37,10 +38,12 @@ namespace Misana.Core
 
         public SimulationMode Mode { get; private set; }
 
+
+
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
-            , INetworkSender sender)
+            , INetworkSender sender,INetworkReceiver receiver)
         {
-            _sender = sender;
+            EffectMessenger = new NetworkEffectMessenger(sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
@@ -100,6 +103,12 @@ namespace Misana.Core
         {
             var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
             return CreateEntity(definition,createCallback, createdCallback);
+        }
+
+        public Task<int> CreateEntity(string definitionName, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            return CreateEntity(definition,entityId,createCallback, createdCallback);
         }
 
         public async Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)

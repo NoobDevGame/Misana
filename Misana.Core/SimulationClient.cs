@@ -25,32 +25,37 @@ namespace Misana.Core
 
         public SimulationState State => BaseSimulation.State;
 
+        public SimulationMode Mode => BaseSimulation.Mode;
 
-        private NetworkClient _client;
+        public NetworkEffectMessenger EffectMessenger => BaseSimulation.EffectMessenger;
+
+        private INetworkSender _sender;
+        private INetworkReceiver _receiver;
         private int entiytIndex;
         private readonly int maxEntityIndex;
 
 
-        public SimulationClient(NetworkClient client,
+        public SimulationClient(INetworkSender sender, INetworkReceiver receiver,
             int entiytIndex, int entityCount, System.Collections.Generic.List<BaseSystem> baseBeforSystems, System.Collections.Generic.List<BaseSystem> baseAfterSystems)
         {
-            _client = client;
+            _sender = sender;
+            _receiver = receiver;
             this.entiytIndex = entiytIndex;
             maxEntityIndex = entityCount + entiytIndex;
 
             System.Collections.Generic.List<BaseSystem> beforSystems = new System.Collections.Generic.List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(_client));
+            beforSystems.Add(new ReceiveEntityPositionSystem(_receiver));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 
             System.Collections.Generic.List<BaseSystem> afterSystems = new System.Collections.Generic.List<BaseSystem>();
-            afterSystems.Add(new SendEntityPositionSystem(_client));
+            afterSystems.Add(new SendEntityPositionSystem(_sender));
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
-            BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,client);
+            BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,sender,receiver);
 
-            client.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
+            receiver.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
         }
 
         private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
@@ -89,7 +94,7 @@ namespace Misana.Core
         public async Task ChangeMap(Map map)
         {
             var message = new ChangeMapMessageRequest(map.Name);
-            var respone = await _client.SendRequestMessage(ref message).Wait<ChangeMapMessageResponse>();
+            var respone = await _sender.SendRequestMessage(ref message).Wait<ChangeMapMessageResponse>();
             if (!respone.Result)
                 throw new NotSupportedException();
 
@@ -102,6 +107,12 @@ namespace Misana.Core
             return CreateEntity(definition, createCallback, createdCallback);
         }
 
+        public Task<int> CreateEntity(string definitionName, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            return CreateEntity(definition.Id,entityId, createCallback, createdCallback);
+        }
+
         public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             return CreateEntity(definition.Id, createCallback, createdCallback);
@@ -110,7 +121,7 @@ namespace Misana.Core
         public async Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             CreateEntityMessageRequest request = new CreateEntityMessageRequest(defintionId);
-            var response = await _client.SendRequestMessage(ref request).Wait<CreateEntityMessageResponse>();
+            var response = await _sender.SendRequestMessage(ref request).Wait<CreateEntityMessageResponse>();
             if (!response.Result)
                 throw new InvalidOperationException();
 
@@ -127,7 +138,7 @@ namespace Misana.Core
         public async Task Start()
         {
             var message = new StartSimulationMessageRequest();
-            var response = await _client.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
+            var response = await _sender.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
 
             if (!response.Result)
                 throw new NotSupportedException();

@@ -8,9 +8,9 @@ namespace Misana.Core.Communication.Systems
 {
     public class ReceiveEntityPositionSystem : BaseSystemR1<TransformComponent>
     {
-        private NetworkClient _client;
+        private INetworkReceiver _client;
 
-        public ReceiveEntityPositionSystem(NetworkClient client)
+        public ReceiveEntityPositionSystem(INetworkReceiver client)
         {
             _client = client;
         }

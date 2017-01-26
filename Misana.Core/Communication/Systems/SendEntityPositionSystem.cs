@@ -8,9 +8,9 @@ namespace Misana.Core.Communication.Systems
 {
     public class SendEntityPositionSystem : BaseSystemR2<TransformComponent,SendComponent>
     {
-        private NetworkClient _client;
+        private INetworkSender _client;
 
-        public SendEntityPositionSystem(NetworkClient client)
+        public SendEntityPositionSystem(INetworkSender client)
         {
             _client = client;
         }
@@ -18,7 +18,7 @@ namespace Misana.Core.Communication.Systems
         protected override void Update(Entity e, TransformComponent r1,SendComponent r2)
         {
             EntityPositionMessage message = new EntityPositionMessage(e.Id,r1);
-            _client.SendRequestMessage(ref message);
+            _client.SendMessage(ref message);
         }
     }
 }

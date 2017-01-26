@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Effects.Messages;
 
 namespace Misana.Core.Effects.BaseEffects
 {
@@ -21,9 +23,9 @@ namespace Misana.Core.Effects.BaseEffects
             SetParent = setParent;
         }
 
-        public override void Apply(Entity entity, ISimulation simulation)
+        public override async void Apply(Entity entity, ISimulation simulation)
         {
-            try
+            if (simulation.Mode == SimulationMode.SinglePlayer)
             {
                 simulation.CreateEntity(DefinitionName,e =>
                 {
@@ -35,9 +37,41 @@ namespace Misana.Core.Effects.BaseEffects
                     }
                 }, null);
             }
-            catch (Exception e)
+            else if (simulation.Mode == SimulationMode.Server)
             {
+                var id = await simulation.CreateEntity(DefinitionName,e =>
+                {
+                    var transform = e.Get<TransformComponent>();
+
+                    if (SetParent && transform != null)
+                    {
+                        transform.ParentEntityId = entity.Id;
+                    }
+                }, null);
+
+                OnCreateEntityEffectMessage message = new OnCreateEntityEffectMessage(id);
+                simulation.EffectMessenger.SendMessage(ref message);
             }
+            else if (simulation.Mode == SimulationMode.Local)
+            {
+                OnCreateEntityEffectMessage message;
+                var result = simulation.EffectMessenger.TryGetMessage(out message);
+                if (result)
+                {
+                    var id = await simulation.CreateEntity(DefinitionName,message.EntityId,e =>
+                    {
+                        var transform = e.Get<TransformComponent>();
+
+                        if (SetParent && transform != null)
+                        {
+                            transform.ParentEntityId = entity.Id;
+                        }
+                    }, null);
+                }
+
+            }
+            
+
         }
 
         public override void Serialize(Version version, BinaryWriter bw)

@@ -54,6 +54,7 @@
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
     <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
     <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
+    <Compile Include="Communication\NetworkEffectMessenger.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
+    <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
