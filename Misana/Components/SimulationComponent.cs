@@ -118,7 +118,7 @@ namespace Misana.Components
 
         public async Task StartWorld()
         {
-            Game.Player.PlayerId = await Simulation.CreatePlayer(Game.Player.Input, Game.Player.Transform,null,null);
+            Game.Player.PlayerId = await host.CreatePlayer(Game.Player.Input, Game.Player.Transform);
             await Simulation.Start();
         }
 

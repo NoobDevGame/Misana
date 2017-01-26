@@ -9,6 +9,7 @@ using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
+using Misana.Core.Events;
 using Misana.Core.Maps;
 using Misana.Network;
 
@@ -23,6 +24,7 @@ namespace Misana.Core
         public EntityManager Entities => BaseSimulation.Entities;
 
         public SimulationState State => BaseSimulation.State;
+
 
         private NetworkClient _client;
         private int entiytIndex;
@@ -47,6 +49,7 @@ namespace Misana.Core
                 afterSystems.AddRange(baseAfterSystems);
 
             BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,client);
+
             client.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
         }
 
@@ -93,73 +96,33 @@ namespace Misana.Core
              await BaseSimulation.ChangeMap(map);
         }
 
-        public void CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
-            CreateEntity(definition,createCallback,createdCallback);
+            return CreateEntity(definition, createCallback, createdCallback);
         }
 
-        public void CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityId = Interlocked.Increment(ref entiytIndex);
-
-
-            var message = new CreateEntityMessageRequest(entityId,definition.Id);
-            _client.SendRequestMessage(ref message).SetCallback<CreateEntityMessageResponse>(r =>
-            {
-                if (!r.Result)
-                    return;
-                var newCreatedCallback = createdCallback + OnEntityCreated;
-
-                BaseSimulation.CreateEntity(definition.Id,entityId,createCallback,newCreatedCallback);
-            });
-
+            return CreateEntity(definition.Id, createCallback, createdCallback);
         }
 
-        public void CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public async Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            throw new NotSupportedException();
-        }
-
-        private void OnEntityCreated(Entity entity)
-        {
-            var createComponent = entity.Get<CreateComponent>();
-
-            if (createComponent != null)
-            {
-                foreach (var createEvent in createComponent.OnCreateEvent)
-                {
-                    createEvent.Apply(Entities,entity,null,this);
-                }
-            }
-        }
-
-        public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-
-            var playerId = Interlocked.Increment(ref entiytIndex);
-
-            var definition = CurrentMap.GlobalEntityDefinitions["Player"];
-
-            var message = new CreateEntityMessageRequest(playerId,definition.Id);
-            var response = await _client.SendRequestMessage(ref message).Wait<CreateEntityMessageResponse>();
-
+            CreateEntityMessageRequest request = new CreateEntityMessageRequest(defintionId);
+            var response = await _client.SendRequestMessage(ref request).Wait<CreateEntityMessageResponse>();
             if (!response.Result)
-                throw new NotSupportedException();
+                throw new InvalidOperationException();
 
-            var newCreatedCallback = createdCallback + OnEntityCreated;
-
-            await BaseSimulation.CreatePlayer(input, transform,playerId, createCallback, newCreatedCallback);
-
-            return playerId;
+            return await BaseSimulation.CreateEntity(defintionId, response.EntityId, createCallback, createdCallback);
         }
 
-
-
-        public Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform, int playerId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            throw new NotSupportedException();
+            throw new NotImplementedException();
         }
+
+
 
         public async Task Start()
         {

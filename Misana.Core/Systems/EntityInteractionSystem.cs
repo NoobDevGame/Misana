@@ -19,14 +19,14 @@ namespace Misana.Core.Systems
             }
         }
 
-        private ISimulation _world;
+        private ISimulation _simulation;
         List<int>[][] _areas;
         HashSet<int>[] _occupiedTilesPerArea;
         HashSet<CollisionPair>[] _collisionPairsPerArea;
 
         public void ChangeSimulation(ISimulation simulation)
         {
-            _world = simulation;
+            _simulation = simulation;
             _areas = new List<int>[simulation.CurrentMap.Areas.Count][];
             _occupiedTilesPerArea = new HashSet<int>[simulation.CurrentMap.Areas.Count];
             _collisionPairsPerArea = new HashSet<CollisionPair>[simulation.CurrentMap.Areas.Count];
@@ -146,11 +146,11 @@ namespace Misana.Core.Systems
 
                             if(interactableComponent.Interacting)
                             foreach (var e in interactable2Component.OnInteractionEvents)
-                                e.Apply(Manager, e2, e1, _world);
+                                e.Apply(Manager, e2, e1, _simulation);
 
                             if(interactable2Component.Interacting)
                             foreach (var e in interactableComponent.OnInteractionEvents)
-                                e.Apply(Manager, e1, e2, _world);
+                                e.Apply(Manager, e1, e2, _simulation);
                         }
                     }
                 }

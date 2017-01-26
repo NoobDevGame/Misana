@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using Misana.Core.Ecs;
 using Misana.Core.Effects;
 
@@ -54,10 +55,10 @@ namespace Misana.Core.Events.Entities
             return Condition?.Test(target, simulation) ?? true;
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation simulation)
+        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation simulation)
         {
             Effect.Apply(target, simulation);
-            return true;
+            return await Task.FromResult(true);
         }
 
         public override OnEvent Copy()

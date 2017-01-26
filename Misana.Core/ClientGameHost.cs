@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Network;
 
@@ -23,14 +24,6 @@ namespace Misana.Core
             this.client = client;
             _beforSystems = beforSystems;
             _afterSystems = afterSystems;
-
-            client.RegisterOnMessageCallback<OnCreateEntityMessage>(OnCreateEntity);
-
-        }
-
-        private void OnCreateEntity(OnCreateEntityMessage message, MessageHeader header, NetworkClient networkClient)
-        {
-            Simulation.CreateEntity(message.DefinitionId,message.EntityId,null,null);
         }
 
         public async Task Connect(string name)
@@ -77,6 +70,17 @@ namespace Misana.Core
         public void Update(GameTime gameTime)
         {
             Simulation?.Update(gameTime);
+        }
+
+        public Task<int> CreatePlayer(PlayerInputComponent playerInput, TransformComponent playerTransform)
+        {
+            return Simulation.CreateEntity("Player", b =>
+            {
+                var transfrom = b.Get<TransformComponent>();
+                transfrom.CopyTo(playerTransform);
+                b.Add(playerTransform);
+                b.Add(playerInput);
+            }, null);
         }
     }
 }

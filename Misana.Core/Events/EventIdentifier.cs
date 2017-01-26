@@ -1,4 +1,17 @@
-﻿$HEADER$namespace $NAMESPACE$
+﻿
+using System.Threading;
+
+public static class EventIdentifier
 {
-  public class $CLASS$ {$END$}
+    private static int _eventIndex = 0;
+
+    public static void Reset()
+    {
+        _eventIndex = 0;
+    }
+
+    public static int NextId()
+    {
+        return Interlocked.Increment(ref _eventIndex);
+    }
 }

@@ -129,6 +129,7 @@
     <Compile Include="Events\Conditions\FlagCondition.cs" />
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
+    <Compile Include="Events\EventIdentifier.cs" />
     <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />

@@ -6,6 +6,7 @@ using Misana.Core.Effects.BaseEffects;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
+using Misana.Core.Events;
 using Misana.Core.Events.Entities;
 using Misana.Core.Maps.MapSerializers;
 
@@ -16,8 +17,12 @@ namespace Misana.Core.Maps
 
         private static readonly string dirPath =  Path.Combine("Content", "Maps");
 
+
+
         public static Map LoadPath(string path)
         {
+            EventIdentifier.Reset();
+
             if (!File.Exists(path))
                 throw new FileNotFoundException("File not founded", path);
             Map map;
@@ -54,6 +59,7 @@ namespace Misana.Core.Maps
                 playerDefinition.Definitions.Add(new EntityInteractableDefinition());
                 playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(5, 3),map.StartArea,0.5f));
                 playerDefinition.Definitions.Add(new WieldingDefinition());
+                playerDefinition.Definitions.Add(new FacingDefinition());
 
                 var createDefinition = new CreateDefinition();
                 createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow",true)){ApplyTo = ApplicableTo.Self});
