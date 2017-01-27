@@ -47,6 +47,7 @@ namespace Misana.Network
 
         private void OnReadLenght(IAsyncResult ar)
         {
+
             var dataCount = stream.EndRead(ar);
             var lenght = BitConverter.ToInt32(buffer, 0);
 

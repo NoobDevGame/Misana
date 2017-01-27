@@ -60,7 +60,6 @@
     <Compile Include="Communication\PlayerInfo.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
-    <Compile Include="Communication\Systems\ServerReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
@@ -163,7 +162,6 @@
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
-    <Compile Include="SimulationClient.cs" />
     <Compile Include="Systems\PositionTrackingSystem.cs" />
     <Compile Include="SimulationMode.cs" />
     <Compile Include="SimulationState.cs" />

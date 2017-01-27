@@ -6,7 +6,7 @@ using Misana.Network;
 
 namespace Misana.Core.Communication.Systems
 {
-    public class SendEntityPositionSystem : BaseSystemR2<TransformComponent,SendComponent>
+    public class SendEntityPositionSystem : BaseSystemR2O1<TransformComponent,SendComponent,FacingComponent>
     {
         private INetworkSender _client;
 
@@ -15,9 +15,12 @@ namespace Misana.Core.Communication.Systems
             _client = client;
         }
 
-        protected override void Update(Entity e, TransformComponent r1,SendComponent r2)
+        protected override void Update(Entity e, TransformComponent r1,SendComponent r2,FacingComponent o1)
         {
             EntityPositionMessage message = new EntityPositionMessage(e.Id,r1);
+            message.Facing = o1?.Facing ?? Vector2.Zero;
+
+
             _client.SendMessage(ref message);
         }
     }

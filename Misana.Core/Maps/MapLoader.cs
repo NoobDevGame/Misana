@@ -54,7 +54,7 @@ namespace Misana.Core.Maps
                 playerDefinition.Definitions.Add(new HealthDefinition());
                 playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
                 playerDefinition.Definitions.Add(new MotionComponentDefinition());
-                playerDefinition.Definitions.Add(new EntityColliderDefinition());
+                //playerDefinition.Definitions.Add(new EntityColliderDefinition());
                 playerDefinition.Definitions.Add(new BlockColliderDefinition());
                 playerDefinition.Definitions.Add(new EntityFlagDefintion());
                 playerDefinition.Definitions.Add(new EntityInteractableDefinition());

@@ -223,7 +223,6 @@ namespace Misana.Network
             if (_callback != null)
             {
                 _callback.Invoke(message,header,client);
-                return;
             }
 
             lock (messagesLockObject)

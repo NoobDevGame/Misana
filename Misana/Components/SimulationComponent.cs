@@ -17,7 +17,7 @@ namespace Misana.Components
 {
     internal class SimulationComponent : GameComponent
     {
-        public ISimulation Simulation { get; private set; }
+        public ISimulation Simulation => host;
 
         public new MisanaGame Game;
         
@@ -102,21 +102,32 @@ namespace Misana.Components
 
         public async Task CreateWorld(string name, Map map)
         {
-            Simulation = await host.CreateWorld(name);
+            await host.CreateWorld(name);
 
+            AddHooks();
+
+            Players.Add(LocalPlayerInfo);
+
+            await Simulation.ChangeMap(map);
+        }
+
+        private void AddHooks()
+        {
             Simulation.Entities.RegisterAdditionHook<SpriteInfoComponent>(
-                (em, e, si) => {
+                (em, e, si) =>
+                {
                     var rsc = ComponentRegistry<RenderSpriteComponent>.Take();
                     em.Add(e, rsc, false);
                 }
             );
 
             Simulation.Entities.RegisterRemovalHook<SpriteInfoComponent>(
-                (em,e,si) => e.Remove<RenderSpriteComponent>()
+                (em, e, si) => e.Remove<RenderSpriteComponent>()
             );
 
             Simulation.Entities.RegisterAdditionHook<CharacterComponent>(
-                (em, e, si) => {
+                (em, e, si) =>
+                {
                     var rnc = ComponentRegistry<RenderNameComponent>.Take();
                     rnc.Text = si.Name;
                     em.Add(e, rnc, false);
@@ -128,18 +139,12 @@ namespace Misana.Components
             );
 
             Simulation.Entities.RegisterAdditionHook<HealthComponent>(
-                (em, e, si) => {
-                    em.Add(e, ComponentRegistry<RenderHealthComponent>.Take(), false);
-                }
+                (em, e, si) => { em.Add(e, ComponentRegistry<RenderHealthComponent>.Take(), false); }
             );
 
             Simulation.Entities.RegisterRemovalHook<HealthComponent>(
                 (em, e, si) => e.Remove<RenderHealthComponent>()
             );
-
-            Players.Add(LocalPlayerInfo);
-
-            await Simulation.ChangeMap(map);
         }
 
         public async Task StartWorld()
@@ -170,6 +175,7 @@ namespace Misana.Components
                 PlayerInfoMessage message;
                 while (host.Receiver.TryGetMessage(out message))
                 {
+
                     Players.Add(new PlayerInfo(message.Name,message.PlayerId));
                 }
             }
@@ -178,7 +184,7 @@ namespace Misana.Components
                 OnStartSimulationMessage message;
                 while (host.Receiver.TryGetMessage(out message))
                 {
-
+                    StartWorld();
                 }
             }
 
@@ -197,7 +203,8 @@ namespace Misana.Components
 
         public async Task JoinWorld(WorldInformation worldListSelectedItem)
         {
-            Simulation= await  host.JoinWorld(worldListSelectedItem.Id);
+            await host.JoinWorld(worldListSelectedItem.Id);
+            AddHooks();
             Players.Add(LocalPlayerInfo);
         }
     }

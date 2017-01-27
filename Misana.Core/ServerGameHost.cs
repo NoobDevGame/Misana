@@ -39,6 +39,8 @@ namespace Misana.Core
 
             newClient.RegisterOnMessageCallback<OnDropWieldedEffectMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
+            newClient.RegisterOnMessageCallback<EntityPositionMessage>(OnNoOwnerBroadcast);
+            newClient.RegisterOnMessageCallback<OnCreateProjectileEffectMessage>(OnNoOwnerBroadcast);
         }
 
         private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, NetworkClient client)
@@ -111,6 +113,12 @@ namespace Misana.Core
 
             var simulation = players[networkClient.ClientId].Simulation;
 
+            if (simulation.BaseSimulation.State == SimulationState.Running)
+            {
+                networkClient.SendResponseMessage(ref response,header.MessageId);
+                return;
+            }
+
             if (simulation.Owner.ClientId != networkClient.ClientId)
             {
                 response.Result = false;
@@ -175,7 +183,7 @@ namespace Misana.Core
         {
             var networkPlayer = players[client.ClientId];
 
-            var simulation = new NetworkSimulation(networkPlayer,client,null,null);
+            var simulation = new NetworkSimulation(networkPlayer,null,null);
             simulation.Name = message.Name;
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);

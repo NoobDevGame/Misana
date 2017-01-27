@@ -20,8 +20,18 @@ namespace Misana.Core.Communication.Systems
             EntityPositionMessage message;
             while (_client.TryGetMessage(out message))
             {
-                var component = Entities.First(i => i.Id == message.entityId).Get<TransformComponent>();
-                component.Position = message.position;
+
+                var entity = Manager.GetEntityById(message.entityId);
+                if (entity != null)
+                {
+                    var transformCmp = entity.Get<TransformComponent>();
+                    transformCmp.Position = message.position;
+
+                    var facingCmp = entity.Get<FacingComponent>();
+                    if (facingCmp != null)
+                        facingCmp.Facing = message.Facing;
+
+                }
             }
         }
 	}

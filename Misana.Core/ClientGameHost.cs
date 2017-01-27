@@ -2,46 +2,132 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Misana.Core.Communication;
 using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Entities;
+using Misana.Core.Maps;
 using Misana.Network;
 
 namespace Misana.Core
 {
-    public class ClientGameHost
+    public class ClientGameHost : ISimulation
     {
         private readonly NetworkClient client;
-        private readonly List<BaseSystem> _beforSystems;
+        private readonly List<BaseSystem> _beforeSystems;
         private readonly List<BaseSystem> _afterSystems;
-
-        private readonly List<ISimulation> _serverSimulations = new List<ISimulation>();
 
         public ISimulation Simulation { get; private set; }
         public INetworkReceiver Receiver { get; private set; }
         public INetworkSender Sender { get; private set; }
 
+        public Map CurrentMap => Simulation.CurrentMap;
+
+        public EntityManager Entities => Simulation.Entities;
+
+        public SimulationState State
+        {
+            get
+            {
+                if (Simulation != null)
+                    return Simulation.State;
+                return SimulationState.Unloaded;
+            }
+        }
+
+        public SimulationMode Mode => Simulation.Mode;
+
+        public NetworkEffectMessenger EffectMessenger => Simulation.EffectMessenger;
+
         public bool IsConnected { get; private set; }
 
 
-        public ClientGameHost(NetworkClient client, List<BaseSystem> beforSystems, List<BaseSystem> afterSystems)
+        public ClientGameHost(NetworkClient client, List<BaseSystem> beforeSystems, List<BaseSystem> afterSystems)
         {
             this.client = client;
-            _beforSystems = beforSystems;
+            _beforeSystems = beforeSystems;
             _afterSystems = afterSystems;
             Receiver = new EmptyNetworkReceive();
             Sender = new EmptyNetworkSender();
         }
 
+        private void RegisterCallback()
+        {
+            Receiver.RegisterOnMessageCallback<JoinWorldMessageResponse>(OnJoinWorld);
+        }
+
+
+        private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, NetworkClient client)
+        {
+            if (message.HaveWorld && Simulation != null)
+            {
+                var map = MapLoader.Load(message.MapName);
+                Simulation.ChangeMap(map);
+            }
+        }
+
+        public Task<int> CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            return CreateEntity(definition, createCallback, createdCallback);
+        }
+
+        public Task<int> CreateEntity(string definitionName, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            return CreateEntity(definition.Id,entityId, createCallback, createdCallback);
+        }
+
+        public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            return CreateEntity(definition.Id, createCallback, createdCallback);
+        }
+
+        public async Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            if (IsConnected)
+            {
+                CreateEntityMessageRequest request = new CreateEntityMessageRequest(defintionId);
+                var response = await Sender.SendRequestMessage(ref request).Wait<CreateEntityMessageResponse>();
+                if (!response.Result)
+                    throw new InvalidOperationException();
+
+                return await Simulation.CreateEntity(defintionId, response.EntityId, createCallback, createdCallback);
+            }
+
+            return await  Simulation.CreateEntity(defintionId, createCallback, createdCallback);
+        }
+
+        public Task<int> CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task ChangeMap(Map map)
+        {
+            if (IsConnected)
+            {
+                var message = new ChangeMapMessageRequest(map.Name);
+                var respone = await Sender.SendRequestMessage(ref message).Wait<ChangeMapMessageResponse>();
+                if (!respone.Result)
+                    throw new NotSupportedException();
+            }
+
+            await Simulation.ChangeMap(map);
+        }
+
         public async Task<int> Connect(string name,IPAddress address)
         {
-
             await client.Connect(new IPEndPoint(address,NetworkListener.PORT));
-
 
             Receiver = client;
             Sender = client;
+
+            RegisterCallback();
+
             LoginMessageRequest message = new LoginMessageRequest(name);
             var responseMessage = await client.SendRequestMessage(ref message).Wait<LoginMessageResponse>();
 
@@ -55,7 +141,7 @@ namespace Misana.Core
             IsConnected = false;
         }
 
-        public async Task<ISimulation> CreateWorld(string name)
+        public async Task CreateWorld(string name)
         {
             ISimulation simulation = null;
 
@@ -69,27 +155,59 @@ namespace Misana.Core
                 if (!responseMessage.Result)
                     throw  new NotSupportedException();
 
-
-                simulation =  new SimulationClient(client, client,_beforSystems,_afterSystems);
+                simulation = CreateNetworkSimulation();
             }
             else
             {
-                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems,new EmptyNetworkSender(), new EmptyNetworkReceive());
+                simulation = new Simulation(SimulationMode.SinglePlayer, _beforeSystems,_afterSystems,new EmptyNetworkSender(), new EmptyNetworkReceive());
             }
 
             Simulation = simulation;
+        }
 
+        private ISimulation CreateNetworkSimulation()
+        {
+            List<BaseSystem> beforSystems = new List<BaseSystem>();
+            beforSystems.Add(new ReceiveEntityPositionSystem(Receiver));
+            if (_beforeSystems != null)
+                beforSystems.AddRange(_beforeSystems);
+
+            List<BaseSystem> afterSystems = new List<BaseSystem>();
+            afterSystems.Add(new SendEntityPositionSystem(Sender));
+            if (_afterSystems != null)
+                afterSystems.AddRange(_afterSystems);
+
+            var simulation = new Simulation(SimulationMode.Local, beforSystems, afterSystems, client, client);
             return simulation;
         }
 
         public void Update(GameTime gameTime)
         {
+            {
+                OnCreateEntityMessage message = new OnCreateEntityMessage();
+                while (Receiver.TryGetMessage(out message))
+                {
+                    Simulation.CreateEntity(message.DefinitionId, message.EntityId, null, null);
+                }
+            }
+
             Simulation?.Update(gameTime);
+        }
+
+        public async Task Start()
+        {
+            var message = new StartSimulationMessageRequest();
+            var response = await Sender.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
+
+            if (!response.Result)
+                throw new NotSupportedException();
+
+            await  Simulation.Start();
         }
 
         public Task<int> CreatePlayer(PlayerInputComponent playerInput, TransformComponent playerTransform)
         {
-            return Simulation.CreateEntity("Player", b =>
+            return CreateEntity("Player", b =>
             {
                 var transfrom = b.Get<TransformComponent>();
                 transfrom.CopyTo(playerTransform);
@@ -99,7 +217,7 @@ namespace Misana.Core
             }, null);
         }
 
-        public async Task<ISimulation> JoinWorld(int id)
+        public async Task JoinWorld(int id)
         {
             if (!IsConnected)
                 throw new InvalidOperationException();
@@ -107,9 +225,14 @@ namespace Misana.Core
             JoinWorldMessageRequest messageRequest= new JoinWorldMessageRequest(id);
             var respone = await Sender.SendRequestMessage<JoinWorldMessageRequest>(ref messageRequest).Wait<JoinWorldMessageResponse>();
 
-            Simulation =  new SimulationClient(client, client,_beforSystems,_afterSystems);
+            Simulation = CreateNetworkSimulation();
 
-            return Simulation;
+            if (respone.HaveWorld)
+            {
+                var map = MapLoader.Load(respone.MapName);
+
+                await Simulation.ChangeMap(map);
+            }
         }
     }
 }

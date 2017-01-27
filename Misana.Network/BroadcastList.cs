@@ -77,7 +77,7 @@ namespace Misana.Network
 
         public void RegisterOnMessageCallback<T1>(MessageReceiveCallback<T1> callback) where T1 : struct
         {
-            throw new NotSupportedException();
+
         }
     }
 }
