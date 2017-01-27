@@ -9,30 +9,38 @@ namespace Misana.Core.Ecs.Changes
 
         public void Add(Entity e)
         {
-            _list.Add(e);
-            HasChanges = true;
+            lock (lockObject)
+            {
+                _list.Add(e);
+                HasChanges = true;
+            }
+
         }
 
         public bool HasChanges;
+        private object lockObject = new object();
 
         public void Commit(List<BaseSystem> systems)
         {
-            foreach (var e in _list)
+            lock (lockObject)
             {
-                for (int i = 0; i < e.Components.Length; i++)
+                foreach (var e in _list)
                 {
-                    if (e.Components[i] != null)
+                    for (int i = 0; i < e.Components.Length; i++)
                     {
-                        ComponentRegistry.AdditionHooks[i](e.Manager, e, e.Components[i]);
+                        if (e.Components[i] != null)
+                        {
+                            ComponentRegistry.AdditionHooks[i](e.Manager, e, e.Components[i]);
+                        }
                     }
-                }
-                
-                foreach (var s in systems)
-                    s.EntityAdded(e);
-            }
 
-            _list.Clear();
-            HasChanges = false;
+                    foreach (var s in systems)
+                        s.EntityAdded(e);
+                }
+
+                _list.Clear();
+                HasChanges = false;
+            }
         }
     }
 }
