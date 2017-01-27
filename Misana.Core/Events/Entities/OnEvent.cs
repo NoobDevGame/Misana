@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Events.Entities
@@ -20,10 +21,17 @@ namespace Misana.Core.Events.Entities
 
         private readonly object _lockObj = new object();
 
-        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, ISimulation simulation);
+        private Task<bool> applyTask;
+
+        internal abstract Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, ISimulation simulation);
 
         public virtual void Apply(EntityManager manager, Ecs.Entity self, Ecs.Entity other, ISimulation simulation)
         {
+            if (applyTask != null && !applyTask.IsCompleted)
+            {
+                return;
+            }
+
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
             {
                 if (manager.GameTime.TotalTime - LastExecution < CoolDown)
@@ -58,7 +66,7 @@ namespace Misana.Core.Events.Entities
                     }
 
                     if(apply)
-                        applied = ApplyToEntity(manager, true, self, simulation);
+                        applyTask = ApplyToEntity(manager, true, self, simulation);
                 }
             }
 
@@ -89,13 +97,18 @@ namespace Misana.Core.Events.Entities
 
                     if (apply)
                     {
-                        applied = ApplyToEntity(manager, false, other, simulation) || applied;
+                        applyTask = ApplyToEntity(manager, false, other, simulation); //|| applied;
                     }
                 }
             }
 
-            if(applied)
-                LastExecution = manager.GameTime.TotalTime;
+            applyTask?.ContinueWith(i =>
+            {
+                if(i.Result)
+                    LastExecution = manager.GameTime.TotalTime;
+            });
+
+
         }
 
         public abstract OnEvent Copy();

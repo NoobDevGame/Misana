@@ -3,6 +3,7 @@ using System.Linq;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
+using Misana.Core.Effects.Messages;
 using Misana.Core.Maps;
 using Misana.Network;
 
@@ -30,10 +31,27 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<CreateEntityMessageRequest>(OnCreateEntityRequest);
             newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
             newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
-            newClient.RegisterOnMessageCallback<DropWieldedMessage>(OnDropWielded);
+
+            newClient.RegisterOnMessageCallback<OnDropWieldedEffectMessage>(OnNoOwnerBroadcast);
+            newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
         }
 
-        private void OnDropWielded(DropWieldedMessage message, MessageHeader header, NetworkClient client)
+        private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+            where T : struct
+        {
+            var simulation = players[client.ClientId].Simulation;
+            simulation.Players.SendMessage(ref message);
+        }
+
+        private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+            where T : struct
+        {
+            var simulation = players[client.ClientId].Simulation;
+            simulation.Players.SendMessage(ref message,client.ClientId);
+        }
+
+        /*
+        private void OnDropWielded(OnDropWieldedEffectMessage message, MessageHeader header, NetworkClient client)
         {
             var simulation = players[client.ClientId].Simulation;
             var em = simulation.BaseSimulation.Entities;
@@ -68,6 +86,7 @@ namespace Misana.Core
 
             simulation.Players.SendMessage(ref message);
         }
+        */
 
         protected override void OnDisconnectClient(NetworkClient oldClient)
         {
@@ -114,15 +133,15 @@ namespace Misana.Core
             networkClient.SendResponseMessage(ref response,header.MessageId);
         }
 
-        private void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
+        private async void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
         {
             var simulation = players[networkClient.ClientId].Simulation;
-            simulation.BaseSimulation.CreateEntity(message.DefinitionId, message.EntityId,null, null);
+            var id = await simulation.BaseSimulation.CreateEntity(message.DefinitionId,null, null);
 
-            var responseMessage = new CreateEntityMessageResponse(true);
+            var responseMessage = new CreateEntityMessageResponse(true,id);
             networkClient.SendResponseMessage(ref responseMessage,header.MessageId);
 
-            var callbackmessage = new OnCreateEntityMessage(message.EntityId,message.DefinitionId);
+            var callbackmessage = new OnCreateEntityMessage(id,message.DefinitionId);
             simulation.Players.SendMessage(ref callbackmessage,networkClient.ClientId);
 
         }

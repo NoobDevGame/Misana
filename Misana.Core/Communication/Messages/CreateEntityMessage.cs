@@ -5,12 +5,12 @@ namespace Misana.Core.Communication.Messages
     [MessageDefinition(ResponseType = typeof(CreateEntityMessageResponse))]
     public struct CreateEntityMessageRequest
     {
-        public int EntityId;
+
         public int DefinitionId;
 
-        public CreateEntityMessageRequest(int entityId, int definitionId)
+        public CreateEntityMessageRequest(int definitionId)
         {
-            EntityId = entityId;
+
             DefinitionId = definitionId;
         }
     }
@@ -19,10 +19,12 @@ namespace Misana.Core.Communication.Messages
     public struct CreateEntityMessageResponse
     {
         public bool Result;
+        public int EntityId;
 
-        public CreateEntityMessageResponse(bool result)
+        public CreateEntityMessageResponse(bool result,int entityId)
         {
             Result = result;
+            EntityId = entityId;
         }
     }
 

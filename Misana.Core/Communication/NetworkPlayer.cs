@@ -28,9 +28,29 @@ namespace Misana.Core.Communication
             Client.SendMessage(ref message);
         }
 
+        public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
+        {
+            return Client.SendRequestMessage(ref message);
+        }
+
+        public void SendResponseMessage<T>(ref T message, byte messageid) where T : struct
+        {
+            Client.SendResponseMessage(ref message,messageid);
+        }
+
         public bool TryGetMessage<T>(out T message, out INetworkClient senderClient) where T : struct
         {
             return Client.TryGetMessage(out message, out senderClient);
+        }
+
+        public bool TryGetMessage<T>(out T message) where T : struct
+        {
+            return Client.TryGetMessage<T>(out message);
+        }
+
+        public void RegisterOnMessageCallback<T>(MessageReceiveCallback<T> callback) where T : struct
+        {
+            Client.RegisterOnMessageCallback(callback);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Network;
 
@@ -23,14 +25,6 @@ namespace Misana.Core
             this.client = client;
             _beforSystems = beforSystems;
             _afterSystems = afterSystems;
-
-            client.RegisterOnMessageCallback<OnCreateEntityMessage>(OnCreateEntity);
-
-        }
-
-        private void OnCreateEntity(OnCreateEntityMessage message, MessageHeader header, NetworkClient networkClient)
-        {
-            Simulation.CreateEntity(message.DefinitionId,message.EntityId,null,null);
         }
 
         public async Task Connect(string name)
@@ -62,11 +56,11 @@ namespace Misana.Core
                 if (!responseMessage.Result)
                     throw  new NotSupportedException();
 
-                simulation =  new SimulationClient(client,responseMessage.EntityStartIndex,responseMessage.EntityStartIndex,_beforSystems,_afterSystems);
+                simulation =  new SimulationClient(client, client, responseMessage.EntityStartIndex,responseMessage.EntityStartIndex,_beforSystems,_afterSystems);
             }
             else
             {
-                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems, client);
+                simulation = new Simulation(SimulationMode.SinglePlayer, _beforSystems,_afterSystems,new EmptyNetworkSender(), new EmptyNetworkReceive());
             }
 
             Simulation = simulation;
@@ -77,6 +71,18 @@ namespace Misana.Core
         public void Update(GameTime gameTime)
         {
             Simulation?.Update(gameTime);
+        }
+
+        public Task<int> CreatePlayer(PlayerInputComponent playerInput, TransformComponent playerTransform)
+        {
+            return Simulation.CreateEntity("Player", b =>
+            {
+                var transfrom = b.Get<TransformComponent>();
+                transfrom.CopyTo(playerTransform);
+                b.Add(playerTransform);
+                b.Add(playerInput);
+                b.Add<SendComponent>();
+            }, null);
         }
     }
 }

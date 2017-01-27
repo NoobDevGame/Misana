@@ -47,13 +47,13 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
-    <Compile Include="Communication\Messages\DropWieldedMessage.cs" />
     <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
     <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
     <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
+    <Compile Include="Communication\NetworkEffectMessenger.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
@@ -98,6 +98,10 @@
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
+    <Compile Include="Effects\Messages\OnDropWieldedEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnPickupEffectMessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
@@ -129,7 +133,9 @@
     <Compile Include="Events\Conditions\FlagCondition.cs" />
     <Compile Include="Events\EffectCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
-    <Compile Include="Events\OnUse\ApplyEffectOnUse.cs" />
+    <Compile Include="Events\EventIdentifier.cs" />
+    <Compile Include="Events\OnUse\ApplyEffectOnUseEvent.cs" />
+    <Compile Include="Events\OnUse\OnUseEvent.cs" />
     <Compile Include="GameTime.cs" />
     <Compile Include="Index2.cs" />
     <Compile Include="Index3.cs" />

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Communication;
 using Misana.Core.Communication.Components;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -10,6 +11,7 @@ using Misana.Core.Effects.BaseEffects;
 using Misana.Core.Entities;
 using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Entities.Events;
+using Misana.Core.Events;
 using Misana.Core.Events.Entities;
 using Misana.Core.Events.OnUse;
 using Misana.Core.Maps;
@@ -21,6 +23,7 @@ namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
+        public NetworkEffectMessenger EffectMessenger { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
@@ -35,8 +38,12 @@ namespace Misana.Core
 
         public SimulationMode Mode { get; private set; }
 
-        public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems, INetworkSender sender)
+
+
+        public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
+            , INetworkSender sender,INetworkReceiver receiver)
         {
+            EffectMessenger = new NetworkEffectMessenger(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
@@ -50,7 +57,7 @@ namespace Misana.Core
                 systems.AddRange(beforSystems);
 
             systems.Add(_positionTrackingSystem);
-            systems.Add(new InputSystem(_positionTrackingSystem, sender));
+            systems.Add(new InputSystem(_positionTrackingSystem,this));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
             systems.Add(new BlockCollidingMoverSystem());
@@ -83,27 +90,30 @@ namespace Misana.Core
                 foreach (var entity in area.Entities)
                 {
 
-                    var entityBuilder = EntityCreator.CreateEntity(Entities, CurrentMap,entity.Definition);
-
-                    if (Mode == SimulationMode.Server)
-                        entityBuilder.Add<SendComponent>();
-
-                    entityBuilder.Commit(Entities);
+                    await CreateEntity(entity.Definition, b =>
+                    {
+                        if (Mode == SimulationMode.Server)
+                            b.Add<SendComponent>();
+                    }, null);
                 }
             }
         }
 
-        public void CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
-            CreateEntity(definition,createCallback, createdCallback);
+            return CreateEntity(definition,createCallback, createdCallback);
         }
 
-        public void CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(string definitionName, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
+            return CreateEntity(definition,entityId,createCallback, createdCallback);
+        }
+
+        public async Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
-            if (Mode == SimulationMode.Local || Mode == SimulationMode.Server)
-                entityBuilder.Add<SendComponent>();
 
             createCallback?.Invoke(entityBuilder);
 
@@ -111,6 +121,13 @@ namespace Misana.Core
 
             createdCallback?.Invoke(entity);
 
+            StartCreateEvent(entity);
+
+            return await Task.FromResult( entity.Id);
+        }
+
+        private void StartCreateEvent(Entity entity)
+        {
             var createComponent = entity.Get<CreateComponent>();
 
             if (createComponent != null)
@@ -122,7 +139,7 @@ namespace Misana.Core
             }
         }
 
-        public void CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public async Task<int> CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
 
@@ -130,14 +147,26 @@ namespace Misana.Core
 
             var entity = entityBuilder.Commit(Entities,entityId);
             createdCallback?.Invoke(entity);
+
+            StartCreateEvent(entity);
+
+            return await Task.FromResult( entity.Id) ;
         }
 
-        public void CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == defintionId).Value;
-            CreateEntity(definition,entityId,createCallback,createdCallback);
+            return CreateEntity(definition,createCallback,createdCallback);
         }
 
+        public Task<int> CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        {
+            var definition = CurrentMap.GlobalEntityDefinitions.First(i => i.Value.Id == defintionId).Value;
+            return CreateEntity(definition,entityId,createCallback,createdCallback);
+        }
+
+
+        /*
         public async Task<int> CreatePlayer(PlayerInputComponent input, TransformComponent transform,Action<EntityBuilder> createCallback,Action<Entity> createdCallback)
         {
             if (Mode == SimulationMode.Server || Mode == SimulationMode.Local)
@@ -147,12 +176,6 @@ namespace Misana.Core
 
             transform.CurrentArea = CurrentMap.StartArea;
             transform.Position = new Vector2(5, 3);
-
-            var playerBuilder = EntityCreator.CreateEntity(playerDefinition, CurrentMap, new EntityBuilder())
-                .Add<FacingComponent>()
-                .Add(transform)
-                .Add(input)
-                ;
 
             if (Mode == SimulationMode.Local)
                 playerBuilder.Add<SendComponent>();
@@ -203,6 +226,7 @@ namespace Misana.Core
 
             return playerId;
         }
+        */
 
         public async Task Start()
         {
@@ -212,7 +236,11 @@ namespace Misana.Core
         public void Update(GameTime gameTime)
         {
             if (State == SimulationState.Running)
+            {
                 Entities.Update(gameTime);
+            }
+
+
         }
 
 

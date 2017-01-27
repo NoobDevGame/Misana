@@ -27,7 +27,6 @@ namespace Misana.Core.Ecs
         public readonly int Index;
 
         private int _entityId;
-        private int _maxEntityId = short.MaxValue;
 
         public GameTime GameTime;
 
@@ -325,8 +324,6 @@ namespace Misana.Core.Ecs
         public int NextId()
         {
             var id = Interlocked.Increment(ref _entityId);
-            if (id > _maxEntityId)
-                throw new IndexOutOfRangeException("Entity out of Range");
             return id;
         }
     }

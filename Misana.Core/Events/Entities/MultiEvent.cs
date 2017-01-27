@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Events.Entities
@@ -64,7 +65,7 @@ namespace Misana.Core.Events.Entities
             base.Apply(manager, self, other, simulation);
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             var applied = false;
 
@@ -75,7 +76,7 @@ namespace Misana.Core.Events.Entities
                 || (!targetIsSelf &&  (_events[i].ApplyTo == ApplicableTo.Other || _events[i].ApplyTo == ApplicableTo.Both) )
                 )
 
-                    applied |= _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
+                    applied |= await _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
             }
 
             return applied;
