@@ -108,7 +108,7 @@ namespace Misana.Controls
                 _renderer = new AreaRenderer(manager,area, Tilesheets);
             }
             manager.GraphicsDevice.IndexBuffer = ib;
-            foreach (var pass in effect.CurrentTechnique.Passes)
+            foreach (var pass in effect.CurrentTechnique.Passes.PassesList)
             {
                 pass.Apply();
 
