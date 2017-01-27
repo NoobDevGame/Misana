@@ -101,7 +101,7 @@ namespace Misana.Core.Communication
                 builder.Add<ExpiringComponent>(x => x.TimeLeft = TimeSpan.FromMilliseconds(message.Expiration));
 
             if (simulation.Mode != SimulationMode.Server)
-                builder.Add<SpriteInfoComponent>();
+                builder.Add<SpriteInfoComponent>(x => x.TilePosition = new Index2(37,0));
 
             builder.Commit(simulation.Entities,id);
         }

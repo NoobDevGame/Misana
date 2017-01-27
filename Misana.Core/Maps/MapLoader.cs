@@ -72,7 +72,7 @@ namespace Misana.Core.Maps
                 var wieldable = new WieldableDefinition();
                 wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect() ));
                 bowDefinition.Definitions.Add(wieldable);
-                bowDefinition.Definitions.Add(new CharacterRenderDefinition());
+                bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52,0)));
                 bowDefinition.Definitions.Add(new WieldedDefinition(0.5f,0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());
                 bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f,0.3f),map.StartArea));

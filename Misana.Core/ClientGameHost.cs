@@ -196,11 +196,16 @@ namespace Misana.Core
 
         public async Task Start()
         {
-            var message = new StartSimulationMessageRequest();
-            var response = await Sender.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
+            if (IsConnected)
+            {
+                var message = new StartSimulationMessageRequest();
+                var response = await Sender.SendRequestMessage(ref message).Wait<StartSimulationMessageResponse>();
 
-            if (!response.Result)
-                throw new NotSupportedException();
+                if (!response.Result)
+                    throw new NotSupportedException();
+            }
+
+
 
             await  Simulation.Start();
         }
