@@ -29,6 +29,8 @@ namespace Misana.Network
 
         public void Stop()
         {
+            if (_tokenSource == null)
+                return;
             _tokenSource.Cancel();
             _listener.Stop();
         }

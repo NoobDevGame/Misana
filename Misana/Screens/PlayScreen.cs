@@ -36,7 +36,8 @@ namespace Misana.Screens
             lobbyBrowserButton.Margin = new Border(0, 0, 0, 10);
             lobbyBrowserButton.LeftMouseClick += (s, e) =>
             {
-                //manager.NavigateToScreen(new LoadScreen(manager));
+                var task = manager.Game.Simulation.CreateLocalServer("LocalPlayer");
+                manager.NavigateToScreen(new ConnectingScreen(manager,task, (m) => new NewWorldScreen(m)));
             };
             stack.Controls.Add(lobbyBrowserButton);
 

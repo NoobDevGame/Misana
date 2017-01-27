@@ -60,7 +60,7 @@ namespace Misana.Components
             renderSystems.Add(NameRenderSystem);
 
             serverHost = new ServerGameHost();
-            serverHost.Start();
+
 
             networkClient = new NetworkClient();
             host = new ClientGameHost(networkClient, null,renderSystems);
@@ -73,6 +73,12 @@ namespace Misana.Components
         {
             await CreateWorld("LcoalWorld",map);
             await StartWorld();
+        }
+
+        public async Task CreateLocalServer(string localplayer)
+        {
+            serverHost.Start();
+            await ConnectToServer(localplayer, IPAddress.Loopback);
         }
 
         public async Task ConnectToServer(string name, IPAddress address)
@@ -138,5 +144,7 @@ namespace Misana.Components
         {
             serverHost.Stop();
         }
+
+
     }
 }
