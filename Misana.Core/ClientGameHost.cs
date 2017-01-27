@@ -19,6 +19,10 @@ namespace Misana.Core
         private readonly List<ISimulation> _serverSimulations = new List<ISimulation>();
 
         public ISimulation Simulation { get; private set; }
+        public INetworkReceiver Receiver { get; private set; }
+        public INetworkSender Sender { get; private set; }
+
+        public bool IsConnected { get; private set; }
 
 
         public ClientGameHost(NetworkClient client, List<BaseSystem> beforSystems, List<BaseSystem> afterSystems)
@@ -26,21 +30,29 @@ namespace Misana.Core
             this.client = client;
             _beforSystems = beforSystems;
             _afterSystems = afterSystems;
+            Receiver = new EmptyNetworkReceive();
+            Sender = new EmptyNetworkSender();
         }
 
-        public async Task Connect(string name,IPAddress address)
+        public async Task<int> Connect(string name,IPAddress address)
         {
 
             await client.Connect(new IPEndPoint(address,NetworkListener.PORT));
 
+
+            Receiver = client;
+            Sender = client;
             LoginMessageRequest message = new LoginMessageRequest(name);
             var responseMessage = await client.SendRequestMessage(ref message).Wait<LoginMessageResponse>();
 
+            IsConnected = true;
+            return responseMessage.Id;
         }
 
         public void Disconnect()
         {
             client.Disconnect();
+            IsConnected = false;
         }
 
         public async Task<ISimulation> CreateWorld(string name)
@@ -49,7 +61,7 @@ namespace Misana.Core
 
             if (client.IsConnected)
             {
-                CreateWorldMessageRequest message = new CreateWorldMessageRequest();
+                CreateWorldMessageRequest message = new CreateWorldMessageRequest(name);
                 var waitobject = client.SendRequestMessage(ref message);
 
                 var responseMessage = await waitobject.Wait<CreateWorldMessageResponse>();
@@ -57,7 +69,8 @@ namespace Misana.Core
                 if (!responseMessage.Result)
                     throw  new NotSupportedException();
 
-                simulation =  new SimulationClient(client, client, responseMessage.EntityStartIndex,responseMessage.EntityStartIndex,_beforSystems,_afterSystems);
+
+                simulation =  new SimulationClient(client, client,_beforSystems,_afterSystems);
             }
             else
             {
@@ -84,6 +97,15 @@ namespace Misana.Core
                 b.Add(playerInput);
                 b.Add<SendComponent>();
             }, null);
+        }
+
+        public async Task JoinWorld(int id)
+        {
+            if (!IsConnected)
+                throw new InvalidOperationException();
+
+            JoinWorldMessageRequest messageRequest= new JoinWorldMessageRequest(id);
+            var respone = await Sender.SendRequestMessage<JoinWorldMessageRequest>(ref messageRequest).Wait<JoinWorldMessageResponse>();
         }
     }
 }

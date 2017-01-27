@@ -1,15 +1,11 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Communication.Systems;
-using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
-using Misana.Core.Events;
 using Misana.Core.Maps;
 using Misana.Network;
 
@@ -31,29 +27,36 @@ namespace Misana.Core
 
         private INetworkSender _sender;
         private INetworkReceiver _receiver;
-        private int entiytIndex;
-        private readonly int maxEntityIndex;
 
 
         public SimulationClient(INetworkSender sender, INetworkReceiver receiver,
-            int entiytIndex, int entityCount, System.Collections.Generic.List<BaseSystem> baseBeforSystems, System.Collections.Generic.List<BaseSystem> baseAfterSystems)
+             List<BaseSystem> baseBeforSystems, List<BaseSystem> baseAfterSystems)
         {
             _sender = sender;
             _receiver = receiver;
-            this.entiytIndex = entiytIndex;
-            maxEntityIndex = entityCount + entiytIndex;
 
-            System.Collections.Generic.List<BaseSystem> beforSystems = new System.Collections.Generic.List<BaseSystem>();
+            List<BaseSystem> beforSystems = new List<BaseSystem>();
             beforSystems.Add(new ReceiveEntityPositionSystem(_receiver));
             if (baseBeforSystems != null)
                 beforSystems.AddRange(baseBeforSystems);
 
-            System.Collections.Generic.List<BaseSystem> afterSystems = new System.Collections.Generic.List<BaseSystem>();
+            List<BaseSystem> afterSystems = new List<BaseSystem>();
             afterSystems.Add(new SendEntityPositionSystem(_sender));
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
 
             BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,sender,receiver);
+
+            _receiver.RegisterOnMessageCallback<JoinWorldMessageResponse>(OnJoinWorld);
+        }
+
+        private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, NetworkClient client)
+        {
+            if (message.HaveWorld)
+            {
+                var map = MapLoader.Load(message.MapName);
+                BaseSimulation.ChangeMap(map);
+            }
         }
 
         public async Task ChangeMap(Map map)

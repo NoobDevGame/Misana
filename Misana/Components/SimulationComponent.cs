@@ -1,20 +1,17 @@
-﻿using engenious;
-using Misana.Controls;
-using Misana.Core;
-using Misana.Core.Ecs;
-using Misana.Core.Systems;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
+using engenious;
+using Misana.Core;
+using Misana.Core.Communication;
+using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
-using Misana.Core.Systems.StatusSystem;
+using Misana.Core.Ecs;
 using Misana.Core.Maps;
 using Misana.EntityComponents;
 using Misana.EntitySystems;
 using Misana.Network;
+using GameTime = engenious.GameTime;
 
 namespace Misana.Components
 {
@@ -31,6 +28,11 @@ namespace Misana.Components
         private ClientGameHost host;
         private ServerGameHost serverHost;
         private NetworkClient networkClient;
+
+        public List<WorldInformation> WorldInformations { get;} = new List<WorldInformation>();
+        public List<PlayerInfo> Players { get;  } = new List<PlayerInfo>();
+
+        public PlayerInfo LocalPlayerInfo { get; private set; }
 
         public SimulationComponent(MisanaGame game) : base(game)
         {
@@ -54,7 +56,7 @@ namespace Misana.Components
 
 
 
-            System.Collections.Generic.List<BaseSystem> renderSystems = new System.Collections.Generic.List<BaseSystem>();
+            List<BaseSystem> renderSystems = new List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
@@ -83,7 +85,8 @@ namespace Misana.Components
 
         public async Task ConnectToServer(string name, IPAddress address)
         {
-            await host.Connect(name,address);
+            var id = await host.Connect(name,address);
+            LocalPlayerInfo = new PlayerInfo(name,id);
         }
 
         public async Task CreateWorld(string name, Map map)
@@ -123,6 +126,8 @@ namespace Misana.Components
                 (em, e, si) => e.Remove<RenderHealthComponent>()
             );
 
+            Players.Add(LocalPlayerInfo);
+
             await Simulation.ChangeMap(map);
         }
 
@@ -132,8 +137,32 @@ namespace Misana.Components
             await Simulation.Start();
         }
 
-        public override void Update(engenious.GameTime gameTime)
+        public override void Update(GameTime gameTime)
         {
+            {
+                WorldInformationMessage message;
+                while (host.Receiver.TryGetMessage(out message))
+                {
+                    WorldInformations.Add(new WorldInformation(message));
+                }
+            }
+
+            {
+                OnJoinWorldMessage message;
+                while (host.Receiver.TryGetMessage(out message))
+                {
+                    Players.Add(new PlayerInfo(message.Name,message.PlayerId));
+                }
+            }
+
+            {
+                PlayerInfoMessage message;
+                while (host.Receiver.TryGetMessage(out message))
+                {
+                    Players.Add(new PlayerInfo(message.Name,message.PlayerId));
+                }
+            }
+
             base.Update(gameTime);
 
             host.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
@@ -146,5 +175,10 @@ namespace Misana.Components
         }
 
 
+        public async Task JoinWorld(WorldInformation worldListSelectedItem)
+        {
+            await host.JoinWorld(worldListSelectedItem.Id);
+            Players.Add(LocalPlayerInfo);
+        }
     }
 }

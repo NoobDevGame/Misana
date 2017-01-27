@@ -47,6 +47,7 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
+    <Compile Include="Communication\Messages\GetOuterPlayersMessageRequest.cs" />
     <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
     <Compile Include="Communication\Messages\LoginMessage.cs" />
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="Communication\NetworkEffectMessenger.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
+    <Compile Include="Communication\PlayerInfo.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ServerReceiveEntityPositionSystem.cs" />

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading;
 using Misana.Core.Communication.Systems;
 using Misana.Core.Ecs;
 using Misana.Network;
@@ -12,6 +13,11 @@ namespace Misana.Core.Communication
         public BroadcastList<NetworkPlayer> Players { get; private set; } = new BroadcastList<NetworkPlayer>();
 
         public Simulation BaseSimulation { get; private set; }
+
+        private static int _index;
+        public int Id { get; } = Interlocked.Increment(ref _index);
+
+        public string Name { get; set; }
 
         public NetworkSimulation(NetworkPlayer owner,NetworkClient client, List<BaseSystem> baseBeforSystems, List<BaseSystem> baseAfterSystems)
         {

@@ -4,23 +4,24 @@ using Misana.Network;
 namespace Misana.Core.Communication.Messages
 {
     [MessageDefinition]
-    public struct ReadWorldsMessageRequest
+    public struct GetOuterPlayersMessageRequest
     {
 
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
     [MessageDefinition]
-    public struct WorldInformationMessage
+    public struct PlayerInfoMessage
     {
-        public int WorldId;
+        public int PlayerId;
 
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Name;
 
-        public WorldInformationMessage(int worldId, string name)
+
+        public PlayerInfoMessage(int playerId, string name)
         {
-            WorldId = worldId;
+            PlayerId = playerId;
             Name = name;
         }
     }

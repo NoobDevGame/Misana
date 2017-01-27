@@ -1,4 +1,7 @@
-﻿using Misana.Components;
+﻿using engenious;
+using Misana.Components;
+using Misana.Core.Communication;
+using Misana.Core.Communication.Messages;
 using MonoGameUi;
 using NoobFight.Screens;
 
@@ -6,10 +9,13 @@ namespace Misana.Screens
 {
     internal class WorldSelectScreen : Screen
     {
-        Listbox<string> worldList;
+        Listbox<WorldInformation> worldList;
+
+        public new ScreenComponent Manager;
 
         public WorldSelectScreen(ScreenComponent manager) : base(manager)
         {
+            Manager = manager;
             Grid grid = new Grid(manager);
             grid.HorizontalAlignment = HorizontalAlignment.Stretch;
             grid.VerticalAlignment = VerticalAlignment.Stretch;
@@ -19,7 +25,7 @@ namespace Misana.Screens
             grid.Rows.Add(new RowDefinition() { ResizeMode = ResizeMode.Auto });
             Controls.Add(grid);
 
-            worldList = new Listbox<string>(manager);
+            worldList = new Listbox<WorldInformation>(manager);
             worldList.HorizontalAlignment = HorizontalAlignment.Stretch;
             worldList.VerticalAlignment = VerticalAlignment.Stretch;
             worldList.TemplateGenerator = (s) =>
@@ -27,7 +33,7 @@ namespace Misana.Screens
                 Panel p = new Panel(manager);
                 p.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-                p.Controls.Add(new Label(manager) { Text = s });
+                p.Controls.Add(new Label(manager) { Text = s.Name });
                 return p;
             };
             grid.AddControl(worldList, 0, 0, 2 ,1);
@@ -40,7 +46,8 @@ namespace Misana.Screens
             joinButton.MinWidth = 300;
             joinButton.LeftMouseClick += (s, e) =>
             {
-                //manager.Game.NetworkComponent.JoinWorld(worldList.SelectedItem);
+                var task = manager.Game.Simulation.JoinWorld(worldList.SelectedItem);
+                manager.NavigateToScreen(new ConnectingScreen(manager, task, m => new LobbyScreen(m)));
             };
             grid.AddControl(joinButton, 0, 1);
 
@@ -61,6 +68,15 @@ namespace Misana.Screens
                     worldList.Items.Add(m.WorldName);
             });
             */
+        }
+
+        protected override void OnUpdate(GameTime gameTime)
+        {
+            foreach (var worldinformation in Manager.Game.Simulation.WorldInformations )
+            {
+                if (!worldList.Items.Contains(worldinformation) && IsActiveScreen)
+                    worldList.Items.Add(worldinformation);
+            }
         }
     }
 }

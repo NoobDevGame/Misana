@@ -1,6 +1,7 @@
 ﻿using engenious;
 using engenious.Graphics;
 using Misana.Components;
+using Misana.Core.Communication;
 using MonoGameUi;
 
 namespace Misana.Screens
@@ -11,7 +12,7 @@ namespace Misana.Screens
 
         Button startButton, exitButton;
 
-        Listbox<string> playerList;
+        Listbox<PlayerInfo> playerList;
 
         ScreenComponent Manager;
 
@@ -37,20 +38,18 @@ namespace Misana.Screens
             objectivePanel.Padding = Border.All(10);
             grid.AddControl(objectivePanel, 0, 0, 2, 1);
 
-            playerList = new Listbox<string>(manager);
+            playerList = new Listbox<PlayerInfo>(manager);
             playerList.VerticalAlignment = VerticalAlignment.Stretch;
             playerList.TemplateGenerator += (s) =>
             {
                 Panel p = new Panel(manager);
                 p.HorizontalAlignment = HorizontalAlignment.Stretch;
 
-                p.Controls.Add(new Label(manager) { Text = s });
+                p.Controls.Add(new Label(manager) { Text = s.Name });
                 return p;
             };
             playerList.MinWidth = 200;
             playerList.Margin = new Border(5, 0, 0, 5);
-            //foreach (var p in manager.Game.SimulationComponent.Simulation.Players)
-            //    playerList.Items.Add(p.Name);
             grid.AddControl(playerList, 2, 0, 1, 2);
 
             startButton = Button.TextButton(manager, "Start");
@@ -79,14 +78,14 @@ namespace Misana.Screens
         {
             base.OnUpdate(gameTime);
 
-            /*
-            if(Manager.Game.SimulationComponent.Simulation.Players.Count() != playerList.Items.Count)
+
+            if(Manager.Game.Simulation.Players.Count != playerList.Items.Count)
             {
                 playerList.Items.Clear();
-                foreach (var p in Manager.Game.SimulationComponent.Simulation.Players)
-                    playerList.Items.Add(p.Name);
+                foreach (var p in Manager.Game.Simulation.Players)
+                    playerList.Items.Add(p);
             }
-            */
+
         }
     }
 }

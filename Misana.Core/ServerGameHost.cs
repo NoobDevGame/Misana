@@ -32,8 +32,58 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<ChangeMapMessageRequest>(OnChangeMapRequest);
             newClient.RegisterOnMessageCallback<StartSimulationMessageRequest>(OnStartRequest);
 
+            newClient.RegisterOnMessageCallback<ReadWorldsMessageRequest>(OnReadWorldsRequest);
+            newClient.RegisterOnMessageCallback<GetOuterPlayersMessageRequest>(OnGetOuterPlayers);
+
+            newClient.RegisterOnMessageCallback<JoinWorldMessageRequest>(OnJoinWorldRequest);
+
             newClient.RegisterOnMessageCallback<OnDropWieldedEffectMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
+        }
+
+        private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, NetworkClient client)
+        {
+
+            var simulation = players[client.ClientId].Simulation;
+            foreach (var player in simulation.Players)
+            {
+                if (player.ClientId == client.ClientId)
+                    continue;
+                var response = new PlayerInfoMessage(player.ClientId, player.Name);
+                client.SendMessage(ref response);
+            }
+        }
+
+        private void OnJoinWorldRequest(JoinWorldMessageRequest message, MessageHeader header, NetworkClient client)
+        {
+            var simulation = simulations.FirstOrDefault(i => i.Id == message.Id);
+            JoinWorldMessageResponse response = new JoinWorldMessageResponse(simulation != null
+                ,simulation.BaseSimulation.CurrentMap != null,simulation.BaseSimulation.CurrentMap?.Name);
+
+            if (simulation != null)
+            {
+                var player = players[client.ClientId];
+                simulation.Players.Add(player);
+                player.SetSimulation(simulation);
+
+                OnJoinWorldMessage joinMessage = new OnJoinWorldMessage(player.ClientId,player.Name);
+                simulation.Players.SendMessage(ref joinMessage,client.ClientId);
+
+                OnGetOuterPlayers(default(GetOuterPlayersMessageRequest), default(MessageHeader), client);
+
+            }
+
+            client.SendResponseMessage(ref response,header.MessageId);
+
+        }
+
+        private void OnReadWorldsRequest(ReadWorldsMessageRequest message, MessageHeader header, NetworkClient client)
+        {
+            foreach (var simulation in simulations)
+            {
+                WorldInformationMessage response = new WorldInformationMessage(simulation.Id,simulation.Name);
+                client.SendMessage(ref response);
+            }
         }
 
         private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
@@ -49,44 +99,6 @@ namespace Misana.Core
             var simulation = players[client.ClientId].Simulation;
             simulation.Players.SendMessage(ref message,client.ClientId);
         }
-
-        /*
-        private void OnDropWielded(OnDropWieldedEffectMessage message, MessageHeader header, NetworkClient client)
-        {
-            var simulation = players[client.ClientId].Simulation;
-            var em = simulation.BaseSimulation.Entities;
-            var owner = em.GetEntityById(message.OwnerId);
-            var wielded = em.GetEntityById(message.WieldedId);
-
-            if (wielded == null || owner == null)
-                return;
-
-            var ownerWielding = owner.Get<WieldingComponent>();
-            var ownerTransform = owner.Get<TransformComponent>();
-
-            if (ownerWielding == null || ownerTransform == null)
-                return;
-
-            if (ownerWielding.RightHandEntityId != message.WieldedId)
-                return;
-
-            var wieldedTransform = wielded.Get<TransformComponent>();
-
-            if (wieldedTransform == null)
-                return;
-
-            wielded.Remove<WieldedComponent>().Add<DroppedItemComponent>();
-
-            ownerWielding.TwoHanded = false;
-            ownerWielding.RightHandEntityId = 0;
-
-            wieldedTransform.Radius /= 2;
-            wieldedTransform.ParentEntityId = 0;
-            wieldedTransform.Position = ownerTransform.Position;
-
-            simulation.Players.SendMessage(ref message);
-        }
-        */
 
         protected override void OnDisconnectClient(NetworkClient oldClient)
         {
@@ -153,6 +165,8 @@ namespace Misana.Core
             players.Add(client.ClientId,new NetworkPlayer(message.Name,client));
 
             client.SendResponseMessage(ref responseMessage,header.MessageId);
+
+            OnReadWorldsRequest(default(ReadWorldsMessageRequest),default(MessageHeader), client);
         }
 
         protected virtual void OnCreateWorld(CreateWorldMessageRequest message,MessageHeader header,NetworkClient client)
@@ -160,13 +174,11 @@ namespace Misana.Core
             var networkPlayer = players[client.ClientId];
 
             var simulation = new NetworkSimulation(networkPlayer,client,null,null);
+            simulation.Name = message.Name;
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);
 
-            var startIndex = (simulation.Players.Count + 1) * short.MaxValue;
-            var entityCount = short.MaxValue;
-
-            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,startIndex,entityCount );
+            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,simulation.Id );
             client.SendResponseMessage(ref messageResponse,header.MessageId);
 
         }
