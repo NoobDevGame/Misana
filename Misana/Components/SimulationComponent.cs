@@ -6,6 +6,7 @@ using Misana.Core.Systems;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Components;
@@ -59,11 +60,14 @@ namespace Misana.Components
             renderSystems.Add(NameRenderSystem);
 
             serverHost = new ServerGameHost();
+            serverHost.Start();
 
-            networkClient = serverHost.NewDummyClient();
+            networkClient = new NetworkClient();
             host = new ClientGameHost(networkClient, null,renderSystems);
 
         }
+
+
 
         public async Task StartLocalGame(Map map)
         {
@@ -71,9 +75,9 @@ namespace Misana.Components
             await StartWorld();
         }
 
-        public async Task ConnectToServer(string name)
+        public async Task ConnectToServer(string name, IPAddress address)
         {
-            await host.Connect(name);
+            await host.Connect(name,address);
         }
 
         public async Task CreateWorld(string name, Map map)
@@ -128,6 +132,11 @@ namespace Misana.Components
 
             host.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
             serverHost.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
+        }
+
+        public void Close()
+        {
+            serverHost.Stop();
         }
     }
 }

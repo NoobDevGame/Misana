@@ -31,7 +31,7 @@ namespace Misana.Screens
             };
             stack.Controls.Add(directMultiplayerButton);
 
-            Button lobbyBrowserButton = Button.TextButton(manager, "Saved Servers");
+            Button lobbyBrowserButton = Button.TextButton(manager, "Network Server");
             lobbyBrowserButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             lobbyBrowserButton.Margin = new Border(0, 0, 0, 10);
             lobbyBrowserButton.LeftMouseClick += (s, e) =>
@@ -40,6 +40,7 @@ namespace Misana.Screens
             };
             stack.Controls.Add(lobbyBrowserButton);
 
+            /*
             Button createGameButton = Button.TextButton(manager, "Create Game");
             createGameButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             createGameButton.Margin = new Border(0, 0, 0, 10);
@@ -48,6 +49,7 @@ namespace Misana.Screens
                 //manager.NavigateToScreen(new LoadScreen(manager));
             };
             stack.Controls.Add(createGameButton);
+            */
 
             Button backButton = Button.TextButton(manager, "Back");
             backButton.HorizontalAlignment = HorizontalAlignment.Left;

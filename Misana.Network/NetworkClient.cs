@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -8,26 +10,59 @@ namespace Misana.Network
 {
     public class NetworkClient : INetworkSender, INetworkReceiver, INetworkClient
     {
-        private readonly NetworkListener _listener;
-        private NetworkClient _outerClient;
-
         private static int clientId = 0;
         public int ClientId { get; } = Interlocked.Increment(ref clientId);
 
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
+        private TcpClient _client;
+        private NetworkStream stream;
+
+        public bool CanConnect { get; private set; }
         public bool IsConnected { get; private set; }
 
-        internal NetworkClient(NetworkListener listener)
+        byte[] buffer = new byte[1024];
+
+        public NetworkClient()
         {
-            _listener = listener;
+            _client = new TcpClient();
+            CanConnect = true;
         }
 
-        internal NetworkClient(NetworkClient client)
+        internal NetworkClient(TcpClient tcpClient)
         {
+            _client = tcpClient;
+            stream = tcpClient.GetStream();
+            CanConnect = false;
             IsConnected = true;
-            _outerClient = client;
+
+            StartRead();
+        }
+
+        private void StartRead()
+        {
+            stream.BeginRead(buffer, 0, 4, OnReadLenght, null);
+        }
+
+        private void OnReadLenght(IAsyncResult ar)
+        {
+            var dataCount = stream.EndRead(ar);
+            var lenght = BitConverter.ToInt32(buffer, 0);
+
+            stream.BeginRead(buffer, 0, lenght, OnReadData, null);
+        }
+
+        private void OnReadData(IAsyncResult ar)
+        {
+            var dataCount = stream.EndRead(ar);
+
+            byte[] data = new byte[dataCount];
+            Array.Copy(buffer,data,dataCount);
+            ReceiveData(data);
+
+
+            StartRead();
         }
 
         private void ReceiveData(byte[] data)
@@ -52,6 +87,14 @@ namespace Misana.Network
             _messageHandles.GetHandle<T>().RegisterCallback(callback);
         }
 
+        public void SendMessage<T>(ref T message) where T : struct
+        {
+            if (!IsConnected)
+                throw new InvalidOperationException("Client is not connected");
+
+            SendRequestMessage(ref message);
+        }
+
         public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
         {
             if (!IsConnected)
@@ -65,17 +108,9 @@ namespace Misana.Network
 
             waitObject?.Start();
 
-            _outerClient.ReceiveData(data);
+            WriteData(ref data);
 
             return waitObject;
-        }
-
-        public void SendMessage<T>(ref T message) where T : struct
-        {
-            if (!IsConnected)
-                throw new InvalidOperationException("Client is not connected");
-
-            SendRequestMessage(ref message);
         }
 
         public void SendResponseMessage<T>(ref T message,byte messageid) where T : struct
@@ -87,7 +122,18 @@ namespace Misana.Network
 
             var data = MessageHandle<T>.Serialize(ref message,messageid);
 
-            _outerClient.ReceiveData(data);
+            WriteData(ref data);
+        }
+
+        private void WriteData( ref byte[] data)
+        {
+            byte[] sendData = new byte[data.Length + 4];
+            var lengthBytes = BitConverter.GetBytes(data.Length);
+
+            Array.Copy(lengthBytes,sendData,lengthBytes.Length);
+            Array.Copy(data,0,sendData,lengthBytes.Length,data.Length);
+
+            stream.BeginWrite(sendData, 0, sendData.Length, null, null);
         }
 
         public bool TryGetMessage<T>(out T message, out INetworkClient senderClient)
@@ -118,26 +164,24 @@ namespace Misana.Network
             return TryGetMessage(out message, out client);
         }
 
-        public async Task Connect()
+        public async Task Connect(IPEndPoint endPoint)
         {
-            if (IsConnected)
+            if (IsConnected || !CanConnect)
                 throw new InvalidOperationException("Client is connected");
 
-            _outerClient = _listener.CreateClient(this);
+            await _client.ConnectAsync(endPoint.Address, endPoint.Port);
+            stream = _client.GetStream();
+            StartRead();
 
             IsConnected = true;
         }
 
         public void Disconnect()
         {
-            if (false && !IsConnected)
-                throw new InvalidOperationException("Client is not connected");
+            if (!IsConnected)
+                return;
 
-
-            IsConnected = false;
-
-            _outerClient.Disconnect();
-            _outerClient = null;
+            _client.Close();
         }
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Misana.Components;
 using MonoGameUi;
 using NoobFight.Screens;
@@ -36,7 +37,7 @@ namespace Misana.Screens
                     int port = 4344;
                     if (splt.Length > 1)
                         int.TryParse(splt[1], out port);
-                    var task = manager.Game.Simulation.ConnectToServer("LocalPlayer");
+                    var task = manager.Game.Simulation.ConnectToServer("LocalPlayer",IPAddress.Loopback);
                     manager.NavigateToScreen(new ConnectingScreen(manager,task, (m) => new WorldSelectScreen(m)));
 
                     //manager.Game.NetworkComponent.Connect(splt[0], port,manager.Game.PlayerComponent.PlayerName,manager.Game.PlayerComponent.PlayerTexture);

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
@@ -27,10 +28,10 @@ namespace Misana.Core
             _afterSystems = afterSystems;
         }
 
-        public async Task Connect(string name)
+        public async Task Connect(string name,IPAddress address)
         {
 
-            await client.Connect();
+            await client.Connect(new IPEndPoint(address,NetworkListener.PORT));
 
             LoginMessageRequest message = new LoginMessageRequest(name);
             var responseMessage = await client.SendRequestMessage(ref message).Wait<LoginMessageResponse>();

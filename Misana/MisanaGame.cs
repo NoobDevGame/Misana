@@ -42,9 +42,10 @@ namespace Misana
             Components.Add(ScreenManager);
         }
 
-        public override void LoadContent()
+        protected override void OnExiting(object sender, EventArgs e)
         {
-            base.LoadContent();
+            Simulation.Close();
         }
+
     }
 }
