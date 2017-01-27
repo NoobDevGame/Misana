@@ -1,0 +1,4 @@
+[submodule "monogameui"]
+	path = monogameui
+	url = git@github.com:OctoAwesome/monogameui.git
+	branch = feature/engenious
