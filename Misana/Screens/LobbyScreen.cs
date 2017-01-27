@@ -1,8 +1,9 @@
-﻿using engenious;
-using engenious.Graphics;
+﻿using engenious.Graphics;
 using Misana.Components;
+using Misana.Core;
 using Misana.Core.Communication;
 using MonoGameUi;
+using GameTime = engenious.GameTime;
 
 namespace Misana.Screens
 {
@@ -84,6 +85,11 @@ namespace Misana.Screens
                 playerList.Items.Clear();
                 foreach (var p in Manager.Game.Simulation.Players)
                     playerList.Items.Add(p);
+            }
+
+            if (Manager.Game.Simulation.SimualtionState == SimulationState.Running)
+            {
+                Manager.NavigateToScreen(new GameScreen(Manager));
             }
 
         }

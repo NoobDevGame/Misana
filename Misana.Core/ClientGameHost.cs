@@ -99,13 +99,17 @@ namespace Misana.Core
             }, null);
         }
 
-        public async Task JoinWorld(int id)
+        public async Task<ISimulation> JoinWorld(int id)
         {
             if (!IsConnected)
                 throw new InvalidOperationException();
 
             JoinWorldMessageRequest messageRequest= new JoinWorldMessageRequest(id);
             var respone = await Sender.SendRequestMessage<JoinWorldMessageRequest>(ref messageRequest).Wait<JoinWorldMessageResponse>();
+
+            Simulation =  new SimulationClient(client, client,_beforSystems,_afterSystems);
+
+            return Simulation;
         }
     }
 }

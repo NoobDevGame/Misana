@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -180,10 +180,6 @@
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Misana.Contracts\Misana.Contracts.csproj">
-      <Project>{C71C87EC-A97E-4AE2-A92B-B426AFA8F2C1}</Project>
-      <Name>Misana.Contracts</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Misana.Network\Misana.Network.csproj">
       <Project>{3C60961E-26F1-4769-A090-0297C946ADA2}</Project>
       <Name>Misana.Network</Name>

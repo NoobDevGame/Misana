@@ -48,6 +48,12 @@ namespace Misana.Core
             BaseSimulation = new Simulation(SimulationMode.Local,beforSystems,afterSystems,sender,receiver);
 
             _receiver.RegisterOnMessageCallback<JoinWorldMessageResponse>(OnJoinWorld);
+            _receiver.RegisterOnMessageCallback< OnStartSimulationMessage>(OnStartSimulation);
+        }
+
+        private void OnStartSimulation(OnStartSimulationMessage message, MessageHeader header, NetworkClient client)
+        {
+            BaseSimulation.Start();
         }
 
         private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, NetworkClient client)

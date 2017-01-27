@@ -121,6 +121,8 @@ namespace Misana.Core
             simulation.BaseSimulation.Start();
 
             networkClient.SendResponseMessage(ref response,header.MessageId);
+            OnStartSimulationMessage broodCastMessage = new OnStartSimulationMessage();
+            simulation.Players.SendMessage(ref broodCastMessage,networkClient.ClientId);
 
         }
 

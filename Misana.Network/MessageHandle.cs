@@ -59,7 +59,6 @@ namespace Misana.Network
 
             Marshal.Copy(data, 0, ptr, headerSize);
 
-
             var header = Marshal.PtrToStructure<MessageHeader>(ptr);
             BlockAllocator.Free(ptr, actual);
 

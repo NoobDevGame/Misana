@@ -33,6 +33,17 @@ namespace Misana.Components
         public List<PlayerInfo> Players { get;  } = new List<PlayerInfo>();
 
         public PlayerInfo LocalPlayerInfo { get; private set; }
+        public SimulationState SimualtionState
+		{
+			get
+			{
+				if (Simulation == null) 
+				{
+					return SimulationState.Unloaded;
+				}
+				return Simulation.State;
+			}
+		}
 
         public SimulationComponent(MisanaGame game) : base(game)
         {
@@ -163,6 +174,15 @@ namespace Misana.Components
                 }
             }
 
+            {
+                OnStartSimulationMessage message;
+                while (host.Receiver.TryGetMessage(out message))
+                {
+
+                }
+            }
+
+
             base.Update(gameTime);
 
             host.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
@@ -177,7 +197,7 @@ namespace Misana.Components
 
         public async Task JoinWorld(WorldInformation worldListSelectedItem)
         {
-            await host.JoinWorld(worldListSelectedItem.Id);
+            Simulation= await  host.JoinWorld(worldListSelectedItem.Id);
             Players.Add(LocalPlayerInfo);
         }
     }
