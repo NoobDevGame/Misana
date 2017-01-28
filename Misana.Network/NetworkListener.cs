@@ -8,7 +8,7 @@ namespace Misana.Network
 {
     public class NetworkListener
     {
-        public const int PORT = 34560;
+
 
         private readonly BroadcastList<INetworkClient> _clients = new BroadcastList<INetworkClient>();
 
@@ -17,7 +17,7 @@ namespace Misana.Network
 
         public NetworkListener()
         {
-            _listener = new TcpListener(new IPEndPoint(IPAddress.Any,PORT));
+            _listener = new TcpListener(new IPEndPoint(IPAddress.Any, NetworkManager.TcpPort));
         }
 
         public void Start()

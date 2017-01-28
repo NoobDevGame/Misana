@@ -121,7 +121,7 @@ namespace Misana.Core
 
         public async Task<int> Connect(string name,IPAddress address)
         {
-            await client.Connect(new IPEndPoint(address,NetworkListener.PORT));
+            await client.Connect(new IPEndPoint(address,NetworkManager.TcpPort));
 
             Receiver = client;
             Sender = client;

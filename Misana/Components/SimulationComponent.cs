@@ -75,6 +75,8 @@ namespace Misana.Components
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
 
+            NetworkManager.SetPorts(localUdpPort:NetworkManager.StandardPort +1);
+
             serverHost = new ServerGameHost();
 
 
