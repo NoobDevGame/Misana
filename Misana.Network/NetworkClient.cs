@@ -175,6 +175,11 @@ namespace Misana.Network
             IsConnected = true;
         }
 
+        public Task Connect(IPAddress addr)
+        {
+            return Connect(new IPEndPoint(addr, NetworkManager.TcpPort));
+        }
+
         public void Disconnect()
         {
             if (!IsConnected)
