@@ -34,10 +34,6 @@ namespace Misana.Network
             ServerClient = this;
         }
 
-        public async Task Connect(IPEndPoint ipEndPoint)
-        {
-        }
-
         public async Task Connect(IPAddress addr)
         {
         }

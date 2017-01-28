@@ -3,7 +3,7 @@ using Misana.Network;
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition]
+    [MessageDefinition(UseUDP = true)]
     public struct EntityPositionMessage
     {
         public int entityId;

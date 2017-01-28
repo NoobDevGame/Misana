@@ -134,7 +134,7 @@ namespace Misana.Network
         private static MessageWaitObject[] sendWaitHandles;
 
         public static bool IsResponse { get;  private set; }
-
+        public static bool IsUDPMessage { get; set; }
         public MessageHandle()
             : base(typeof(T))
         {
@@ -144,7 +144,7 @@ namespace Misana.Network
         public override void Initialize(MessageDefinitionAttribute attribute)
         {
             IsResponse = attribute.IsResponse;
-
+            IsUDPMessage = attribute.UseUDP;
             if (attribute.ResponseType != null)
             {
                 var handler = MessageHandleManager.CreateMessageHandle(attribute.ResponseType);

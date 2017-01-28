@@ -16,24 +16,39 @@ namespace Misana.Network
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
-        private TcpClient _client;
+        private TcpClient _tcpClient;
+        private UdpClient _udpSendClient;
+        private UdpClient _udpReceiveClient;
+
+
         private NetworkStream stream;
 
         public bool CanConnect { get; private set; }
         public bool IsConnected { get; private set; }
 
-        byte[] buffer = new byte[1024];
+        private IPAddress remoteIp;
+        private int sendPort;
+
+        byte[] tcpBuffer = new byte[1024];
+        byte[] udpBuffer = new byte[1024];
+
 
         public NetworkClient()
         {
-            _client = new TcpClient();
+            sendPort = NetworkManager.LocalUdpPort;
             CanConnect = true;
         }
 
         internal NetworkClient(TcpClient tcpClient)
         {
-            _client = tcpClient;
+            remoteIp = ((IPEndPoint) tcpClient.Client.RemoteEndPoint).Address;
+            sendPort = NetworkManager.ServerUdpPort;
+
+            _tcpClient = tcpClient;
             stream = tcpClient.GetStream();
+            _udpSendClient = new UdpClient();
+            _udpReceiveClient = new UdpClient(new IPEndPoint(remoteIp,NetworkManager.LocalUdpPort));
+
             CanConnect = false;
             IsConnected = true;
 
@@ -42,28 +57,39 @@ namespace Misana.Network
 
         private void StartRead()
         {
-            stream.BeginRead(buffer, 0, 4, OnReadLenght, null);
+            stream.BeginRead(tcpBuffer, 0, 4, OnReadtcpLenght, null);
+            _udpReceiveClient.BeginReceive(onReadUdp,null);
         }
 
-        private void OnReadLenght(IAsyncResult ar)
+        private void onReadUdp(IAsyncResult ar)
+        {
+            IPEndPoint sender = null;
+            var data = _udpReceiveClient.EndReceive(ar,ref sender);
+
+
+            ReceiveData(data);
+            _udpReceiveClient.BeginReceive(onReadUdp,null);
+        }
+
+        private void OnReadtcpLenght(IAsyncResult ar)
         {
 
             var dataCount = stream.EndRead(ar);
-            var lenght = BitConverter.ToInt32(buffer, 0);
+            var lenght = BitConverter.ToInt32(tcpBuffer, 0);
 
-            stream.BeginRead(buffer, 0, lenght, OnReadData, null);
+            stream.BeginRead(tcpBuffer, 0, lenght, OnReadTcpData, null);
         }
 
-        private void OnReadData(IAsyncResult ar)
+        private void OnReadTcpData(IAsyncResult ar)
         {
             var dataCount = stream.EndRead(ar);
 
             byte[] data = new byte[dataCount];
-            Array.Copy(buffer,data,dataCount);
+            Array.Copy(tcpBuffer,data,dataCount);
             ReceiveData(data);
 
 
-            StartRead();
+            stream.BeginRead(tcpBuffer, 0, 4, OnReadtcpLenght, null);
         }
 
         private void ReceiveData(byte[] data)
@@ -106,8 +132,15 @@ namespace Misana.Network
             var data = MessageHandle<T>.Serialize(ref message,out waitObject);
 
             waitObject?.Start();
+            if (MessageHandle<T>.IsUDPMessage)
+            {
+                WriteUDPData(ref data);
+            }
+            else
+            {
+                WriteTCPData(ref data);
+            }
 
-            WriteData(ref data);
 
             return waitObject;
         }
@@ -121,10 +154,10 @@ namespace Misana.Network
 
             var data = MessageHandle<T>.Serialize(ref message,messageid);
 
-            WriteData(ref data);
+            WriteTCPData(ref data);
         }
 
-        private void WriteData( ref byte[] data)
+        private void WriteTCPData( ref byte[] data)
         {
             byte[] sendData = new byte[data.Length + 4];
             var lengthBytes = BitConverter.GetBytes(data.Length);
@@ -133,6 +166,12 @@ namespace Misana.Network
             Array.Copy(data,0,sendData,lengthBytes.Length,data.Length);
 
             stream.BeginWrite(sendData, 0, sendData.Length, null, null);
+        }
+
+        private void WriteUDPData( ref byte[] data)
+        {
+
+            _udpSendClient.BeginSend(data, data.Length, new IPEndPoint(remoteIp, sendPort), null, null);
         }
 
         public bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient)
@@ -163,13 +202,21 @@ namespace Misana.Network
             return TryGetMessage(out message, out client);
         }
 
-        public async Task Connect(IPEndPoint endPoint)
+        private async Task Connect(IPEndPoint endPoint)
         {
             if (IsConnected || !CanConnect)
                 throw new InvalidOperationException("Client is connected");
 
-            await _client.ConnectAsync(endPoint.Address, endPoint.Port);
-            stream = _client.GetStream();
+            remoteIp = endPoint.Address;
+
+            _tcpClient = new TcpClient();
+
+            await _tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
+            stream = _tcpClient.GetStream();
+
+            _udpSendClient = new UdpClient(new IPEndPoint(endPoint.Address,NetworkManager.ServerUdpPort));
+            _udpReceiveClient = new UdpClient();
+
             StartRead();
 
             IsConnected = true;
@@ -185,7 +232,7 @@ namespace Misana.Network
             if (!IsConnected)
                 return;
 
-            _client.Close();
+            _tcpClient.Close();
         }
 
 
