@@ -35,6 +35,7 @@ namespace Misana.Core.Events.OnUse
         {
             bw.Write(_eff.GetType().AssemblyQualifiedName);
             _eff.Serialize(version,bw);
+            bw.Write(CoolDown.TotalMilliseconds);
         }
 
         public override void Deserialize(Version version, BinaryReader br)
@@ -43,6 +44,7 @@ namespace Misana.Core.Events.OnUse
             var type = Type.GetType(name);
             _eff = (EffectDefinition) Activator.CreateInstance(type);
             _eff.Deserialize(version,br);
+            CoolDown = TimeSpan.FromMilliseconds(br.ReadDouble());
         }
     }
 }

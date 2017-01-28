@@ -55,7 +55,7 @@ namespace Misana.Core.Effects.BaseEffects
                     offset += w.ParentPosition;
             }
 
-            OnCreateProjectileEffectMessage onCreateProjectileEffectMessage = new OnCreateProjectileEffectMessage(Speed,Radius,Expiration,transform.CurrentArea.Id,move,transform.Position +  offset);
+            OnCreateProjectileEffectMessage onCreateProjectileEffectMessage = new OnCreateProjectileEffectMessage(Speed,Radius,Expiration,transform.CurrentArea.Id,move,transform.Position +  offset,2);
             simulation.EffectMessenger.SendMessage(ref onCreateProjectileEffectMessage,true);
 
 

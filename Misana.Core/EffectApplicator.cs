@@ -5,7 +5,9 @@ using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Effects.BaseEffects;
 using Misana.Core.Effects.Messages;
+using Misana.Core.Events.Entities;
 using Misana.Network;
 
 namespace Misana.Core
@@ -21,6 +23,16 @@ namespace Misana.Core
             RegisterCallback<OnDropWieldedEffectMessage>(OnDropWielded);
             RegisterCallback<OnPickupEffectMessage>(OnEffectPickup);
             RegisterCallback<OnTeleportEffectMessage>(OnTeleport);
+            RegisterCallback<OnDamageEffectMessage>(OnDamageEffect);
+        }
+
+        private void OnDamageEffect(OnDamageEffectMessage message, MessageHeader header, NetworkClient client)
+        {
+            var entity = simulation.Entities.GetEntityById(message.EntityId);
+            var healthComponet = entity.Get<HealthComponent>();
+
+            if (healthComponet != null)
+                healthComponet.Current -= message.Damage;
         }
 
         private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, NetworkClient client)
@@ -96,7 +108,11 @@ namespace Misana.Core
             builder.Add<MotionComponent>(x => x.Move = message.move )
                 .Add<ProjectileComponent>(x => x.Move = message.move)
                 .Add<OnLocalSimulationComponent>()
-                .Add<EntityColliderComponent>()
+                .Add<EntityColliderComponent>(a =>
+                {
+                    a.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(message.Damage)) {ApplyTo = ApplicableTo.Other});
+                    a.OnCollisionEvents.Add(new ApplyEffectEvent(new RemoveSelfEffect()) {ApplyTo = ApplicableTo.Self});
+                })
                 .Add<TransformComponent>(t => {
                     t.CurrentArea = simulation.CurrentMap.GetAreaById(message.area);
                     t.Radius = message.Radius;

@@ -13,7 +13,9 @@ namespace Misana.Core.Effects.Messages
         public Vector2 move;
         public Vector2 position;
 
-        public OnCreateProjectileEffectMessage(float speed, float radius, float expiration,int area, Vector2 move, Vector2 position)
+        public float Damage;
+
+        public OnCreateProjectileEffectMessage(float speed, float radius, float expiration,int area, Vector2 move, Vector2 position,float damage)
         {
             Speed = speed;
             Radius = radius;
@@ -21,6 +23,7 @@ namespace Misana.Core.Effects.Messages
             this.area = area;
             this.move = move;
             this.position = position;
+            Damage = damage;
         }
     }
 }

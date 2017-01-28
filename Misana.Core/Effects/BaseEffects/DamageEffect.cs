@@ -2,6 +2,7 @@
 using System.IO;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Effects.Messages;
 
 namespace Misana.Core.Effects.BaseEffects
 {
@@ -24,7 +25,11 @@ namespace Misana.Core.Effects.BaseEffects
             var healthComponet = entity.Get<HealthComponent>();
 
             if (healthComponet != null)
-                healthComponet.Current -= Damage;
+            {
+                OnDamageEffectMessage message = new OnDamageEffectMessage(entity.Id,Damage);
+
+                simulation.EffectMessenger.ApplyEffectSelf(ref message);
+            }
         }
 
         public override void Serialize(Version version, BinaryWriter bw)

@@ -98,9 +98,11 @@
     <Compile Include="Ecs\EntityManager.cs" />
     <Compile Include="EffectApplicator.cs" />
     <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
+    <Compile Include="Effects\BaseEffects\RemoveSelfEffect.cs" />
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
+    <Compile Include="Effects\Messages\OnDamageEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnDropWieldedEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
