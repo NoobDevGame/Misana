@@ -33,6 +33,7 @@ namespace Misana.Components
         public List<PlayerInfo> Players { get;  } = new List<PlayerInfo>();
 
         public PlayerInfo LocalPlayerInfo { get; private set; }
+
         public SimulationState SimualtionState
 		{
 			get
@@ -44,6 +45,8 @@ namespace Misana.Components
 				return Simulation.State;
 			}
 		}
+
+        public bool CanStart { get; set; } = false;
 
         public SimulationComponent(MisanaGame game) : base(game)
         {
@@ -109,6 +112,8 @@ namespace Misana.Components
             Players.Add(LocalPlayerInfo);
 
             await Simulation.ChangeMap(map);
+
+            CanStart = true;
         }
 
         private void AddHooks()

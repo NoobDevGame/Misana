@@ -56,6 +56,7 @@ namespace Misana.Screens
             startButton = Button.TextButton(manager, "Start");
             startButton.HorizontalAlignment = HorizontalAlignment.Stretch;
             startButton.Height = 40;
+            startButton.Enabled = manager.Game.Simulation.CanStart;
             startButton.LeftMouseClick += (s, e) =>
             {
                 var task = manager.Game.Simulation.StartWorld();
