@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
+using Misana.Core.Communication.Components;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
+using Misana.Core.Effects.Messages;
 using Misana.Core.Events;
 
 namespace Misana.Core.Effects.BaseEffects
@@ -32,13 +34,23 @@ namespace Misana.Core.Effects.BaseEffects
 
             if (positionComponent != null)
             {
-                var area = simulation.CurrentMap.GetAreaById(AreaId);
-                positionComponent.CurrentArea = area;
-                positionComponent.Position = new Vector2(X,Y);
+
+                OnTeleportEffectMessage message = new OnTeleportEffectMessage(entity.Id,new Vector2(X,Y),AreaId );
+
                 if (CenterOfBlock)
                 {
-                    positionComponent.Position += new Vector2(0.5f,0.5f);
+                    message.Position += new Vector2(0.5f, 0.5f);
                 }
+
+                if (simulation.Mode == SimulationMode.SinglePlayer || simulation.Mode == SimulationMode.Local || entity.Contains<OnLocalSimulationComponent>())
+                {
+                    simulation.EffectMessenger.ApplyEffectSelf(ref message);
+                }
+                else if (simulation.Mode == SimulationMode.Server)
+                {
+                    simulation.EffectMessenger.SendMessage(ref message,true);
+                }
+
             }
         }
 

@@ -85,9 +85,7 @@ namespace Misana.Core.Maps.MapSerializers
             var entityCount = br.ReadInt32();
             for (int i = 0; i < entityCount; i++)
             {
-                AreaEntity entity = new AreaEntity();
-                entity.Name = br.ReadString();
-                entity.Definition = DeserializeEntityDefinition(br);
+                var entity = DeserializeEntityDefinition(br);
                 a.Entities.Add(entity);
             }
 
@@ -202,8 +200,7 @@ namespace Misana.Core.Maps.MapSerializers
             bw.Write(area.Entities.Count);
             foreach (var entity in area.Entities)
             {
-                bw.Write(entity.Name);
-                SerializeEntityDefinition(entity.Definition,bw);
+                SerializeEntityDefinition(entity,bw);
             }
         }
 

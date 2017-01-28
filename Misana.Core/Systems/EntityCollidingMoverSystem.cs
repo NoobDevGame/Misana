@@ -116,6 +116,9 @@ namespace Misana.Core.Systems
 
                             vecDistance = vecDistance.Normalize() * Math.Abs(distance);
 
+                            if (float.IsNaN(vecDistance.X) || float.IsNaN(vecDistance.Y) )
+                                continue;
+
                             if (!entityCollider.Fixed && entity2Collider.Fixed && motionComponent != null)
                             {
                                 motionComponent.Move += vecDistance;

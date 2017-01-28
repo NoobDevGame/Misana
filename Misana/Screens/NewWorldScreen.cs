@@ -81,7 +81,7 @@ namespace Misana.Screens
             playButton.Margin = Border.All(10);
             playButton.LeftMouseClick += (s, e) =>
             {
-                var map = MapLoader.Load("Multi");
+                var map = MapLoader.Load("DebugMap");
                 var task = manager.Game.Simulation.CreateWorld(nameInput.Text,map);
                 manager.NavigateToScreen(new ConnectingScreen(manager, task, m => new LobbyScreen(m)));
                 //manager.Game.NetworkComponent.CreateWorld(nameInput.Text, (GameMode)Enum.Parse(typeof(GameMode), gamemodeSelect.SelectedItem));

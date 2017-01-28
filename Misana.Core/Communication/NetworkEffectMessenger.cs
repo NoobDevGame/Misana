@@ -2,6 +2,7 @@
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Threading;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -29,6 +30,20 @@ namespace Misana.Core.Communication
             RegisterCallback<OnCreateProjectileEffectMessage>(OnCreateProjectileEffect);
             RegisterCallback<OnDropWieldedEffectMessage>(OnDropWielded);
             RegisterCallback<OnPickupEffectMessage>(OnEffectPickup);
+            RegisterCallback<OnTeleportEffectMessage>(OnTeleport);
+        }
+
+        private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, NetworkClient client)
+        {
+            var entity = simulation.Entities.GetEntityById(message.EntityId);
+            var positionComponent = entity.Get<TransformComponent>();
+
+            if (positionComponent != null)
+            {
+                var area = simulation.CurrentMap.GetAreaById( message.AreaId);
+                positionComponent.CurrentArea = area;
+                positionComponent.Position = message.Position;
+            }
         }
 
         private void OnEffectPickup(OnPickupEffectMessage effectMessage, MessageHeader header, NetworkClient client)
@@ -90,10 +105,13 @@ namespace Misana.Core.Communication
             EntityBuilder builder = new EntityBuilder();
             builder.Add<MotionComponent>(x => x.Move = message.move )
                 .Add<ProjectileComponent>(x => x.Move = message.move)
+                .Add<OnLocalSimulationComponent>()
+                .Add<EntityColliderComponent>()
                 .Add<TransformComponent>(t => {
                     t.CurrentArea = simulation.CurrentMap.GetAreaById(message.area);
                     t.Radius = message.Radius;
                     t.Position = message.position;
+                    t.Radius = 0.2f;
                 })
                 ;
 
@@ -116,16 +134,23 @@ namespace Misana.Core.Communication
 
         public void SendMessage<T>(ref T message,bool self = false) where T : struct
         {
-            if (self && localCallbacks.ContainsKey(typeof(T)))
-            {
-                localCallbacks[typeof(T)].Invoke(message);
-            }
+            if (self )
+                ApplyEffectSelf(ref message);
             sender.SendMessage(ref message);
         }
 
         public bool TryGetMessage<T>(out T message) where T : struct
         {
             return receiver.TryGetMessage(out message);
+        }
+
+        public void ApplyEffectSelf<T>(ref T message)
+            where T : struct
+        {
+            if (localCallbacks.ContainsKey(typeof(T)))
+            {
+                localCallbacks[typeof(T)].Invoke(message);
+            }
         }
     }
 }

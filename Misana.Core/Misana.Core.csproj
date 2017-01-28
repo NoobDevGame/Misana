@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Communication\Components\OnLocalSimulationComponent.cs" />
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnPickupEffectMessage.cs" />
+    <Compile Include="Effects\Messages\OnTeleportEffectmessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\CharacterRenderDefinition.cs" />
@@ -145,7 +147,6 @@
     <Compile Include="Maps\Area.cs" />
     <Compile Include="Maps\Layer.cs" />
     <Compile Include="Maps\Map.cs" />
-    <Compile Include="Maps\AreaEntity.cs" />
     <Compile Include="Maps\MapLoader.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer.cs" />
     <Compile Include="Maps\MapSerializers\MapSerializer_0_1.cs" />

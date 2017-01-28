@@ -89,12 +89,20 @@ namespace Misana.Core
             {
                 foreach (var entity in area.Entities)
                 {
-
-                    await CreateEntity(entity.Definition, b =>
+                    try
                     {
-                        if (Mode == SimulationMode.Server)
-                            b.Add<SendComponent>();
-                    }, null);
+                        await CreateEntity(entity, b =>
+                        {
+                            if (Mode == SimulationMode.Server)
+                                b.Add<SendComponent>();
+                        }, null);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                        //throw;
+                    }
+
                 }
             }
         }

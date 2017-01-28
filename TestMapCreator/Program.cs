@@ -25,11 +25,13 @@ namespace TestMapCreator
 			var map = MapLoader.CreateMapFromTiled ("DebugMap", paths);
 
 			//Definitionen
+
+            //Player
 			EntityDefinition playerDefinition = new EntityDefinition("Player",map.GetNextDefinitionId());
 			playerDefinition.Definitions.Add(new HealthDefinition());
 			playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
 			playerDefinition.Definitions.Add(new MotionComponentDefinition());
-			//playerDefinition.Definitions.Add(new EntityColliderDefinition());
+			playerDefinition.Definitions.Add(new EntityColliderDefinition());
 			playerDefinition.Definitions.Add(new BlockColliderDefinition());
 			playerDefinition.Definitions.Add(new EntityFlagDefintion());
 			playerDefinition.Definitions.Add(new EntityInteractableDefinition());
@@ -43,6 +45,7 @@ namespace TestMapCreator
 			playerDefinition.Definitions.Add(createDefinition);
 			map.GlobalEntityDefinitions.Add("Player",playerDefinition);
 
+            //Bogen
 			EntityDefinition bowDefinition = new EntityDefinition("Bow",map.GetNextDefinitionId());
 			var wieldable = new WieldableDefinition();
 			wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect() ));
@@ -54,8 +57,22 @@ namespace TestMapCreator
 
 			map.GlobalEntityDefinitions.Add("Bow",bowDefinition);
 
+            {
+                //TestTeleporter
+                EntityDefinition testTeleporter = new EntityDefinition("TestTeleport", map.GetNextDefinitionId());
 
-			MapLoader.Save (map, string.Format ("{0}.mm", map.Name));
+                var entityCollider = new EntityColliderDefinition();
+                entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new TeleportEffect(5,10,1)) {ApplyTo = ApplicableTo.Other});
+
+
+                testTeleporter.Definitions.Add(entityCollider);
+                testTeleporter.Definitions.Add(new CharacterRenderDefinition());
+                testTeleporter.Definitions.Add(new TransformDefinition(new Vector2(11, 10), 1, 0.5f));
+
+                map.Areas[0].Entities.Add(testTeleporter);
+            }
+
+            MapLoader.Save (map, string.Format ("{0}.mm", map.Name));
         }
     }
 }

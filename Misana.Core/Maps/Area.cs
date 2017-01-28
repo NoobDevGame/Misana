@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Misana.Core.Entities;
 
 namespace Misana.Core.Maps
 {
@@ -20,7 +21,7 @@ namespace Misana.Core.Maps
 
         public List<Layer> Layers { get; set; }
 
-        public List<AreaEntity> Entities { get; private set; } = new List<AreaEntity>();
+        public List<EntityDefinition> Entities { get; } = new List<EntityDefinition>();
 
         public Area(string name, int id, int width, int height, Vector2 spawnPoint, List<Layer> layers)
         {

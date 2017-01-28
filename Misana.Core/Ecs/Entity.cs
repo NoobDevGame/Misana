@@ -34,5 +34,10 @@ namespace Misana.Core.Ecs
             Components = components;
             Manager = manager;
         }
+
+        public bool Contains<T>() where T : Component, new()
+        {
+            return Get<T>() != null;
+        }
     }
 }
