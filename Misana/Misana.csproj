@@ -36,18 +36,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="engenious, Version=0.1.7.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\engenious.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\NVorbis.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\engenious.0.1.7\lib\net40\OpenTK.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -56,6 +44,15 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="engenious, Version=0.1.7.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\engenious.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.4.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
+      <HintPath>..\packages\engenious.0.1.7\lib\net40\OpenTK.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Components\CameraComponent.cs" />
@@ -91,12 +88,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Content\Maps\LakeHouse.mm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Maps\Multi.mm">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Content\Tilesheets\TileSheetCharacters.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -111,10 +102,6 @@
     </None>
     <None Include="OpenTK.dll.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="Content\Maps\Tiled\TileSheetOutdoor.tsx" />
-    <None Include="Content\Maps\Tiled\Lobby\main.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Content\BoldFont.spritefont" />
     <EngeniousContentReference Include="Content\Content.ecp" />
@@ -184,6 +171,10 @@
     <None Include="Content\ui\progress\progress_background.png" />
     <None Include="Content\ui\progress\progress_red.png" />
     <None Include="packages.config" />
+    <None Include="..\TestMapCreator\bin\Debug\DebugMap.mm">
+      <Link>Content\Maps\DebugMap.mm</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
@@ -203,7 +194,7 @@
       <Name>Misana.Network</Name>
     </ProjectReference>
     <ProjectReference Include="..\monogameui\MonoGameUi\MonoGameUi.csproj">
-      <Project>{9e89b217-8424-4fcb-b365-3a01f61cd44f}</Project>
+      <Project>{9E89B217-8424-4FCB-B365-3A01F61CD44F}</Project>
       <Name>MonoGameUi</Name>
     </ProjectReference>
   </ItemGroup>
@@ -223,6 +214,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="libs\" />
+    <Folder Include="Content\" />
+    <Folder Include="Content\Maps\" />
   </ItemGroup>
   <Import Project="..\packages\engenious.0.1.7\build\engenious.targets" Condition="Exists('..\packages\engenious.0.1.7\build\engenious.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

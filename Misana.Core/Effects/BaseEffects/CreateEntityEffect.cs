@@ -31,7 +31,7 @@ namespace Misana.Core.Effects.BaseEffects
         {
             if (simulation.Mode == SimulationMode.SinglePlayer)
             {
-                simulation.CreateEntity(DefinitionName,e =>
+                await simulation.CreateEntity(DefinitionName,e =>
                 {
                     var transform = e.Get<TransformComponent>();
 
@@ -106,12 +106,14 @@ namespace Misana.Core.Effects.BaseEffects
         {
             bw.Write(DefinitionName);
             bw.Write(SetParent);
+            bw.Write(Weapon);
         }
 
         public override void Deserialize(Version version, BinaryReader br)
         {
             DefinitionName = br.ReadString();
             SetParent = br.ReadBoolean();
+            Weapon = br.ReadBoolean();
         }
     }
 }

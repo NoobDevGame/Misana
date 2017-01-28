@@ -10,6 +10,12 @@ namespace Misana.Core.Events.Entities
     {
         public EffectDefinition Effect;
         public EffectCondition Condition;
+
+        public ApplyEffectEvent()
+        {
+
+        }
+
         public ApplyEffectEvent(EffectDefinition deff, EffectCondition condition = null)
         {
             Effect = deff;
@@ -32,6 +38,10 @@ namespace Misana.Core.Events.Entities
 
             bw.Write(Effect.GetType().AssemblyQualifiedName);
             Effect.Serialize(version, bw);
+
+            bw.Write((byte)ApplyTo);
+            bw.Write(CoolDown.TotalMilliseconds);
+            bw.Write(Debounce.TotalMilliseconds);
         }
 
         public override void Deserialize(Version version, BinaryReader br)
@@ -46,8 +56,12 @@ namespace Misana.Core.Events.Entities
             }
 
             var typeName2 = br.ReadString();
-            var effect = (EffectDefinition)Activator.CreateInstance(Type.GetType(typeName2));
-            effect.Deserialize(version, br);
+            Effect = (EffectDefinition)Activator.CreateInstance(Type.GetType(typeName2));
+            Effect.Deserialize(version, br);
+
+            ApplyTo = (ApplicableTo) br.ReadByte();
+            CoolDown = TimeSpan.FromMilliseconds(br.ReadDouble());
+            Debounce = TimeSpan.FromMilliseconds(br.ReadDouble());
         }
 
         protected override bool CanApply(EntityManager manager, Entity target, ISimulation simulation)

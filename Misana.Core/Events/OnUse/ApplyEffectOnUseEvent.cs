@@ -8,7 +8,7 @@ namespace Misana.Core.Events.OnUse
 {
     public class ApplyEffectOnUseEvent : OnUseEvent
     {
-        private readonly EffectDefinition _eff;
+        private EffectDefinition _eff;
 
         public ApplyEffectOnUseEvent()
         {
@@ -22,7 +22,7 @@ namespace Misana.Core.Events.OnUse
 
         protected override bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, ISimulation simulation)
         {
-            _eff.Apply(self, simulation);
+            _eff?.Apply(self, simulation);
             return true;
         }
 
@@ -41,8 +41,8 @@ namespace Misana.Core.Events.OnUse
         {
             var name = br.ReadString();
             var type = Type.GetType(name);
-            var effect = (EffectDefinition) Activator.CreateInstance(type);
-            effect.Deserialize(version,br);
+            _eff = (EffectDefinition) Activator.CreateInstance(type);
+            _eff.Deserialize(version,br);
         }
     }
 }

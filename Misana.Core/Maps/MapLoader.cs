@@ -48,39 +48,6 @@ namespace Misana.Core.Maps
                 map =  MapSerializer.DeserializeMap(version, br);
 
             }
-            if (!map.GlobalEntityDefinitions.ContainsKey("Player"))
-            {
-                EntityDefinition playerDefinition = new EntityDefinition(map.GetNextDefinitionId());
-                playerDefinition.Definitions.Add(new HealthDefinition());
-                playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
-                playerDefinition.Definitions.Add(new MotionComponentDefinition());
-                //playerDefinition.Definitions.Add(new EntityColliderDefinition());
-                playerDefinition.Definitions.Add(new BlockColliderDefinition());
-                playerDefinition.Definitions.Add(new EntityFlagDefintion());
-                playerDefinition.Definitions.Add(new EntityInteractableDefinition());
-                playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(5, 3),map.StartArea,0.5f));
-                playerDefinition.Definitions.Add(new WieldingDefinition());
-                playerDefinition.Definitions.Add(new FacingDefinition());
-
-                var createDefinition = new CreateDefinition();
-                createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow",true)){ApplyTo = ApplicableTo.Self});
-
-                playerDefinition.Definitions.Add(createDefinition);
-                map.GlobalEntityDefinitions.Add("Player",playerDefinition);
-
-                EntityDefinition bowDefinition = new EntityDefinition(map.GetNextDefinitionId());
-                var wieldable = new WieldableDefinition();
-                wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect() ));
-                bowDefinition.Definitions.Add(wieldable);
-                bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52,0)));
-                bowDefinition.Definitions.Add(new WieldedDefinition(0.5f,0.5f));
-                bowDefinition.Definitions.Add(new FacingDefinition());
-                bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f,0.3f),map.StartArea));
-
-                map.GlobalEntityDefinitions.Add("Bow",bowDefinition);
-                //TODO:BowDebug
-
-            }
 
             return map;
         }
