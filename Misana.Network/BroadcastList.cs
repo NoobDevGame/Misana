@@ -6,7 +6,7 @@ namespace Misana.Network
     public class BroadcastList<T> : List<T> , IBroadcastSender , INetworkReceiver
         where T : INetworkSender , INetworkIdentifier , INetworkReceiver
     {
-        private Dictionary<Type,Action<object,MessageHeader,NetworkClient>> callbacks = new Dictionary<Type, Action<object, MessageHeader, NetworkClient>>();
+        private Dictionary<Type,Action<object,MessageHeader,INetworkClient>> callbacks = new Dictionary<Type, Action<object, MessageHeader, INetworkClient>>();
 
         public BroadcastList()
         {
@@ -82,7 +82,7 @@ namespace Misana.Network
             return false;
         }
 
-        public void ReceiveMessage<T1>(ref T1 message,MessageHeader header,NetworkClient client)
+        public void ReceiveMessage<T1>(ref T1 message,MessageHeader header,INetworkClient client)
             where T1 : struct
         {
             if (callbacks.ContainsKey(typeof(T1)))
@@ -93,7 +93,7 @@ namespace Misana.Network
 
         public void RegisterOnMessageCallback<T1>(MessageReceiveCallback<T1> callback) where T1 : struct
         {
-            Action<object,MessageHeader,NetworkClient> action = (o, h, c) => callback?.Invoke((T1) o, h, c);
+            Action<object,MessageHeader,INetworkClient> action = (o, h, c) => callback?.Invoke((T1) o, h, c);
 
             if (callbacks.ContainsKey(typeof(T1)))
             {

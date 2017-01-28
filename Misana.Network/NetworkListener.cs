@@ -52,12 +52,12 @@ namespace Misana.Network
             OnConnectClient(networkClient);
         }
 
-        protected virtual void OnConnectClient(NetworkClient newClient)
+        protected virtual void OnConnectClient(INetworkClient newClient)
         {
 
         }
 
-        protected virtual void OnDisconnectClient(NetworkClient oldClient)
+        protected virtual void OnDisconnectClient(INetworkClient oldClient)
         {
 
         }

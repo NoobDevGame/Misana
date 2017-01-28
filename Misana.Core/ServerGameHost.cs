@@ -24,7 +24,7 @@ namespace Misana.Core
 
         }
 
-        protected override void OnConnectClient(NetworkClient newClient)
+        protected override void OnConnectClient(INetworkClient newClient)
         {
             newClient.RegisterOnMessageCallback<LoginMessageRequest>(OnLoginRequest);
             newClient.RegisterOnMessageCallback<CreateWorldMessageRequest>(OnCreateWorld);
@@ -43,7 +43,7 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<OnCreateProjectileEffectMessage>(OnNoOwnerBroadcast);
         }
 
-        private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, NetworkClient client)
+        private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, INetworkClient client)
         {
 
             var simulation = players[client.NetworkId].Simulation;
@@ -56,7 +56,7 @@ namespace Misana.Core
             }
         }
 
-        private void OnJoinWorldRequest(JoinWorldMessageRequest message, MessageHeader header, NetworkClient client)
+        private void OnJoinWorldRequest(JoinWorldMessageRequest message, MessageHeader header, INetworkClient client)
         {
             var simulation = simulations.FirstOrDefault(i => i.Id == message.Id);
             JoinWorldMessageResponse response = new JoinWorldMessageResponse(simulation != null
@@ -79,7 +79,7 @@ namespace Misana.Core
 
         }
 
-        private void OnReadWorldsRequest(ReadWorldsMessageRequest message, MessageHeader header, NetworkClient client)
+        private void OnReadWorldsRequest(ReadWorldsMessageRequest message, MessageHeader header, INetworkClient client)
         {
             foreach (var simulation in simulations)
             {
@@ -88,7 +88,7 @@ namespace Misana.Core
             }
         }
 
-        private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+        private void OnBroadcast<T>(T message, MessageHeader header, INetworkClient client)
             where T : struct
         {
             var simulation = players[client.NetworkId].Simulation;
@@ -96,7 +96,7 @@ namespace Misana.Core
             simulation.Players.SendMessage(ref message);
         }
 
-        private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, NetworkClient client)
+        private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, INetworkClient client)
             where T : struct
         {
             var simulation = players[client.NetworkId].Simulation;
@@ -104,12 +104,12 @@ namespace Misana.Core
             simulation.Players.SendMessage(ref message,client.NetworkId);
         }
 
-        protected override void OnDisconnectClient(NetworkClient oldClient)
+        protected override void OnDisconnectClient(INetworkClient oldClient)
         {
             base.OnDisconnectClient(oldClient);
         }
 
-        private void OnStartRequest(StartSimulationMessageRequest message, MessageHeader header, NetworkClient networkClient)
+        private void OnStartRequest(StartSimulationMessageRequest message, MessageHeader header, INetworkClient networkClient)
         {
             var response = new StartSimulationMessageResponse(true);
 
@@ -136,7 +136,7 @@ namespace Misana.Core
 
         }
 
-        private void OnChangeMapRequest(ChangeMapMessageRequest message, MessageHeader header, NetworkClient networkClient)
+        private void OnChangeMapRequest(ChangeMapMessageRequest message, MessageHeader header, INetworkClient networkClient)
         {
             ChangeMapMessageResponse response = new ChangeMapMessageResponse(true);
 
@@ -157,7 +157,7 @@ namespace Misana.Core
             networkClient.SendResponseMessage(ref response,header.MessageId);
         }
 
-        private async void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
+        private async void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, INetworkClient networkClient)
         {
             var simulation = players[networkClient.NetworkId].Simulation;
             var id = await simulation.BaseSimulation.CreateEntity(message.DefinitionId,null, null);
@@ -170,7 +170,7 @@ namespace Misana.Core
 
         }
 
-        protected virtual void OnLoginRequest(LoginMessageRequest message, MessageHeader header,NetworkClient client)
+        protected virtual void OnLoginRequest(LoginMessageRequest message, MessageHeader header,INetworkClient client)
         {
             var responseMessage = new LoginMessageResponse(client.NetworkId);
 
@@ -181,7 +181,7 @@ namespace Misana.Core
             OnReadWorldsRequest(default(ReadWorldsMessageRequest),default(MessageHeader), client);
         }
 
-        protected virtual void OnCreateWorld(CreateWorldMessageRequest message,MessageHeader header,NetworkClient client)
+        protected virtual void OnCreateWorld(CreateWorldMessageRequest message,MessageHeader header,INetworkClient client)
         {
             var networkPlayer = players[client.NetworkId];
 

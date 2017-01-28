@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Misana.Network
 {
-    public class NetworkClient : INetworkSender, INetworkReceiver, INetworkIdentifier
+    internal class NetworkClient : INetworkClient
     {
         private static int clientId = 0;
         public int NetworkId { get; } = Interlocked.Increment(ref clientId);

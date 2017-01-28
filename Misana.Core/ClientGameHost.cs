@@ -16,7 +16,7 @@ namespace Misana.Core
 {
     public class ClientGameHost : ISimulation
     {
-        private readonly NetworkClient client;
+        private readonly INetworkClient client;
         private readonly List<BaseSystem> _beforeSystems;
         private readonly List<BaseSystem> _afterSystems;
 
@@ -45,7 +45,7 @@ namespace Misana.Core
         public bool IsConnected { get; private set; }
 
 
-        public ClientGameHost(NetworkClient client, List<BaseSystem> beforeSystems, List<BaseSystem> afterSystems)
+        public ClientGameHost(INetworkClient client, List<BaseSystem> beforeSystems, List<BaseSystem> afterSystems)
         {
             this.client = client;
             _beforeSystems = beforeSystems;
@@ -60,7 +60,7 @@ namespace Misana.Core
         }
 
 
-        private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, NetworkClient client)
+        private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, INetworkClient client)
         {
             if (message.HaveWorld && Simulation != null)
             {

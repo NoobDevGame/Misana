@@ -4,7 +4,7 @@ namespace Misana.Core.Communication
 {
     public class NetworkPlayer : INetworkSender ,INetworkReceiver, INetworkIdentifier
     {
-        public NetworkPlayer(string name, NetworkClient client)
+        public NetworkPlayer(string name, INetworkClient client)
         {
             Name = name;
             Client = client;
@@ -12,7 +12,7 @@ namespace Misana.Core.Communication
 
         public string Name { get; private set; }
 
-        public NetworkClient Client { get; private set; }
+        public INetworkClient Client { get; private set; }
 
         public int NetworkId => Client.NetworkId;
 

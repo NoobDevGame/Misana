@@ -26,7 +26,7 @@ namespace Misana.Core
             RegisterCallback<OnDamageEffectMessage>(OnDamageEffect);
         }
 
-        private void OnDamageEffect(OnDamageEffectMessage message, MessageHeader header, NetworkClient client)
+        private void OnDamageEffect(OnDamageEffectMessage message, MessageHeader header, INetworkClient client)
         {
             var entity = simulation.Entities.GetEntityById(message.EntityId);
             var healthComponet = entity.Get<HealthComponent>();
@@ -35,7 +35,7 @@ namespace Misana.Core
                 healthComponet.Current -= message.Damage;
         }
 
-        private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, NetworkClient client)
+        private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, INetworkClient client)
         {
             var entity = simulation.Entities.GetEntityById(message.EntityId);
             var positionComponent = entity.Get<TransformComponent>();
@@ -48,7 +48,7 @@ namespace Misana.Core
             }
         }
 
-        private void OnEffectPickup(OnPickupEffectMessage effectMessage, MessageHeader header, NetworkClient client)
+        private void OnEffectPickup(OnPickupEffectMessage effectMessage, MessageHeader header, INetworkClient client)
         {
             var parentEntity = simulation.Entities.GetEntityById(effectMessage.ParentEntityId);
             var entity = simulation.Entities.GetEntityById(effectMessage.EntityId);
@@ -68,7 +68,7 @@ namespace Misana.Core
             wielding.TwoHanded = true;
         }
 
-        private void OnDropWielded(OnDropWieldedEffectMessage effectMessage, MessageHeader header, NetworkClient client)
+        private void OnDropWielded(OnDropWieldedEffectMessage effectMessage, MessageHeader header, INetworkClient client)
         {
             var em = simulation.Entities;
             var owner = em.GetEntityById(effectMessage.OwnerId);
@@ -101,7 +101,7 @@ namespace Misana.Core
             wieldedTransform.Position = ownerTransform.Position;
         }
 
-        private void OnCreateProjectileEffect(OnCreateProjectileEffectMessage message, MessageHeader header, NetworkClient client)
+        private void OnCreateProjectileEffect(OnCreateProjectileEffectMessage message, MessageHeader header, INetworkClient client)
         {
             var id = Interlocked.Increment(ref _dummyId) % ushort.MaxValue + ushort.MaxValue;
             EntityBuilder builder = new EntityBuilder();

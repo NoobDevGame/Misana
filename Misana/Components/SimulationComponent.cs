@@ -27,7 +27,7 @@ namespace Misana.Components
 
         private ClientGameHost host;
         private ServerGameHost serverHost;
-        private NetworkClient networkClient;
+        private INetworkClient networkClient;
 
         public List<WorldInformation> WorldInformations { get;} = new List<WorldInformation>();
         public List<PlayerInfo> Players { get;  } = new List<PlayerInfo>();
@@ -78,7 +78,7 @@ namespace Misana.Components
             serverHost = new ServerGameHost();
 
 
-            networkClient = new NetworkClient();
+            networkClient = NetworkManager.CreateNetworkClient();
             host = new ClientGameHost(networkClient, null,renderSystems);
 
         }
