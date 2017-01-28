@@ -167,17 +167,19 @@ namespace Misana.Core
 
         private ISimulation CreateNetworkSimulation()
         {
-            List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(Receiver));
+            List<BaseSystem> beforeSystems = new List<BaseSystem>();
+            beforeSystems.Add(new ReceiveEntityPositionSystem(Receiver));
+            beforeSystems.Add(new ReceiveHealthSystem(Receiver));
             if (_beforeSystems != null)
-                beforSystems.AddRange(_beforeSystems);
+                beforeSystems.AddRange(_beforeSystems);
 
             List<BaseSystem> afterSystems = new List<BaseSystem>();
-            afterSystems.Add(new SendEntityPositionSystem(Sender));
             if (_afterSystems != null)
                 afterSystems.AddRange(_afterSystems);
+            afterSystems.Add(new SendEntityPositionSystem(Sender));
 
-            var simulation = new Simulation(SimulationMode.Local, beforSystems, afterSystems, client, client);
+
+            var simulation = new Simulation(SimulationMode.Local, beforeSystems, afterSystems, client, client);
             return simulation;
         }
 

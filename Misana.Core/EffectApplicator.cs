@@ -103,6 +103,12 @@ namespace Misana.Core
 
         private void OnCreateProjectileEffect(OnCreateProjectileEffectMessage message, MessageHeader header, NetworkClient client)
         {
+
+            if (simulation.Mode == SimulationMode.Server)
+            {
+
+            }
+
             var id = Interlocked.Increment(ref _dummyId) % ushort.MaxValue + ushort.MaxValue;
             EntityBuilder builder = new EntityBuilder();
             builder.Add<MotionComponent>(x => x.Move = message.move )

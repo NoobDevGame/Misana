@@ -66,7 +66,7 @@ namespace TestMapCreator
 
                 var entityCollider = new EntityColliderDefinition();
                 entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new TeleportEffect(5,10,1)) {ApplyTo = ApplicableTo.Other});
-
+                entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) {ApplyTo = ApplicableTo.Other});
 
                 testTeleporter.Definitions.Add(entityCollider);
                 testTeleporter.Definitions.Add(new CharacterRenderDefinition());

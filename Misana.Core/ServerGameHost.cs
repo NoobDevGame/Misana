@@ -92,6 +92,7 @@ namespace Misana.Core
             where T : struct
         {
             var simulation = players[client.ClientId].Simulation;
+            simulation.Players.ReceiveMessage(ref message,header,client);
             simulation.Players.SendMessage(ref message);
         }
 
@@ -99,6 +100,7 @@ namespace Misana.Core
             where T : struct
         {
             var simulation = players[client.ClientId].Simulation;
+            simulation.Players.ReceiveMessage(ref message,header,client);
             simulation.Players.SendMessage(ref message,client.ClientId);
         }
 

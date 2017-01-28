@@ -19,22 +19,24 @@ namespace Misana.Core.Communication
 
         public string Name { get; set; }
 
-        public NetworkSimulation(NetworkPlayer owner, List<BaseSystem> baseBeforSystems, List<BaseSystem> baseAfterSystems)
+        public NetworkSimulation(NetworkPlayer owner, List<BaseSystem> baseBeforeSystems, List<BaseSystem> baseAfterSystems)
         {
             Owner = owner;
             Players.Add(owner);
 
-            List<BaseSystem> beforSystems = new List<BaseSystem>();
-            beforSystems.Add(new ReceiveEntityPositionSystem(Players));
-            if (baseBeforSystems != null)
-                beforSystems.AddRange(baseBeforSystems);
+            List<BaseSystem> beforeSystems = new List<BaseSystem>();
+            beforeSystems.Add(new ReceiveEntityPositionSystem(Players));
+            if (baseBeforeSystems != null)
+                beforeSystems.AddRange(baseBeforeSystems);
 
             List<BaseSystem> afterSystems = new List<BaseSystem>();
-            afterSystems.Add(new SendEntityPositionSystem(Players));
             if (baseAfterSystems != null)
                 afterSystems.AddRange(baseAfterSystems);
+            afterSystems.Add(new SendEntityPositionSystem(Players));
+            afterSystems.Add(new SendHealthSystem(Players));
 
-            BaseSimulation = new Simulation(SimulationMode.Server, beforSystems,afterSystems,Players,Players);
+
+            BaseSimulation = new Simulation(SimulationMode.Server, beforeSystems,afterSystems,Players,Players);
         }
     }
 }
