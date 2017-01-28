@@ -214,8 +214,8 @@ namespace Misana.Network
             await _tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
             stream = _tcpClient.GetStream();
 
-            _udpSendClient = new UdpClient(new IPEndPoint(endPoint.Address,NetworkManager.ServerUdpPort));
-            _udpReceiveClient = new UdpClient();
+			_udpSendClient = new UdpClient ();
+			_udpReceiveClient = new UdpClient(new IPEndPoint(endPoint.Address,NetworkManager.ServerUdpPort));
 
             StartRead();
 

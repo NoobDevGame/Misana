@@ -28,6 +28,7 @@ namespace Misana.Components
         private ClientGameHost host;
         private ServerGameHost serverHost;
         private INetworkClient networkClient;
+        private List<BaseSystem> renderSystems;
 
         public List<WorldInformation> WorldInformations { get;} = new List<WorldInformation>();
         public List<PlayerInfo> Players { get;  } = new List<PlayerInfo>();
@@ -70,7 +71,7 @@ namespace Misana.Components
 
 
 
-            List<BaseSystem> renderSystems = new List<BaseSystem>();
+            renderSystems = new List<BaseSystem>();
             renderSystems.Add(SpriteRenderSystem);
             renderSystems.Add(HealthRenderSystem);
             renderSystems.Add(NameRenderSystem);
@@ -78,17 +79,14 @@ namespace Misana.Components
             NetworkManager.SetPorts(localUdpPort:NetworkManager.StandardPort +1);
 
             serverHost = new ServerGameHost();
-
-
-            networkClient = NetworkManager.CreateNetworkClient();
-            host = new ClientGameHost(networkClient, null,renderSystems);
-
         }
 
 
 
         public async Task StartLocalGame(Map map)
         {
+            host = new ClientGameHost(new EmptyClient(), null,renderSystems);
+
             await CreateWorld("LcoalWorld",map);
             await StartWorld();
         }
@@ -96,11 +94,16 @@ namespace Misana.Components
         public async Task CreateLocalServer(string localplayer)
         {
             serverHost.Start();
-            await ConnectToServer(localplayer, IPAddress.Loopback);
+            networkClient = serverHost.CreateLocalClient();
+            host = new ClientGameHost(networkClient, null,renderSystems);
+            var id = await host.Connect("Test",IPAddress.Loopback);
+            LocalPlayerInfo = new PlayerInfo("Test",id);
         }
 
         public async Task ConnectToServer(string name, IPAddress address)
         {
+            networkClient = NetworkManager.CreateNetworkClient();
+            host = new ClientGameHost(networkClient, null,renderSystems);
             var id = await host.Connect(name,address);
             LocalPlayerInfo = new PlayerInfo(name,id);
         }
@@ -162,6 +165,9 @@ namespace Misana.Components
 
         public override void Update(GameTime gameTime)
         {
+            if (host == null)
+                return;
+
             {
                 WorldInformationMessage message;
                 while (host.Receiver.TryGetMessage(out message))

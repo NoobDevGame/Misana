@@ -17,18 +17,21 @@ namespace Misana.Network
 
         private readonly InternalNetworkClient _outer;
 
+        private readonly string name;
         public InternalNetworkClient()
         {
             _outer = new InternalNetworkClient(this);
+            name = "Client";
 
             LocalClient = this;
             ServerClient = _outer;
 
         }
 
-        public InternalNetworkClient(InternalNetworkClient client)
+        private InternalNetworkClient(InternalNetworkClient client)
         {
             _outer = client;
+            name = "Server";
 
             LocalClient = client;
             ServerClient = this;
@@ -51,27 +54,20 @@ namespace Misana.Network
         {
             MessageWaitObject waitObject = null;
 
-            MessageHandle<T>.GetWaitObject(out waitObject);
+            var messageId = MessageHandle<T>.GetWaitObject(out waitObject);
 
             waitObject?.Start();
 
-            _outer.Receive(ref message);
+            _outer.Receive(ref message,messageId);
 
             return waitObject;
-        }
-
-        private void Receive<T>(ref T message)
-            where T : struct
-        {
-            var header = new MessageHeader(MessageHandle<T>.Index.Value);
-            _messageHandles.GetHandle<T>().SetMessage(message,default(MessageHeader), _outer);
         }
 
         private void Receive<T>(ref T message,byte id)
             where T : struct
         {
             var header = new MessageHeader(MessageHandle<T>.Index.Value,id);
-            _messageHandles.GetHandle<T>().SetMessage(message,header, _outer);
+            _messageHandles.GetHandle<T>().SetMessage(message,header, this);
         }
 
         public void SendResponseMessage<T>(ref T message, byte messageid) where T : struct

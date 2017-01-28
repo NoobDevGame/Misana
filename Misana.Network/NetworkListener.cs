@@ -39,6 +39,7 @@ namespace Misana.Network
         {
             var client = new InternalNetworkClient();
             _clients.Add(client.ServerClient);
+            OnConnectClient(client.ServerClient);
             return client;
         }
 

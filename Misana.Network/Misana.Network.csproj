@@ -44,6 +44,7 @@
     <Compile Include="BlockAllocator.cs" />
     <Compile Include="BroadcastList.cs" />
     <Compile Include="Delegates.cs" />
+    <Compile Include="EmptyClient.cs" />
     <Compile Include="INetworkClient.cs" />
     <Compile Include="INetworkReceiver.cs" />
     <Compile Include="IBroadcastSender.cs" />
