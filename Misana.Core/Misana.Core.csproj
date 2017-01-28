@@ -96,6 +96,7 @@
     <Compile Include="Ecs\EntityBuilder.cs" />
     <Compile Include="Ecs\Changes\EntityChange.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="EffectApplicator.cs" />
     <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />

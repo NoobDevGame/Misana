@@ -23,7 +23,7 @@ namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
-        public NetworkEffectMessenger EffectMessenger { get; }
+        public EffectApplicator EffectMessenger { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
@@ -38,12 +38,10 @@ namespace Misana.Core
 
         public SimulationMode Mode { get; private set; }
 
-
-
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
             , INetworkSender sender,INetworkReceiver receiver)
         {
-            EffectMessenger = new NetworkEffectMessenger(this,sender,receiver);
+            EffectMessenger = new EffectApplicator(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;

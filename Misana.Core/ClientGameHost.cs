@@ -40,7 +40,7 @@ namespace Misana.Core
 
         public SimulationMode Mode => Simulation.Mode;
 
-        public NetworkEffectMessenger EffectMessenger => Simulation.EffectMessenger;
+        public EffectApplicator EffectMessenger => Simulation.EffectMessenger;
 
         public bool IsConnected { get; private set; }
 

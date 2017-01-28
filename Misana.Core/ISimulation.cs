@@ -20,7 +20,7 @@ namespace Misana.Core
 
         SimulationMode Mode { get; }
 
-        NetworkEffectMessenger EffectMessenger { get; }
+        EffectApplicator EffectMessenger { get; }
 
         Task ChangeMap(Map map);
 
