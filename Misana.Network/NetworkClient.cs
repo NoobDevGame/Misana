@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Misana.Network
 {
-    public class NetworkClient : INetworkSender, INetworkReceiver, INetworkClient
+    public class NetworkClient : INetworkSender, INetworkReceiver, INetworkIdentifier
     {
         private static int clientId = 0;
-        public int ClientId { get; } = Interlocked.Increment(ref clientId);
+        public int NetworkId { get; } = Interlocked.Increment(ref clientId);
 
 
         private MessageHandleList _messageHandles = new MessageHandleList();
@@ -137,7 +137,7 @@ namespace Misana.Network
             stream.BeginWrite(sendData, 0, sendData.Length, null, null);
         }
 
-        public bool TryGetMessage<T>(out T message, out INetworkClient senderClient)
+        public bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient)
             where T : struct
         {
             if (!IsConnected)
@@ -161,7 +161,7 @@ namespace Misana.Network
             if (!IsConnected)
                 throw new InvalidOperationException("Client is not connected");
 
-            INetworkClient client;
+            INetworkIdentifier client;
             return TryGetMessage(out message, out client);
         }
 

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Misana.Network
 {
     public class BroadcastList<T> : List<T> , IBroadcastSender , INetworkReceiver
-        where T : INetworkSender , INetworkClient , INetworkReceiver
+        where T : INetworkSender , INetworkIdentifier , INetworkReceiver
     {
         private Dictionary<Type,Action<object,MessageHeader,NetworkClient>> callbacks = new Dictionary<Type, Action<object, MessageHeader, NetworkClient>>();
 
@@ -35,7 +35,7 @@ namespace Misana.Network
         {
             foreach (var item in this)
             {
-                if (item.ClientId == originId)
+                if (item.NetworkId == originId)
                     continue;
 
                 item.SendMessage(ref message);
@@ -44,7 +44,7 @@ namespace Misana.Network
 
         private int userIndex = 0;
 
-        public bool TryGetMessage<T1>(out T1 message, out INetworkClient senderClient) where T1 : struct
+        public bool TryGetMessage<T1>(out T1 message, out INetworkIdentifier senderClient) where T1 : struct
         {
             for (; userIndex < Count; userIndex++)
             {
@@ -68,7 +68,7 @@ namespace Misana.Network
             for (; userIndex < Count; userIndex++)
             {
                 var client = this[userIndex];
-                INetworkClient senderClient = null;
+                INetworkIdentifier senderClient = null;
                 var result = client.TryGetMessage(out message, out senderClient);
 
                 if (result)

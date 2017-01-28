@@ -114,10 +114,10 @@ namespace Misana.Network
         private class MessageInfo
         {
             public T Message { get; }
-            public INetworkClient Client { get; }
+            public INetworkIdentifier Client { get; }
 
 
-            public MessageInfo(T message,INetworkClient client)
+            public MessageInfo(T message,INetworkIdentifier client)
             {
                 Message = message;
                 Client = client;
@@ -193,7 +193,7 @@ namespace Misana.Network
             return Deserialize(ref data);
         }
 
-        public bool TryGetValue(out T message,out INetworkClient senderClient)
+        public bool TryGetValue(out T message,out INetworkIdentifier senderClient)
         {
             if (messages.Count > 0)
             {

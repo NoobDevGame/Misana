@@ -46,12 +46,12 @@ namespace Misana.Core
         private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, NetworkClient client)
         {
 
-            var simulation = players[client.ClientId].Simulation;
+            var simulation = players[client.NetworkId].Simulation;
             foreach (var player in simulation.Players)
             {
-                if (player.ClientId == client.ClientId)
+                if (player.NetworkId == client.NetworkId)
                     continue;
-                var response = new PlayerInfoMessage(player.ClientId, player.Name);
+                var response = new PlayerInfoMessage(player.NetworkId, player.Name);
                 client.SendMessage(ref response);
             }
         }
@@ -64,12 +64,12 @@ namespace Misana.Core
 
             if (simulation != null)
             {
-                var player = players[client.ClientId];
+                var player = players[client.NetworkId];
                 simulation.Players.Add(player);
                 player.SetSimulation(simulation);
 
-                OnJoinWorldMessage joinMessage = new OnJoinWorldMessage(player.ClientId,player.Name);
-                simulation.Players.SendMessage(ref joinMessage,client.ClientId);
+                OnJoinWorldMessage joinMessage = new OnJoinWorldMessage(player.NetworkId,player.Name);
+                simulation.Players.SendMessage(ref joinMessage,client.NetworkId);
 
                 OnGetOuterPlayers(default(GetOuterPlayersMessageRequest), default(MessageHeader), client);
 
@@ -91,7 +91,7 @@ namespace Misana.Core
         private void OnBroadcast<T>(T message, MessageHeader header, NetworkClient client)
             where T : struct
         {
-            var simulation = players[client.ClientId].Simulation;
+            var simulation = players[client.NetworkId].Simulation;
             simulation.Players.ReceiveMessage(ref message,header,client);
             simulation.Players.SendMessage(ref message);
         }
@@ -99,9 +99,9 @@ namespace Misana.Core
         private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, NetworkClient client)
             where T : struct
         {
-            var simulation = players[client.ClientId].Simulation;
+            var simulation = players[client.NetworkId].Simulation;
             simulation.Players.ReceiveMessage(ref message,header,client);
-            simulation.Players.SendMessage(ref message,client.ClientId);
+            simulation.Players.SendMessage(ref message,client.NetworkId);
         }
 
         protected override void OnDisconnectClient(NetworkClient oldClient)
@@ -113,7 +113,7 @@ namespace Misana.Core
         {
             var response = new StartSimulationMessageResponse(true);
 
-            var simulation = players[networkClient.ClientId].Simulation;
+            var simulation = players[networkClient.NetworkId].Simulation;
 
             if (simulation.BaseSimulation.State == SimulationState.Running)
             {
@@ -121,7 +121,7 @@ namespace Misana.Core
                 return;
             }
 
-            if (simulation.Owner.ClientId != networkClient.ClientId)
+            if (simulation.Owner.NetworkId != networkClient.NetworkId)
             {
                 response.Result = false;
                 networkClient.SendResponseMessage(ref response,header.MessageId);
@@ -132,7 +132,7 @@ namespace Misana.Core
 
             networkClient.SendResponseMessage(ref response,header.MessageId);
             OnStartSimulationMessage broodCastMessage = new OnStartSimulationMessage();
-            simulation.Players.SendMessage(ref broodCastMessage,networkClient.ClientId);
+            simulation.Players.SendMessage(ref broodCastMessage,networkClient.NetworkId);
 
         }
 
@@ -140,9 +140,9 @@ namespace Misana.Core
         {
             ChangeMapMessageResponse response = new ChangeMapMessageResponse(true);
 
-            var simulation = players[networkClient.ClientId].Simulation;
+            var simulation = players[networkClient.NetworkId].Simulation;
 
-            if (simulation.Owner.ClientId != networkClient.ClientId)
+            if (simulation.Owner.NetworkId != networkClient.NetworkId)
             {
                 response.Result = false;
                 networkClient.SendResponseMessage(ref response,header.MessageId);
@@ -159,22 +159,22 @@ namespace Misana.Core
 
         private async void OnCreateEntityRequest(CreateEntityMessageRequest message, MessageHeader header, NetworkClient networkClient)
         {
-            var simulation = players[networkClient.ClientId].Simulation;
+            var simulation = players[networkClient.NetworkId].Simulation;
             var id = await simulation.BaseSimulation.CreateEntity(message.DefinitionId,null, null);
 
             var responseMessage = new CreateEntityMessageResponse(true,id);
             networkClient.SendResponseMessage(ref responseMessage,header.MessageId);
 
             var callbackmessage = new OnCreateEntityMessage(id,message.DefinitionId);
-            simulation.Players.SendMessage(ref callbackmessage,networkClient.ClientId);
+            simulation.Players.SendMessage(ref callbackmessage,networkClient.NetworkId);
 
         }
 
         protected virtual void OnLoginRequest(LoginMessageRequest message, MessageHeader header,NetworkClient client)
         {
-            var responseMessage = new LoginMessageResponse(client.ClientId);
+            var responseMessage = new LoginMessageResponse(client.NetworkId);
 
-            players.Add(client.ClientId,new NetworkPlayer(message.Name,client));
+            players.Add(client.NetworkId,new NetworkPlayer(message.Name,client));
 
             client.SendResponseMessage(ref responseMessage,header.MessageId);
 
@@ -183,7 +183,7 @@ namespace Misana.Core
 
         protected virtual void OnCreateWorld(CreateWorldMessageRequest message,MessageHeader header,NetworkClient client)
         {
-            var networkPlayer = players[client.ClientId];
+            var networkPlayer = players[client.NetworkId];
 
             var simulation = new NetworkSimulation(networkPlayer,null,null);
             simulation.Name = message.Name;

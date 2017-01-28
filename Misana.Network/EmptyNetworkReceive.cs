@@ -2,7 +2,7 @@
 {
     public class EmptyNetworkReceive : INetworkReceiver
     {
-        public bool TryGetMessage<T>(out T message, out INetworkClient senderClient) where T : struct
+        public bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient) where T : struct
         {
             senderClient = null;
             message = default(T);

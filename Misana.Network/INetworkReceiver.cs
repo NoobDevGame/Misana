@@ -4,7 +4,7 @@ namespace Misana.Network
 {
     public interface INetworkReceiver
     {
-        bool TryGetMessage<T>(out T message, out INetworkClient senderClient)
+        bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient)
             where T: struct ;
 
         bool TryGetMessage<T>(out T message)

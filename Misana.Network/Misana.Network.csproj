@@ -46,7 +46,7 @@
     <Compile Include="Delegates.cs" />
     <Compile Include="INetworkReceiver.cs" />
     <Compile Include="IBroadcastSender.cs" />
-    <Compile Include="INetworkClient.cs" />
+    <Compile Include="INetworkIdentifier.cs" />
     <Compile Include="INetworkSender.cs" />
     <Compile Include="MessageHandleList.cs" />
     <Compile Include="MessageWaitObject.cs" />
