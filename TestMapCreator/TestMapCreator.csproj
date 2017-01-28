@@ -52,18 +52,24 @@
   </Target>
   -->
   <ItemGroup>
-    <None Include="MisanaMap\Dorf_Markhausen.tmx" />
     <None Include="MisanaMap\TileSheetDungeon.tsx" />
     <None Include="MisanaMap\TileSheetIndoor.tsx" />
     <None Include="MisanaMap\TileSheetOutdoor.tsx" />
-    <None Include="MisanaMap\Maps\Dorf_Markhausen.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Misana.Core\Misana.Core.csproj">
       <Project>{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}</Project>
       <Name>Misana.Core</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="MisanaMap\Maps\Markhausen.Weg.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MisanaMap\Maps\Markhausen.West.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="MisanaMap\Markhausen.Weg.tmx" />
+    <Content Include="MisanaMap\Markhausen.West.tmx" />
   </ItemGroup>
 </Project>

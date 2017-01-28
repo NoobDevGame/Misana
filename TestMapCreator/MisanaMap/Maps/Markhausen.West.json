@@ -107,7 +107,7 @@
         {
          "columns":57,
          "firstgid":1,
-         "image":"..\/..\/..\/Dokumente\/develop\/cs\/Misana\/Misana\/Content\/TileSheetOutdoor.png",
+         "image":"..\/Tilesheets\/TileSheetOutdoor.png",
          "imageheight":526,
          "imagewidth":968,
          "margin":0,
@@ -150,51 +150,87 @@
                 {
                  "blocked":true
                 },
-             "1357":
+             "1231":
                 {
                  "blocked":true
                 },
-             "1358":
+             "1232":
                 {
                  "blocked":true
                 },
-             "1359":
+             "1233":
                 {
                  "blocked":true
                 },
-             "1360":
+             "1234":
                 {
                  "blocked":true
                 },
-             "1363":
+             "1235":
                 {
                  "blocked":true
                 },
-             "1364":
+             "1236":
                 {
                  "blocked":true
                 },
-             "1414":
+             "1237":
                 {
                  "blocked":true
                 },
-             "1415":
+             "1288":
                 {
                  "blocked":true
                 },
-             "1416":
+             "1289":
                 {
                  "blocked":true
                 },
-             "1417":
+             "1290":
                 {
                  "blocked":true
                 },
-             "1420":
+             "1291":
                 {
                  "blocked":true
                 },
-             "1421":
+             "1292":
+                {
+                 "blocked":true
+                },
+             "1293":
+                {
+                 "blocked":true
+                },
+             "1294":
+                {
+                 "blocked":true
+                },
+             "1345":
+                {
+                 "blocked":true
+                },
+             "1346":
+                {
+                 "blocked":true
+                },
+             "1347":
+                {
+                 "blocked":true
+                },
+             "1348":
+                {
+                 "blocked":true
+                },
+             "1349":
+                {
+                 "blocked":true
+                },
+             "1350":
+                {
+                 "blocked":true
+                },
+             "1351":
                 {
                  "blocked":true
                 },
@@ -206,55 +242,7 @@
                 {
                  "blocked":true
                 },
-             "344":
-                {
-                 "blocked":true
-                },
-             "345":
-                {
-                 "blocked":true
-                },
-             "346":
-                {
-                 "blocked":true
-                },
              "4":
-                {
-                 "blocked":true
-                },
-             "401":
-                {
-                 "blocked":true
-                },
-             "402":
-                {
-                 "blocked":true
-                },
-             "403":
-                {
-                 "blocked":true
-                },
-             "458":
-                {
-                 "blocked":true
-                },
-             "459":
-                {
-                 "blocked":true
-                },
-             "460":
-                {
-                 "blocked":true
-                },
-             "515":
-                {
-                 "blocked":true
-                },
-             "516":
-                {
-                 "blocked":true
-                },
-             "517":
                 {
                  "blocked":true
                 },
@@ -282,19 +270,19 @@
                 {
                  "blocked":true
                 },
+             "532":
+                {
+                 "blocked":true
+                },
+             "533":
+                {
+                 "blocked":true
+                },
+             "534":
+                {
+                 "blocked":true
+                },
              "57":
-                {
-                 "blocked":true
-                },
-             "572":
-                {
-                 "blocked":true
-                },
-             "573":
-                {
-                 "blocked":true
-                },
-             "574":
                 {
                  "blocked":true
                 },
@@ -326,7 +314,19 @@
                 {
                  "blocked":true
                 },
+             "589":
+                {
+                 "blocked":true
+                },
              "59":
+                {
+                 "blocked":true
+                },
+             "590":
+                {
+                 "blocked":true
+                },
+             "591":
                 {
                  "blocked":true
                 },
@@ -335,18 +335,6 @@
                  "blocked":true
                 },
              "61":
-                {
-                 "blocked":true
-                },
-             "629":
-                {
-                 "blocked":true
-                },
-             "630":
-                {
-                 "blocked":true
-                },
-             "631":
                 {
                  "blocked":true
                 },
@@ -374,39 +362,15 @@
                 {
                  "blocked":true
                 },
-             "686":
+             "646":
                 {
                  "blocked":true
                 },
-             "687":
+             "647":
                 {
                  "blocked":true
                 },
-             "688":
-                {
-                 "blocked":true
-                },
-             "743":
-                {
-                 "blocked":true
-                },
-             "744":
-                {
-                 "blocked":true
-                },
-             "745":
-                {
-                 "blocked":true
-                },
-             "800":
-                {
-                 "blocked":true
-                },
-             "801":
-                {
-                 "blocked":true
-                },
-             "802":
+             "648":
                 {
                  "blocked":true
                 }
@@ -441,51 +405,87 @@
                 {
                  "blocked":"bool"
                 },
-             "1357":
+             "1231":
                 {
                  "blocked":"bool"
                 },
-             "1358":
+             "1232":
                 {
                  "blocked":"bool"
                 },
-             "1359":
+             "1233":
                 {
                  "blocked":"bool"
                 },
-             "1360":
+             "1234":
                 {
                  "blocked":"bool"
                 },
-             "1363":
+             "1235":
                 {
                  "blocked":"bool"
                 },
-             "1364":
+             "1236":
                 {
                  "blocked":"bool"
                 },
-             "1414":
+             "1237":
                 {
                  "blocked":"bool"
                 },
-             "1415":
+             "1288":
                 {
                  "blocked":"bool"
                 },
-             "1416":
+             "1289":
                 {
                  "blocked":"bool"
                 },
-             "1417":
+             "1290":
                 {
                  "blocked":"bool"
                 },
-             "1420":
+             "1291":
                 {
                  "blocked":"bool"
                 },
-             "1421":
+             "1292":
+                {
+                 "blocked":"bool"
+                },
+             "1293":
+                {
+                 "blocked":"bool"
+                },
+             "1294":
+                {
+                 "blocked":"bool"
+                },
+             "1345":
+                {
+                 "blocked":"bool"
+                },
+             "1346":
+                {
+                 "blocked":"bool"
+                },
+             "1347":
+                {
+                 "blocked":"bool"
+                },
+             "1348":
+                {
+                 "blocked":"bool"
+                },
+             "1349":
+                {
+                 "blocked":"bool"
+                },
+             "1350":
+                {
+                 "blocked":"bool"
+                },
+             "1351":
                 {
                  "blocked":"bool"
                 },
@@ -497,55 +497,7 @@
                 {
                  "blocked":"bool"
                 },
-             "344":
-                {
-                 "blocked":"bool"
-                },
-             "345":
-                {
-                 "blocked":"bool"
-                },
-             "346":
-                {
-                 "blocked":"bool"
-                },
              "4":
-                {
-                 "blocked":"bool"
-                },
-             "401":
-                {
-                 "blocked":"bool"
-                },
-             "402":
-                {
-                 "blocked":"bool"
-                },
-             "403":
-                {
-                 "blocked":"bool"
-                },
-             "458":
-                {
-                 "blocked":"bool"
-                },
-             "459":
-                {
-                 "blocked":"bool"
-                },
-             "460":
-                {
-                 "blocked":"bool"
-                },
-             "515":
-                {
-                 "blocked":"bool"
-                },
-             "516":
-                {
-                 "blocked":"bool"
-                },
-             "517":
                 {
                  "blocked":"bool"
                 },
@@ -573,19 +525,19 @@
                 {
                  "blocked":"bool"
                 },
+             "532":
+                {
+                 "blocked":"bool"
+                },
+             "533":
+                {
+                 "blocked":"bool"
+                },
+             "534":
+                {
+                 "blocked":"bool"
+                },
              "57":
-                {
-                 "blocked":"bool"
-                },
-             "572":
-                {
-                 "blocked":"bool"
-                },
-             "573":
-                {
-                 "blocked":"bool"
-                },
-             "574":
                 {
                  "blocked":"bool"
                 },
@@ -617,7 +569,19 @@
                 {
                  "blocked":"bool"
                 },
+             "589":
+                {
+                 "blocked":"bool"
+                },
              "59":
+                {
+                 "blocked":"bool"
+                },
+             "590":
+                {
+                 "blocked":"bool"
+                },
+             "591":
                 {
                  "blocked":"bool"
                 },
@@ -626,18 +590,6 @@
                  "blocked":"bool"
                 },
              "61":
-                {
-                 "blocked":"bool"
-                },
-             "629":
-                {
-                 "blocked":"bool"
-                },
-             "630":
-                {
-                 "blocked":"bool"
-                },
-             "631":
                 {
                  "blocked":"bool"
                 },
@@ -665,39 +617,15 @@
                 {
                  "blocked":"bool"
                 },
-             "686":
+             "646":
                 {
                  "blocked":"bool"
                 },
-             "687":
+             "647":
                 {
                  "blocked":"bool"
                 },
-             "688":
-                {
-                 "blocked":"bool"
-                },
-             "743":
-                {
-                 "blocked":"bool"
-                },
-             "744":
-                {
-                 "blocked":"bool"
-                },
-             "745":
-                {
-                 "blocked":"bool"
-                },
-             "800":
-                {
-                 "blocked":"bool"
-                },
-             "801":
-                {
-                 "blocked":"bool"
-                },
-             "802":
+             "648":
                 {
                  "blocked":"bool"
                 }

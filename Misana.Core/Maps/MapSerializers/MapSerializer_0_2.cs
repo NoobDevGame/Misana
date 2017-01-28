@@ -52,8 +52,8 @@ namespace Misana.Core.Maps.MapSerializers
             var id = br.ReadInt32();
             var name = br.ReadString();
 
-            var height = br.ReadInt32();
             var width = br.ReadInt32();
+            var height = br.ReadInt32();
 
             var spawnX = br.ReadSingle();
             var spawnY = br.ReadSingle();

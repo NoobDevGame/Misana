@@ -18,9 +18,10 @@ namespace TestMapCreator
         public static void Main(string[] args)
         {
 			List<string> maps = new List<string> ();
-			maps.Add ("Dorf_Markhausen");
+			maps.Add ("Markhausen.West"); //1
+            maps.Add ("Markhausen.Weg"); //2
 
-			var paths = maps.Select (i => Path.Combine("MisanaMap","Maps",string.Format("{0}.json",i))).ToArray();
+            var paths = maps.Select (i => Path.Combine("MisanaMap","Maps",string.Format("{0}.json",i))).ToArray();
 
 			var map = MapLoader.CreateMapFromTiled ("DebugMap", paths);
 
@@ -59,23 +60,34 @@ namespace TestMapCreator
             }
 
 
-
             {
-                //TestTeleporter
-                EntityDefinition testTeleporter = new EntityDefinition("TestTeleport", map.GetNextDefinitionId());
+                // Teleporter
+                //Area 1
+                CreateTeleport(map,5,10,1,11,10,1);
 
-                var entityCollider = new EntityColliderDefinition();
-                entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new TeleportEffect(5,10,1)) {ApplyTo = ApplicableTo.Other});
-                entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) {ApplyTo = ApplicableTo.Other});
-
-                testTeleporter.Definitions.Add(entityCollider);
-                testTeleporter.Definitions.Add(new CharacterRenderDefinition());
-                testTeleporter.Definitions.Add(new TransformDefinition(new Vector2(11, 10), 1, 0.5f));
-
-                map.Areas[0].Entities.Add(testTeleporter);
+                CreateTeleport(map,19,8,1,1,8,2);
+                CreateTeleport(map,19,9,1,1,9,2);
             }
 
             MapLoader.Save (map, string.Format ("{0}.mm", map.Name));
+        }
+
+        private static void CreateTeleport(Map map,float x, float y, int area,int targeX,int targeY,int targetArea)
+        {
+            var id = map.GetNextDefinitionId();
+            //TestTeleporter
+            EntityDefinition testTeleporter = new EntityDefinition($"Teleport_{id}", id);
+
+            var entityCollider = new EntityColliderDefinition();
+            entityCollider.OnCollisionEvents.Add(
+                new ApplyEffectEvent(new TeleportEffect(targeX, targeY, targetArea)) {ApplyTo = ApplicableTo.Other});
+            //entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) {ApplyTo = ApplicableTo.Other});
+
+            testTeleporter.Definitions.Add(entityCollider);
+            testTeleporter.Definitions.Add(new CharacterRenderDefinition());
+            testTeleporter.Definitions.Add(new TransformDefinition(new Vector2(x, y), area, 0.4f));
+
+            map.Areas[area-1].Entities.Add(testTeleporter);
         }
     }
 }
