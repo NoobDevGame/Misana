@@ -37,7 +37,10 @@ namespace Misana.Screens
                     int port = 4344;
                     if (splt.Length > 1)
                         int.TryParse(splt[1], out port);
-                    var task = manager.Game.Simulation.ConnectToServer("LocalPlayer",IPAddress.Loopback);
+
+                    var ip = string.IsNullOrEmpty(splt[0]) ? IPAddress.Loopback : IPAddress.Parse(splt[0]);
+
+                    var task = manager.Game.Simulation.ConnectToServer("LocalPlayer",ip);
                     manager.NavigateToScreen(new ConnectingScreen(manager,task, (m) => new WorldSelectScreen(m)));
 
                     //manager.Game.NetworkComponent.Connect(splt[0], port,manager.Game.PlayerComponent.PlayerName,manager.Game.PlayerComponent.PlayerTexture);
