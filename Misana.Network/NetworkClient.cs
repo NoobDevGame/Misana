@@ -10,8 +10,8 @@ namespace Misana.Network
 {
     internal class NetworkClient : INetworkClient
     {
-        private static int clientId = 0;
-        public int NetworkId { get; } = Interlocked.Increment(ref clientId);
+
+        public int NetworkId { get; } = NetworkManager.GetNextId();
 
 
         private MessageHandleList _messageHandles = new MessageHandleList();
@@ -100,8 +100,6 @@ namespace Misana.Network
         {
             if (!IsConnected)
                 throw new InvalidOperationException("Client is not connected");
-
-            var index = MessageHandle<T>.Index;
 
             MessageWaitObject waitObject = null;
 

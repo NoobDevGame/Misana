@@ -10,7 +10,7 @@ namespace Misana.Network
     {
         public const int PORT = 34560;
 
-        private readonly BroadcastList<NetworkClient> _clients = new BroadcastList<NetworkClient>();
+        private readonly BroadcastList<INetworkClient> _clients = new BroadcastList<INetworkClient>();
 
         private TcpListener _listener;
         private CancellationTokenSource _tokenSource;
@@ -33,6 +33,13 @@ namespace Misana.Network
                 return;
             _tokenSource.Cancel();
             _listener.Stop();
+        }
+
+        public INetworkClient CreateLocalClient()
+        {
+            var client = new InternalNetworkClient();
+            _clients.Add(client.ServerClient);
+            return client;
         }
 
         private void TcpClientConnected(IAsyncResult ar)

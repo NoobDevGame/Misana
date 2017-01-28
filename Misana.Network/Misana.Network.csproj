@@ -49,6 +49,7 @@
     <Compile Include="IBroadcastSender.cs" />
     <Compile Include="INetworkIdentifier.cs" />
     <Compile Include="INetworkSender.cs" />
+    <Compile Include="InternalNetworkClient.cs" />
     <Compile Include="MessageHandleList.cs" />
     <Compile Include="MessageWaitObject.cs" />
     <Compile Include="MessageDefinitionAttribute.cs" />

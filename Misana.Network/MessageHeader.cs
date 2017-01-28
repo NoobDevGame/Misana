@@ -28,6 +28,11 @@
             MessageId = messageId;
         }
 
-
+        public MessageHeader(int messageTypeIndex)
+        {
+            MessageTypeIndex = messageTypeIndex;
+            State = 0;
+            MessageId = 0;
+        }
     }
 }

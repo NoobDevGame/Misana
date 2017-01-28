@@ -88,9 +88,10 @@ namespace Misana.Network
 
         public abstract object Derserialize(ref byte[] data);
 
-        public abstract void SetMessage(object value,MessageHeader header,NetworkClient client);
         
         public abstract void SetCallbackHandles(ref MessageWaitObject[] waitObjects);
+
+        public abstract void SetMessage(object message, MessageHeader header, INetworkClient networkClient);
     }
 
     internal sealed partial class MessageHandle<T> : MessageHandle
@@ -156,11 +157,19 @@ namespace Misana.Network
             if (IsResponse)
                 throw new NotSupportedException("For Requestmessages only");
 
-            var messageId = (byte)(Interlocked.Increment(ref MessageId) % byte.MaxValue);
+            var messageId = GetWaitObject(out waitObject);
 
-            waitObject = sendWaitHandles?[messageId];
+
 
             return MessageHandle.Serialize<T>(new MessageHeader(Index.Value,messageId),ref data);
+        }
+
+        public static byte GetWaitObject(out MessageWaitObject waitObject)
+        {
+            var messageId = (byte)(Interlocked.Increment(ref MessageId) % byte.MaxValue);
+            waitObject = sendWaitHandles?[messageId];
+
+            return messageId;
         }
 
         public static byte[] Serialize(ref T data,byte messageId)
@@ -182,6 +191,8 @@ namespace Misana.Network
 
             waitObjects = receiveWaitHandles;
         }
+
+
 
         public static T Deserialize(ref byte[] data)
         {
@@ -216,7 +227,7 @@ namespace Misana.Network
             return false;
         }
 
-        public void SetMessage(T message,MessageHeader header,NetworkClient client)
+        public void SetMessage(T message,MessageHeader header,INetworkClient client)
         {
             receiveWaitHandles?[header.MessageId].Release(message);
 
@@ -231,14 +242,16 @@ namespace Misana.Network
             }
         }
 
-        public override void SetMessage(object value,MessageHeader header,NetworkClient client)
+        public override void SetMessage(object message, MessageHeader header, INetworkClient networkClient)
         {
-            SetMessage((T)value,header,client);
+            SetMessage((T)message,header,networkClient);
         }
 
         public void RegisterCallback(MessageReceiveCallback<T> callback)
         {
             _callback += callback;
         }
+
+
     }
 }
