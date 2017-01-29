@@ -16,7 +16,7 @@ namespace Misana.Core.Ecs
 
         public static readonly int ComponentCount;
 
-        private readonly Dictionary<int, Entity> _entityMap = new Dictionary<int, Entity>();
+        private readonly IntMap<Entity> _entityMap = new IntMap<Entity>(128);
         private readonly EntitiesToRemove _entitiesToRemove = new EntitiesToRemove();
         private readonly EntitiesToAdd _entitiesToAdd = new EntitiesToAdd();
         private readonly EntitesWithChanges _entitesWithChanges;
@@ -255,7 +255,7 @@ namespace Misana.Core.Ecs
         {
             while (true)
             {
-                var ids = _entityMap.Keys.ToList();
+                var ids = _entityMap.Keys;
 
                 if (ids.Count == 0)
                 {

@@ -70,7 +70,7 @@ namespace Misana.Core.Systems
                     {
                         var i = entityIndexes[k];
                         var e1 = _posTracker.Entities[i];
-                        if(!IndexMap.TryGetValue(e1, out i))
+                        if(!IndexMap.TryGetValue(e1.Id, out i))
                             continue;
 
                         var entityCollider = R1S[i];
@@ -82,7 +82,7 @@ namespace Misana.Core.Systems
                             var j = entityIndexes[l];
                             var e2 = _posTracker.Entities[j];
 
-                            if (!IndexMap.TryGetValue(e2, out j))
+                            if (!IndexMap.TryGetValue(e2.Id, out j))
                                 continue;
 
                             var position2Component = R2S[j];

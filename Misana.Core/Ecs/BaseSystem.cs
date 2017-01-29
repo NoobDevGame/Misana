@@ -14,7 +14,7 @@ namespace Misana.Core.Ecs
         protected int Count = 0;
         public Entity[] Entities = new Entity[InitialSize];
 
-        protected readonly Dictionary<Entity, int> IndexMap = new Dictionary<Entity, int>(InitialSize);
+        protected readonly IntMap<int> IndexMap = new IntMap<int>(InitialSize);
 
         protected List<int> RequiredIndexes;
         protected List<int> OptionalIndexes;
@@ -42,14 +42,14 @@ namespace Misana.Core.Ecs
 
             var idx = Count++;
             Entities[idx] = e;
-            IndexMap[e] = idx;
+            IndexMap[e.Id] = idx;
             Add(e, idx);
         }
 
         public void EntityRemoved(Entity e)
         {
             int idx;
-            if (!IndexMap.TryGetValue(e, out idx))
+            if (!IndexMap.TryGetValue(e.Id, out idx))
                 return;
 
             if (idx == Count - 1)
@@ -63,8 +63,8 @@ namespace Misana.Core.Ecs
                 Remove(idx, swapIndex);
                 Entities[idx] = Entities[swapIndex];
                 Entities[swapIndex] = null;
-                IndexMap.Remove(e);
-                IndexMap[Entities[idx]] = idx;
+                IndexMap.Remove(e.Id);
+                IndexMap[Entities[idx].Id] = idx;
                 
             }
 
@@ -74,7 +74,7 @@ namespace Misana.Core.Ecs
         public void EntityChanged(Entity e)
         {
             int idx;
-            var existing = IndexMap.TryGetValue(e, out idx);
+            var existing = IndexMap.TryGetValue(e.Id, out idx);
 
             if (Matches(e))
             {
@@ -94,7 +94,7 @@ namespace Misana.Core.Ecs
 
                 idx = Count++;
                 Entities[idx] = e;
-                IndexMap[e] = idx;
+                IndexMap[e.Id] = idx;
                 Add(e, idx);
             }
             else
@@ -106,7 +106,7 @@ namespace Misana.Core.Ecs
                 {
                     Remove(idx, null);
                     Entities[idx] = null;
-                    IndexMap.Remove(e);
+                    IndexMap.Remove(e.Id);
                 }
                 else
                 {
@@ -114,8 +114,8 @@ namespace Misana.Core.Ecs
                     Remove(idx, swapIndex);
                     Entities[idx] = Entities[swapIndex];
                     Entities[swapIndex] = null;
-                    IndexMap.Remove(e);
-                    IndexMap[Entities[idx]] = idx;
+                    IndexMap.Remove(e.Id);
+                    IndexMap[Entities[idx].Id] = idx;
                 }
 
                 Count--;

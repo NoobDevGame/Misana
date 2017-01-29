@@ -9,7 +9,7 @@ namespace Misana.Core.Ecs.Changes
     {
         private readonly EntityManager _manager;
         private static readonly ConcurrentStack<List<EntityChange>> ChangeStack = new ConcurrentStack<List<EntityChange>>();
-
+        
         static EntitesWithChanges()
         {
             for (int i = 0; i < 128; i++)
@@ -51,11 +51,9 @@ namespace Misana.Core.Ecs.Changes
 
         private void CommitWork(int number)
         {
-            foreach (var kvp in _changes)
-            {
-                if (kvp.Key % (ThreadCount + 1) == number)
+            foreach (var changes in _changeLists) {
+                if (changes[0].EntityId % (ThreadCount + 1) == number)
                 {
-                    var changes = kvp.Value;
                     for (int j = 0; j < changes.Count; j++)
                     {
                         for (int i = j + 1; i < changes.Count; i++)
@@ -93,8 +91,9 @@ namespace Misana.Core.Ecs.Changes
         private int _workDoneCounter = 0;
 
 
-        private readonly Dictionary<int, List<EntityChange>> _changes = new Dictionary<int, List<EntityChange>>(64);
-
+        private readonly IntMap<int> _indexMap = new IntMap<int>(128);
+        private readonly List<List<EntityChange>> _changeLists = new List<List<EntityChange>>(64);
+        
         public bool HasChanges;
         private readonly object _dicLock = new object();
         public void Add(EntityChange change)
@@ -102,16 +101,19 @@ namespace Misana.Core.Ecs.Changes
             List<EntityChange> changes;
             lock (_dicLock)
             {
-                if (!_changes.TryGetValue(change.EntityId, out changes))
+                int idx;
+                if (!_indexMap.TryGetValue(change.EntityId, out idx))
                 {
                     if (!ChangeStack.TryPop(out changes))
                         changes = new List<EntityChange>();
 
                     changes.Add(change);
-                    _changes[change.EntityId] = changes;
+                    _changeLists.Add(changes);
                     HasChanges = true;
                     return;
                 }
+
+                changes = _changeLists[idx];
             }
 
             lock (changes)
@@ -137,7 +139,8 @@ namespace Misana.Core.Ecs.Changes
                 _workDoneCounter = 0;
             }
 
-            _changes.Clear();
+            _indexMap.Clear();
+            _changeLists.Clear();
             HasChanges = false;
         }
     }
