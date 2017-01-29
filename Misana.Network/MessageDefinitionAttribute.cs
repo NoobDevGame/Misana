@@ -8,5 +8,6 @@ namespace Misana.Network
         public Type ResponseType { get; set; }
         public bool IsResponse { get; set; }
         public bool UseUDP { get; set; }
+        public bool NoQueue { get; set; }
     }
 }

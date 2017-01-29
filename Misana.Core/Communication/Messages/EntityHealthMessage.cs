@@ -2,7 +2,7 @@
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition]
+    [MessageDefinition(UseUDP = true)]
     public struct EntityHealthMessage
     {
         public int EntityId;

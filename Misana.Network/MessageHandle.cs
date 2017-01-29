@@ -9,7 +9,7 @@ namespace Misana.Network
 {
     internal abstract class MessageHandle
     {
-        private static readonly int headerSize = Marshal.SizeOf(typeof(MessageHeader));
+        private static readonly int HeaderSize = Marshal.SizeOf(typeof(MessageHeader));
         public readonly Type Type;
 
         protected MessageHandle(Type type)
@@ -24,13 +24,13 @@ namespace Misana.Network
         {
             int dataSize = Marshal.SizeOf(typeof(T));
 
-            byte[] arr = new byte[dataSize + headerSize];
+            byte[] arr = new byte[dataSize + HeaderSize];
 
             {
                 int actual;
-                var ptr = BlockAllocator.Alloc(headerSize, out actual);
+                var ptr = BlockAllocator.Alloc(HeaderSize, out actual);
                 Marshal.StructureToPtr(header, ptr, true);
-                Marshal.Copy(ptr, arr, 0, headerSize);
+                Marshal.Copy(ptr, arr, 0, HeaderSize);
                 BlockAllocator.Free(ptr, actual);
             }
 
@@ -38,7 +38,7 @@ namespace Misana.Network
                 int actual;
                 var ptr = BlockAllocator.Alloc(dataSize, out actual);
                 Marshal.StructureToPtr(data, ptr, true);
-                Marshal.Copy(ptr, arr, headerSize, dataSize);
+                Marshal.Copy(ptr, arr, HeaderSize, dataSize);
                 BlockAllocator.Free(ptr, actual);
             }
             return arr;
@@ -55,9 +55,9 @@ namespace Misana.Network
         public static MessageHeader DeserializeHeader(ref byte[] data)
         {
             int actual;
-            var ptr = BlockAllocator.Alloc(headerSize, out actual);
+            var ptr = BlockAllocator.Alloc(HeaderSize, out actual);
 
-            Marshal.Copy(data, 0, ptr, headerSize);
+            Marshal.Copy(data, 0, ptr, HeaderSize);
 
             var header = Marshal.PtrToStructure<MessageHeader>(ptr);
             BlockAllocator.Free(ptr, actual);
@@ -77,7 +77,7 @@ namespace Misana.Network
             int actual;
             var ptr = BlockAllocator.Alloc(dataSize, out actual);
 
-            Marshal.Copy(data,headerSize, ptr, dataSize);
+            Marshal.Copy(data,HeaderSize, ptr, dataSize);
 
 
             var result  = Marshal.PtrToStructure(ptr,type);
@@ -88,8 +88,7 @@ namespace Misana.Network
 
         public abstract object Derserialize(ref byte[] data);
 
-        
-        public abstract void SetCallbackHandles(ref MessageWaitObject[] waitObjects);
+        public abstract void SetCallbackHandles(out MessageWaitObject[] waitObjects);
 
         public abstract void SetMessage(object message, MessageHeader header, INetworkClient networkClient);
     }
@@ -134,7 +133,9 @@ namespace Misana.Network
         private static MessageWaitObject[] sendWaitHandles;
 
         public static bool IsResponse { get;  private set; }
-        public static bool IsUDPMessage { get; set; }
+        public static bool IsUDPMessage { get; private set; }
+        public static bool NoQueue { get; private set; }
+
         public MessageHandle()
             : base(typeof(T))
         {
@@ -145,12 +146,27 @@ namespace Misana.Network
         {
             IsResponse = attribute.IsResponse;
             IsUDPMessage = attribute.UseUDP;
+            NoQueue = attribute.NoQueue;
+
             if (attribute.ResponseType != null)
             {
                 var handler = MessageHandleManager.CreateMessageHandle(attribute.ResponseType);
-                handler.SetCallbackHandles(ref sendWaitHandles);
+                handler.SetCallbackHandles(out sendWaitHandles);
             }
         }
+
+        public override void SetCallbackHandles(out MessageWaitObject[] waitObjects)
+        {
+            if (receiveWaitHandles == null)
+            {
+                receiveWaitHandles = new MessageWaitObject[byte.MaxValue+1];
+                for (int i = 0; i < byte.MaxValue +1; i++)
+                    receiveWaitHandles[i] = new MessageWaitObject();
+            }
+
+            waitObjects = receiveWaitHandles;
+        }
+
 
         public static byte[] Serialize(ref T data,out MessageWaitObject waitObject)
         {
@@ -158,8 +174,6 @@ namespace Misana.Network
                 throw new NotSupportedException("For Requestmessages only");
 
             var messageId = GetWaitObject(out waitObject);
-
-
 
             return MessageHandle.Serialize<T>(new MessageHeader(Index.Value,messageId),ref data);
         }
@@ -179,19 +193,6 @@ namespace Misana.Network
 
             return MessageHandle.Serialize<T>(new MessageHeader(Index.Value,messageId),ref data);
         }
-
-        public override void SetCallbackHandles(ref MessageWaitObject[] waitObjects)
-        {
-            if (receiveWaitHandles == null)
-            {
-                receiveWaitHandles = new MessageWaitObject[byte.MaxValue+1];
-                for (int i = 0; i < byte.MaxValue +1; i++)
-                    receiveWaitHandles[i] = new MessageWaitObject();
-            }
-
-            waitObjects = receiveWaitHandles;
-        }
-
 
 
         public static T Deserialize(ref byte[] data)
@@ -231,15 +232,16 @@ namespace Misana.Network
         {
             receiveWaitHandles?[header.MessageId].Release(message);
 
-            if (_callback != null)
+            _callback?.Invoke(message,header,client);
+
+            if (!NoQueue)
             {
-                _callback.Invoke(message,header,client);
+                lock (messagesLockObject)
+                {
+                    messages.Enqueue(new MessageInfo(message,client));
+                }
             }
 
-            lock (messagesLockObject)
-            {
-                messages.Enqueue(new MessageInfo(message,client));
-            }
         }
 
         public override void SetMessage(object message, MessageHeader header, INetworkClient networkClient)

@@ -10,8 +10,9 @@ namespace Misana.Network
 
         public bool IsLocked { get; private set; }
 
-        private object message;
+        private readonly TimeSpan waitTime = TimeSpan.FromSeconds(30);
 
+        private object message;
         private Action<object> callback;
 
         internal void Start()
@@ -21,7 +22,7 @@ namespace Misana.Network
 
         public async Task<object> Wait()
         {
-            await Semaphore.WaitAsync();
+            await Semaphore.WaitAsync(waitTime);
             Semaphore.Release();
             return message;
         }
