@@ -22,6 +22,7 @@ namespace Misana.Network
                 where type.IsValueType && !type.IsEnum
                 let attribute = type.GetCustomAttribute<MessageDefinitionAttribute>(false)
                 where attribute != null
+                orderby type.FullName
                 select new {Type = type,Attribute = attribute};
 
             foreach (var @struct in structs)

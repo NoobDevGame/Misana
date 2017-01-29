@@ -99,9 +99,12 @@ namespace Misana.Core
         private void OnNoOwnerBroadcast<T>(T message, MessageHeader header, INetworkClient client)
             where T : struct
         {
-            var simulation = players[client.NetworkId].Simulation;
-            simulation.Players.ReceiveMessage(ref message,header,client);
-            simulation.Players.SendMessage(ref message,client.NetworkId);
+            if (players.ContainsKey(client.NetworkId))
+            {
+                var simulation = players[client.NetworkId].Simulation;
+                simulation.Players.ReceiveMessage(ref message,header,client);
+                simulation.Players.SendMessage(ref message,client.NetworkId);
+            }
         }
 
         protected override void OnDisconnectClient(INetworkClient oldClient)

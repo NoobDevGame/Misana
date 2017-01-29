@@ -56,11 +56,9 @@ namespace Misana.Network
             CanConnect = false;
             IsConnected = true;
             IsServer = true;
-
-            StartRead();
         }
 
-        private void StartRead()
+        public void StartRead()
         {
             stream.BeginRead(tcpBuffer, 0, 4, OnReadTcpLenght, null);
             if (!IsServer)
@@ -81,7 +79,6 @@ namespace Misana.Network
 
         private void OnReadTcpLenght(IAsyncResult ar)
         {
-
             var dataCount = stream.EndRead(ar);
             var lenght = BitConverter.ToInt32(tcpBuffer, 0);
 

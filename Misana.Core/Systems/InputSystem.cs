@@ -24,7 +24,7 @@ namespace Misana.Core.Systems
 
         protected override void Update(Entity e, PlayerInputComponent r1, MotionComponent r2, TransformComponent r3, FacingComponent o1)
         {
-            r2.Move += r1.Move * GameTime.ElapsedTime.TotalSeconds;
+            r2.Move += r1.Move * 3 *  GameTime.ElapsedTime.TotalSeconds;
 
             if (o1 != null)
                 o1.Facing = (r3.Position - r1.Facing).Normalize();

@@ -72,8 +72,10 @@ namespace Misana.Network
                 _ipClients.Add(ipAdress,networkClient);
 
                 _listener.BeginAcceptTcpClient(TcpClientConnected, token);
-
                 OnConnectClient(networkClient);
+
+                networkClient.StartRead();
+
             }
             catch (Exception e)
             {
