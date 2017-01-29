@@ -170,7 +170,12 @@ namespace Misana.Network
             Array.Copy(lengthBytes,sendData,lengthBytes.Length);
             Array.Copy(data,0,sendData,lengthBytes.Length,data.Length);
 
-            stream.BeginWrite(sendData, 0, sendData.Length, null, null);
+            stream.BeginWrite(sendData, 0, sendData.Length, OnWriteTcpDone, null);
+        }
+
+        private void OnWriteTcpDone(IAsyncResult ar)
+        {
+            stream.EndWrite(ar);
         }
 
         private void WriteUDPData( ref byte[] data)
