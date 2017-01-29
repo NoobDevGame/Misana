@@ -31,19 +31,18 @@ namespace Misana.Network
         private readonly int sendPort;
 
         readonly byte[] tcpBuffer = new byte[1024];
-        readonly byte[] udpBuffer = new byte[1024];
 
 
         public NetworkClient()
         {
             sendPort = NetworkManager.ServerUdpPort;
-            _udpClient = new UdpClient(NetworkManager.LocalUdpPort);
+			_udpClient = new UdpClient(new IPEndPoint(IPAddress.Any,NetworkManager.LocalUdpPort));
             _tcpClient = new TcpClient();
 
             CanConnect = true;
         }
 
-        internal NetworkClient(TcpClient tcpClient,IPAddress address)
+        internal NetworkClient(TcpClient tcpClient,UdpClient udpClient,IPAddress address)
         {
             RemoteAddress = address;
 
@@ -52,7 +51,7 @@ namespace Misana.Network
 
             stream = tcpClient.GetStream();
 
-            _udpClient = new UdpClient();
+            _udpClient = udpClient;
 
             CanConnect = false;
             IsConnected = true;

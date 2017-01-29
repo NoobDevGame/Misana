@@ -17,6 +17,8 @@ namespace Misana.Network
         private readonly TcpListener _listener;
         private CancellationTokenSource _tokenSource;
 
+        private UdpListnerClient udpListener;
+
         public NetworkListener()
         {
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, NetworkManager.TcpPort));
@@ -29,9 +31,9 @@ namespace Misana.Network
             _listener.Start();
             _listener.BeginAcceptTcpClient(TcpClientConnected, _tokenSource.Token);
 
-            UdpListnerClient udpClient = new UdpListnerClient(this);
-            await udpClient.Connect(IPAddress.Any);
-            OnConnectClient(udpClient);
+            udpListener = new UdpListnerClient(this);
+            await udpListener.Connect(IPAddress.Any);
+            OnConnectClient(udpListener);
         }
 
         public void Stop()
@@ -64,7 +66,7 @@ namespace Misana.Network
             {
                 var ipAdress = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address;
 
-                var networkClient = new NetworkClient(tcpClient,ipAdress);
+                var networkClient = new NetworkClient(tcpClient,udpListener.UdpClient,ipAdress);
 
                 _clients.Add(networkClient);
                 _ipClients.Add(ipAdress,networkClient);

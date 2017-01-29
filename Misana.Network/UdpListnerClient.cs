@@ -13,7 +13,7 @@ namespace Misana.Network
         public bool IsConnected { get; private set; }
         public bool CanSend { get; } = true;
 
-        private UdpClient _udpClient;
+        public UdpClient UdpClient { get; private set; }
 
         public UdpListnerClient(NetworkListener listener)
         {
@@ -25,8 +25,8 @@ namespace Misana.Network
             if (addr != IPAddress.Any)
                 throw new ArgumentException();
 
-            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort));
-            _udpClient.BeginReceive(OnReadUdpData,null);
+            UdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort));
+            UdpClient.BeginReceive(OnReadUdpData,null);
             IsConnected = true;
 
         }
@@ -40,11 +40,11 @@ namespace Misana.Network
         private void OnReadUdpData(IAsyncResult ar)
         {
             IPEndPoint sender = null;
-            var data = _udpClient.EndReceive(ar,ref sender);
+            var data = UdpClient.EndReceive(ar,ref sender);
 
              ReceiveData(data,_listener.GetClientByIp(sender.Address));
 
-            _udpClient.BeginReceive(OnReadUdpData,null);
+            UdpClient.BeginReceive(OnReadUdpData,null);
         }
 
         private void ReceiveData(byte[] data,NetworkClient client)
