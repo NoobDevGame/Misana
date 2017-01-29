@@ -9,6 +9,7 @@ namespace Misana.Network
         public int NetworkId { get; } = NetworkManager.GetNextId();
 
         public bool IsConnected { get; } = true;
+        public bool CanSend { get; } = true;
 
         public INetworkClient ServerClient { get; }
         public INetworkClient LocalClient { get; }

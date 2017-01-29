@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Misana.Network
 {
@@ -11,20 +12,26 @@ namespace Misana.Network
 
 
         private readonly BroadcastList<INetworkClient> _clients = new BroadcastList<INetworkClient>();
+        private readonly Dictionary<IPAddress,NetworkClient> _ipClients = new Dictionary<IPAddress, NetworkClient>();
 
-        private TcpListener _listener;
+        private readonly TcpListener _listener;
         private CancellationTokenSource _tokenSource;
 
         public NetworkListener()
         {
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, NetworkManager.TcpPort));
+
         }
 
-        public void Start()
+        public async Task Start()
         {
             _tokenSource = new CancellationTokenSource();
             _listener.Start();
             _listener.BeginAcceptTcpClient(TcpClientConnected, _tokenSource.Token);
+
+            UdpListnerClient udpClient = new UdpListnerClient(this);
+            await udpClient.Connect(IPAddress.Any);
+            OnConnectClient(udpClient);
         }
 
         public void Stop()
@@ -43,6 +50,8 @@ namespace Misana.Network
             return client;
         }
 
+
+
         private void TcpClientConnected(IAsyncResult ar)
         {
             var token = (CancellationToken)ar.AsyncState;
@@ -51,13 +60,27 @@ namespace Misana.Network
 
             var tcpClient = _listener.EndAcceptTcpClient(ar);
 
-            var networkClient = new NetworkClient(tcpClient);
+            try
+            {
+                var ipAdress = ((IPEndPoint)tcpClient.Client.RemoteEndPoint).Address;
 
-            _clients.Add(networkClient);
+                var networkClient = new NetworkClient(tcpClient,ipAdress);
 
-            _listener.BeginAcceptTcpClient(TcpClientConnected, token);
+                _clients.Add(networkClient);
+                _ipClients.Add(ipAdress,networkClient);
 
-            OnConnectClient(networkClient);
+                _listener.BeginAcceptTcpClient(TcpClientConnected, token);
+
+                OnConnectClient(networkClient);
+            }
+            catch (Exception e)
+            {
+                tcpClient.Close();
+                //Console.WriteLine(e);
+                //throw;
+            }
+
+
         }
 
         protected virtual void OnConnectClient(INetworkClient newClient)
@@ -68,6 +91,11 @@ namespace Misana.Network
         protected virtual void OnDisconnectClient(INetworkClient oldClient)
         {
 
+        }
+
+        internal NetworkClient GetClientByIp(IPAddress senderAddress)
+        {
+            return _ipClients[senderAddress];
         }
     }
 }

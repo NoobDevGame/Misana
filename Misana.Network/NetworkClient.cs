@@ -16,62 +16,71 @@ namespace Misana.Network
 
         private MessageHandleList _messageHandles = new MessageHandleList();
 
-        private TcpClient _tcpClient;
-        private UdpClient _udpSendClient;
-        private UdpClient _udpReceiveClient;
-
+        private readonly TcpClient _tcpClient;
+        private readonly UdpClient _udpClient;
 
         private NetworkStream stream;
 
         public bool CanConnect { get; private set; }
         public bool IsConnected { get; private set; }
+        public bool CanSend { get; } = true;
 
-        private IPAddress remoteIp;
-        private int sendPort;
+        public IPAddress RemoteAddress { get; private set; }
+        public bool IsServer { get; private set; }
 
-        byte[] tcpBuffer = new byte[1024];
-        byte[] udpBuffer = new byte[1024];
+        private readonly int sendPort;
+
+        readonly byte[] tcpBuffer = new byte[1024];
+        readonly byte[] udpBuffer = new byte[1024];
 
 
         public NetworkClient()
         {
-            sendPort = NetworkManager.LocalUdpPort;
+            sendPort = NetworkManager.ServerUdpPort;
+            _udpClient = new UdpClient(NetworkManager.LocalUdpPort);
+            _tcpClient = new TcpClient();
+
             CanConnect = true;
         }
 
-        internal NetworkClient(TcpClient tcpClient)
+        internal NetworkClient(TcpClient tcpClient,IPAddress address)
         {
-            remoteIp = ((IPEndPoint) tcpClient.Client.RemoteEndPoint).Address;
-            sendPort = NetworkManager.ServerUdpPort;
+            RemoteAddress = address;
 
+            sendPort = NetworkManager.LocalUdpPort;
             _tcpClient = tcpClient;
+
             stream = tcpClient.GetStream();
-            _udpSendClient = new UdpClient();
-            _udpReceiveClient = new UdpClient(new IPEndPoint(remoteIp,NetworkManager.LocalUdpPort));
+
+            _udpClient = new UdpClient();
 
             CanConnect = false;
             IsConnected = true;
+            IsServer = true;
 
             StartRead();
         }
 
         private void StartRead()
         {
-            stream.BeginRead(tcpBuffer, 0, 4, OnReadtcpLenght, null);
-            _udpReceiveClient.BeginReceive(onReadUdp,null);
+            stream.BeginRead(tcpBuffer, 0, 4, OnReadTcpLenght, null);
+            if (!IsServer)
+                _udpClient.BeginReceive(OnReadUdpData,null);
         }
 
-        private void onReadUdp(IAsyncResult ar)
+
+        private void OnReadUdpData(IAsyncResult ar)
         {
             IPEndPoint sender = null;
-            var data = _udpReceiveClient.EndReceive(ar,ref sender);
+            var data = _udpClient.EndReceive(ar,ref sender);
 
 
             ReceiveData(data);
-            _udpReceiveClient.BeginReceive(onReadUdp,null);
+            _udpClient.BeginReceive(OnReadUdpData,null);
         }
 
-        private void OnReadtcpLenght(IAsyncResult ar)
+
+        private void OnReadTcpLenght(IAsyncResult ar)
         {
 
             var dataCount = stream.EndRead(ar);
@@ -89,10 +98,10 @@ namespace Misana.Network
             ReceiveData(data);
 
 
-            stream.BeginRead(tcpBuffer, 0, 4, OnReadtcpLenght, null);
+            stream.BeginRead(tcpBuffer, 0, 4, OnReadTcpLenght, null);
         }
 
-        private void ReceiveData(byte[] data)
+        public void ReceiveData(byte[] data)
         {
             var header = MessageHandle.DeserializeHeader(ref data);
             var index = header.MessageTypeIndex;
@@ -170,8 +179,7 @@ namespace Misana.Network
 
         private void WriteUDPData( ref byte[] data)
         {
-
-            _udpSendClient.BeginSend(data, data.Length, new IPEndPoint(remoteIp, sendPort), null, null);
+            _udpClient.BeginSend(data, data.Length, new IPEndPoint(RemoteAddress, sendPort), null, null);
         }
 
         public bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient)
@@ -207,15 +215,10 @@ namespace Misana.Network
             if (IsConnected || !CanConnect)
                 throw new InvalidOperationException("Client is connected");
 
-            remoteIp = endPoint.Address;
-
-            _tcpClient = new TcpClient();
+            RemoteAddress = endPoint.Address;
 
             await _tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
             stream = _tcpClient.GetStream();
-
-			_udpSendClient = new UdpClient ();
-			_udpReceiveClient = new UdpClient(new IPEndPoint(endPoint.Address,NetworkManager.ServerUdpPort));
 
             StartRead();
 

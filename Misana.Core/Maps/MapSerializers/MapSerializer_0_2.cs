@@ -137,11 +137,6 @@ namespace Misana.Core.Maps.MapSerializers
             var tId = br.ReadInt32();
             var sId = br.ReadInt32();
 
-            if (sId == 2)
-            {
-
-            }
-
             var blocked = br.ReadBoolean();
             return new Tile(tId, sId, blocked);
         }

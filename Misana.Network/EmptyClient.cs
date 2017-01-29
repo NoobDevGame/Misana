@@ -8,6 +8,7 @@ namespace Misana.Network
         public int NetworkId { get; } = NetworkManager.GetNextId();
 
         public bool IsConnected { get; } = false;
+        public bool CanSend { get; } = true;
 
         public void SendMessage<T>(ref T message) where T : struct
         {
