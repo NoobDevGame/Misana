@@ -58,13 +58,14 @@ namespace Misana.Core
             systems.Add(new InputSystem(_positionTrackingSystem,this));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
-            systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new WieldedSystem());
             systems.Add(_wieldedWieldableSystem);
             systems.Add(new ProjectileSystem());
+            systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
             systems.Add(new ExpirationSystem());
+            systems.Add(new SpawnerSystem());
             if (afterSystems != null)
                 systems.AddRange(afterSystems);
 

@@ -17,62 +17,94 @@ namespace TestMapCreator
     {
         public static void Main(string[] args)
         {
-			List<string> maps = new List<string> ();
-			maps.Add ("Markhausen.West"); //1
-            maps.Add ("Markhausen.Weg"); //2
+            List<string> maps = new List<string>();
+            maps.Add("Markhausen.West"); //1
+            maps.Add("Markhausen.Weg"); //2
 
-            var paths = maps.Select (i => Path.Combine("MisanaMap","Maps",string.Format("{0}.json",i))).ToArray();
+            var paths = maps.Select(i => Path.Combine("MisanaMap", "Maps", $"{i}.json")).ToArray();
 
-			var map = MapLoader.CreateMapFromTiled ("DebugMap", paths);
+            var map = MapLoader.CreateMapFromTiled("DebugMap", paths);
 
-			//Definitionen
+            //Definitionen
 
             //Player
-			EntityDefinition playerDefinition = new EntityDefinition("Player",map.GetNextDefinitionId());
-			playerDefinition.Definitions.Add(new HealthDefinition());
-			playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1,9)));
-			playerDefinition.Definitions.Add(new MotionComponentDefinition());
-			playerDefinition.Definitions.Add(new EntityColliderDefinition());
-			playerDefinition.Definitions.Add(new BlockColliderDefinition());
-			playerDefinition.Definitions.Add(new EntityFlagDefintion());
-			playerDefinition.Definitions.Add(new EntityInteractableDefinition());
-			playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(11, 8),map.StartArea,0.5f));
-			playerDefinition.Definitions.Add(new WieldingDefinition());
-			playerDefinition.Definitions.Add(new FacingDefinition());
+            EntityDefinition playerDefinition = new EntityDefinition("Player", map.GetNextDefinitionId());
+            playerDefinition.Definitions.Add(new HealthDefinition());
+            playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1, 9)));
+            playerDefinition.Definitions.Add(new MotionComponentDefinition());
+            playerDefinition.Definitions.Add(new EntityColliderDefinition());
+            playerDefinition.Definitions.Add(new BlockColliderDefinition());
+            playerDefinition.Definitions.Add(new EntityFlagDefintion());
+            playerDefinition.Definitions.Add(new EntityInteractableDefinition());
+            playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(11, 8), map.StartArea, 0.5f));
+            playerDefinition.Definitions.Add(new WieldingDefinition());
+            playerDefinition.Definitions.Add(new FacingDefinition());
 
-			var createDefinition = new CreateDefinition();
-			createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow",true)){ApplyTo = ApplicableTo.Self});
+            var createDefinition = new CreateDefinition();
+            createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow", true)) {ApplyTo = ApplicableTo.Self});
 
-			playerDefinition.Definitions.Add(createDefinition);
-			map.GlobalEntityDefinitions.Add("Player",playerDefinition);
+            playerDefinition.Definitions.Add(createDefinition);
+            map.GlobalEntityDefinitions.Add("Player", playerDefinition);
             {
                 //Bogen
                 EntityDefinition bowDefinition = new EntityDefinition("Bow", map.GetNextDefinitionId());
                 var wieldable = new WieldableDefinition();
-                wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) { CoolDown = TimeSpan.FromSeconds(1)});
+                wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) {CoolDown = TimeSpan.FromSeconds(1)});
                 bowDefinition.Definitions.Add(wieldable);
                 bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52, 0)));
                 bowDefinition.Definitions.Add(new WieldedDefinition(0.5f, 0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());
                 bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f, 0.3f), map.StartArea));
 
-                map.GlobalEntityDefinitions.Add("Bow",bowDefinition);
+                map.GlobalEntityDefinitions.Add("Bow", bowDefinition);
             }
 
+            var basicOrc = new EntityDefinition("orc1", map.GetNextDefinitionId());
+            basicOrc.Definitions.Add(new HealthDefinition());
+            basicOrc.Definitions.Add(new CharacterRenderDefinition(new Index2(1, 3)));
+            basicOrc.Definitions.Add(new MotionComponentDefinition());
+            basicOrc.Definitions.Add(new EntityColliderDefinition());
+            basicOrc.Definitions.Add(new BlockColliderDefinition());
+            basicOrc.Definitions.Add(new EntityFlagDefintion());
+            basicOrc.Definitions.Add(new EntityInteractableDefinition());
+            basicOrc.Definitions.Add(new TransformDefinition {AreaId = -1, Radius = 0.5f});
+            basicOrc.Definitions.Add(new WieldingDefinition());
+            basicOrc.Definitions.Add(new FacingDefinition());
+            basicOrc.Definitions.Add(new CharacterDefinition("ORC"));
 
-            {
-                // Teleporter
-                //Area 1
-                CreateTeleport(map,5,10,1,11,10,1);
+            map.GlobalEntityDefinitions.Add("orc1", basicOrc);
 
-                CreateTeleport(map,19,8,1,1,8,2);
-                CreateTeleport(map,19,9,1,1,9,2);
-            }
+            var area1 = map.Areas[0];
+            var area2 = map.Areas[1];
 
-            MapLoader.Save (map, string.Format ("{0}.mm", map.Name));
+
+            // Teleporter
+            //Area 1
+            area1.Entities.Add(CreateTeleport(map, 5, 10, area1, 11, 10, area1));
+
+            area1.Entities.Add(CreateTeleport(map, 19, 8, area1, 1, 8, area2));
+            area1.Entities.Add(CreateTeleport(map, 19, 9, area1, 1, 9, area2));
+            
+            area1.Entities.Add(CreateSpawner(map, 15, 6, area1, new SpawnerDefinition {
+                Active = true,
+                CoolDown = 5,
+                SpawnedDefinitionName = "orc1"
+            }));
+
+            MapLoader.Save(map, $"{map.Name}.mm");
         }
 
-        private static void CreateTeleport(Map map,float x, float y, int area,int targeX,int targeY,int targetArea)
+        private static EntityDefinition CreateSpawner(Map map, int x, int y, Area area, SpawnerDefinition sdef)
+        {
+            var id = map.GetNextDefinitionId();
+            var def = new EntityDefinition($"Spawner_{id}", id);
+            def.Definitions.Add(new CharacterRenderDefinition());
+            def.Definitions.Add(new TransformDefinition(new Vector2(x, y), area, 0.4f));
+            def.Definitions.Add(sdef);
+            return def;
+        }
+
+        private static EntityDefinition CreateTeleport(Map map,float x, float y, Area area,int targeX,int targeY,Area targetArea)
         {
             var id = map.GetNextDefinitionId();
             //TestTeleporter
@@ -80,14 +112,14 @@ namespace TestMapCreator
 
             var entityCollider = new EntityColliderDefinition();
             entityCollider.OnCollisionEvents.Add(
-                new ApplyEffectEvent(new TeleportEffect(targeX, targeY, targetArea)) {ApplyTo = ApplicableTo.Other});
+                new ApplyEffectEvent(new TeleportEffect(targeX, targeY, targetArea.Id)) {ApplyTo = ApplicableTo.Other});
             //entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) {ApplyTo = ApplicableTo.Other});
 
             testTeleporter.Definitions.Add(entityCollider);
             testTeleporter.Definitions.Add(new CharacterRenderDefinition());
             testTeleporter.Definitions.Add(new TransformDefinition(new Vector2(x, y), area, 0.4f));
 
-            map.Areas[area-1].Entities.Add(testTeleporter);
+            return testTeleporter;
         }
     }
 }
