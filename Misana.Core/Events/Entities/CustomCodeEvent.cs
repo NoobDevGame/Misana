@@ -25,10 +25,10 @@ namespace Misana.Core.Events.Entities
             
         }
 
-        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             _action(manager, target, world);
-            return await  Task.FromResult(true);
+            return true;
         }
 
         public override OnEvent Copy()

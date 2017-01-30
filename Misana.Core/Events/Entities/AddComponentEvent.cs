@@ -29,14 +29,14 @@ namespace Misana.Core.Events.Entities
             //throw new NotImplementedException();
         }
 
-        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             var a = ComponentRegistry<T>.TakeManagedAddition();
             a.EntityId = target.Id;
             a.Template = Template;
 
             manager.Change(a);
-            return await Task.FromResult(true);
+            return true;
         }
 
         public override OnEvent Copy()

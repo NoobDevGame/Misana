@@ -65,7 +65,7 @@ namespace Misana.Core.Events.Entities
             base.Apply(manager, self, other, simulation);
         }
 
-        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             var applied = false;
 
@@ -76,7 +76,7 @@ namespace Misana.Core.Events.Entities
                 || (!targetIsSelf &&  (_events[i].ApplyTo == ApplicableTo.Other || _events[i].ApplyTo == ApplicableTo.Both) )
                 )
 
-                    applied |= await _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
+                    applied |= _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
             }
 
             return applied;
