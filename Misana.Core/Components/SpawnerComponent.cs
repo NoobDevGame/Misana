@@ -22,6 +22,8 @@ namespace Misana.Core.Components
         public int MaxAlive;
         public int TotalSpawnLimit;
         public double CoolDown;
+        public Vector2 SpawnDirection;
+        public bool Projectile;
 
         // Config
         public bool Active;
@@ -30,8 +32,7 @@ namespace Misana.Core.Components
         public int TotalSpawned;
         public double LastSpawned;
         public List<int> AliveSpawnedEntityIds = new List<int>();
-        
-        
+
         public override void CopyTo(SpawnerComponent other)
         {
             other.Template = Template.Copy();
@@ -39,6 +40,7 @@ namespace Misana.Core.Components
             other.MaxAlive = MaxAlive;
             other.TotalSpawnLimit = TotalSpawnLimit;
             other.CoolDown = CoolDown;
+            other.SpawnDirection = SpawnDirection;
         }
     }
 }

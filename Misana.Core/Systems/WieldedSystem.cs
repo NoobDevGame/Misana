@@ -10,7 +10,7 @@ namespace Misana.Core.Systems
             if(r2.ParentEntityId == 0)
                 return;
 
-            var parent = Manager.GetEntityById(r2.ParentEntityId);
+            var parent = r2.Parent(Manager);
 
             if(parent == null)
                 return;
@@ -25,8 +25,11 @@ namespace Misana.Core.Systems
                 if (parentTransform.ParentEntityId != 0)
                 {
                     var pw = parent.Get<WieldedComponent>();
-                    if(pw != null)
+                    if (pw != null)
+                    {
                         r1.ParentPosition = parentTransform.Position + pw.ParentPosition;
+                        
+                    }
                     else
                     {
                         r1.ParentPosition = parentTransform.Position;
@@ -38,6 +41,9 @@ namespace Misana.Core.Systems
                 }
                 
             }
+
+            if (parentFacing != null)
+                r1.ParentFacing = parentFacing.Facing;
 
             if (parentTransform != null && parentFacing != null)
             {

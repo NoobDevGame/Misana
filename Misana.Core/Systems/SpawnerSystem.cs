@@ -36,12 +36,15 @@ namespace Misana.Core.Systems
             r1.Template = r1.Template.Copy();
 
             var tf = temp.Get<TransformComponent>();
-            tf.Position = r2.Position + new Vector2(1, 1);
+            tf.Position = r2.AbsolutePosition(Manager) + (r1.SpawnDirection * tf.Radius);
             tf.CurrentArea = r2.CurrentArea;
-            int id;
-            
-            var spawned = temp.Add<ProjectileComponent>(x => x.Move = new Vector2(-.05f, .05f))
-                .Commit(Manager);
+
+            if (r1.Projectile)
+            {
+                temp.Add<ProjectileComponent>(x => x.Move = r1.SpawnDirection * 0.5f);
+            }
+
+            var spawned = temp.Commit(Manager);
             
             r1.LastSpawned = Manager.GameTime.TotalTime.TotalSeconds;
 

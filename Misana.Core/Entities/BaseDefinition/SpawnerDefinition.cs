@@ -13,13 +13,17 @@ namespace Misana.Core.Entities.BaseDefinition
         public int TotalSpawnLimit;
         public double CoolDown;
         public bool Active;
+        public Vector2 SpawnDirection;
+        public bool Projectile;
 
         public override void Deserialize(Version version, BinaryReader br)
         {
             MaxAlive = br.ReadInt32();
             TotalSpawnLimit = br.ReadInt32();
-            CoolDown = br.ReadDouble();
             Active = br.ReadBoolean();
+            Projectile = br.ReadBoolean();
+            CoolDown = br.ReadDouble();
+            SpawnDirection = new Vector2(br.ReadSingle(), br.ReadSingle());
             SpawnedDefinitionName = br.ReadString();
         }
 
@@ -27,8 +31,11 @@ namespace Misana.Core.Entities.BaseDefinition
         {
             bw.Write(MaxAlive);
             bw.Write(TotalSpawnLimit);
-            bw.Write(CoolDown);
             bw.Write(Active);
+            bw.Write(Projectile);
+            bw.Write(CoolDown);
+            bw.Write(SpawnDirection.X);
+            bw.Write(SpawnDirection.Y);
             bw.Write(SpawnedDefinitionName);
         }
 
@@ -39,6 +46,8 @@ namespace Misana.Core.Entities.BaseDefinition
             component.TotalSpawnLimit = TotalSpawnLimit;
             component.CoolDown = CoolDown;
             component.Active = Active;
+            component.SpawnDirection = SpawnDirection;
+            component.Projectile = Projectile;
         }
     }
 }

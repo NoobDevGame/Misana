@@ -45,12 +45,32 @@ namespace TestMapCreator
 
             playerDefinition.Definitions.Add(createDefinition);
             map.GlobalEntityDefinitions.Add("Player", playerDefinition);
+           
+
+            var arrow = new EntityDefinition("Arrow", map.GetNextDefinitionId());
+            arrow.Definitions.Add(new EntityColliderDefinition {
+                    OnCollisionEvents = new List<OnEvent> {
+                        new ApplyEffectEvent(new DamageEffect(2)) { ApplyTo = ApplicableTo.Other },
+                        new ApplyEffectEvent(new RemoveSelfEffect()) { ApplyTo = ApplicableTo.Self }
+                    }
+                });
+            arrow.Definitions.Add(new TransformDefinition { Radius = 0.2f, AreaId = -1});
+            arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0)));
+
             {
                 //Bogen
                 EntityDefinition bowDefinition = new EntityDefinition("Bow", map.GetNextDefinitionId());
                 var wieldable = new WieldableDefinition();
-                wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) {CoolDown = TimeSpan.FromSeconds(1)});
+                //wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) {CoolDown = TimeSpan.FromSeconds(1)});
                 bowDefinition.Definitions.Add(wieldable);
+                bowDefinition.Definitions.Add(new SpawnerDefinition
+                {
+                    Active = true,
+                    CoolDown = 0.2f,
+                    SpawnedDefinitionName = "orc1",
+                    //MaxAlive = 2,
+                    Projectile = true
+                });
                 bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52, 0)));
                 bowDefinition.Definitions.Add(new WieldedDefinition(0.5f, 0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());
@@ -88,7 +108,9 @@ namespace TestMapCreator
             area1.Entities.Add(CreateSpawner(map, 15, 6, area1, new SpawnerDefinition {
                 Active = true,
                 CoolDown = 5,
-                SpawnedDefinitionName = "orc1"
+                SpawnedDefinitionName = "orc1",
+                SpawnDirection = new Vector2(-1,1),
+                Projectile = true
             }));
 
             MapLoader.Save(map, $"{map.Name}.mm");
