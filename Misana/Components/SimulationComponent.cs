@@ -80,20 +80,17 @@ namespace Misana.Components
 
             serverHost = new ServerGameHost();
         }
-
-
-
+        
         public async Task StartLocalGame(Map map)
         {
-            host = new ClientGameHost(new EmptyClient(), null,renderSystems);
-
-            await CreateWorld("LcoalWorld",map);
+            await CreateLocalServer("Asdf");
+            await CreateWorld("LocalWorld", map);
             await StartWorld();
         }
 
         public async Task CreateLocalServer(string localplayer)
         {
-            serverHost.Start();
+            serverHost.StartListening();
             networkClient = serverHost.CreateLocalClient();
             host = new ClientGameHost(networkClient, null,renderSystems);
             var id = await host.Connect("Test",IPAddress.Loopback);
@@ -165,7 +162,7 @@ namespace Misana.Components
 
         public override void Update(GameTime gameTime)
         {
-            if (host == null)
+            if (host?.Receiver == null || host?.Sender == null)
                 return;
 
             {
@@ -200,8 +197,7 @@ namespace Misana.Components
                     StartWorld();
                 }
             }
-
-
+            
             base.Update(gameTime);
 
             host.Update(new Core.GameTime(gameTime.ElapsedGameTime, gameTime.TotalGameTime));
@@ -210,9 +206,8 @@ namespace Misana.Components
 
         public void Close()
         {
-            serverHost.Stop();
+            serverHost.StopListening();
         }
-
 
         public async Task JoinWorld(WorldInformation worldListSelectedItem)
         {
