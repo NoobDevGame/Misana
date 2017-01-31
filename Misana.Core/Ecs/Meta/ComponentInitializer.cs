@@ -26,47 +26,52 @@ namespace Misana.Core.Ecs.Meta
             ComponentRegistry.AdditionHooks = new Action<EntityManager, Entity, Component>[componentCount];
             ComponentRegistry.RemovalHooks = new Action<EntityManager, Entity, Component>[componentCount];
 
+            var baseComponentParam = Expression.Parameter(baseComponentType);
+            var emParam = Expression.Parameter(typeof(EntityManager));
+            var eParam = Expression.Parameter(typeof(Entity));
+
             for (var i = 0; i < componentTypes.Count; i++)
             {
                 var componentType = componentTypes[i];
                 var rType = registryType.MakeGenericType(componentType);
 
                 InitializeRegistry(i, rType, componentType);
-
-               
-
-                var cParam = Expression.Parameter(baseComponentType);
-
-                var genericRelease = rType.GetMethod("Release", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-                ComponentRegistry.Release[i] =
-                    Expression.Lambda<Action<Component>>(Expression.Call(null, genericRelease, Expression.Convert(cParam, componentType)), false, cParam)
-                        .Compile();
-
-                var genericTake = rType.GetMethod("Take", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-                ComponentRegistry.Take[i] =
-                    Expression.Lambda<Func<Component>>(Expression.Call(null, genericTake), false)
-                        .Compile();
-
-                var emParam = Expression.Parameter(typeof(EntityManager));
-                var eParam = Expression.Parameter(typeof(Entity));
-
-                var genericAdditionHooks = rType.GetMethod("TriggerAdditionHooks", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-                ComponentRegistry.AdditionHooks[i] =
-                    Expression.Lambda<Action<EntityManager, Entity, Component>>(
-                        Expression.Call(null, genericAdditionHooks, emParam, eParam, Expression.Convert(cParam, componentType)), false, emParam, eParam, cParam)
-                        .Compile();
-
-                var genericRemovalHooks = rType.GetMethod("TriggerRemovalHooks", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
-                ComponentRegistry.RemovalHooks[i] =
-                    Expression.Lambda<Action<EntityManager, Entity, Component>>(
-                        Expression.Call(null, genericRemovalHooks, emParam, eParam, Expression.Convert(cParam, componentType)), false, emParam, eParam, cParam)
-                        .Compile();
+                AssignRegistryPoolingMethods(i, rType, componentType, baseComponentParam);
+                AssignRegistryHooks(i, rType, componentType, baseComponentParam, emParam, eParam);
 
                 componentType.GetMethod("Initialize", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public)?.Invoke(null, null);
                 var onmt = rType.GetMethod("OnNewManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
 
                 onNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
             }
+        }
+
+        private static void AssignRegistryHooks(int i, Type rType, Type componentType, ParameterExpression cParam, ParameterExpression emParam, ParameterExpression eParam)
+        {
+            var genericAdditionHooks = rType.GetMethod("TriggerAdditionHooks", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            ComponentRegistry.AdditionHooks[i] =
+                Expression.Lambda<Action<EntityManager, Entity, Component>>(
+                    Expression.Call(null, genericAdditionHooks, emParam, eParam, Expression.Convert(cParam, componentType)), false, emParam, eParam, cParam)
+                    .Compile();
+
+            var genericRemovalHooks = rType.GetMethod("TriggerRemovalHooks", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            ComponentRegistry.RemovalHooks[i] =
+                Expression.Lambda<Action<EntityManager, Entity, Component>>(
+                    Expression.Call(null, genericRemovalHooks, emParam, eParam, Expression.Convert(cParam, componentType)), false, emParam, eParam, cParam)
+                    .Compile();
+        }
+
+        private static void AssignRegistryPoolingMethods(int componentIndex, Type rType, Type componentType, ParameterExpression cParam)
+        {
+            var genericRelease = rType.GetMethod("Release", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            ComponentRegistry.Release[componentIndex] =
+                Expression.Lambda<Action<Component>>(Expression.Call(null, genericRelease, Expression.Convert(cParam, componentType)), false, cParam)
+                    .Compile();
+
+            var genericTake = rType.GetMethod("Take", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
+            ComponentRegistry.Take[componentIndex] =
+                Expression.Lambda<Func<Component>>(Expression.Call(null, genericTake), false)
+                    .Compile();
         }
 
         private static void InitializeRegistry(int index, Type registryType, Type componentType)
