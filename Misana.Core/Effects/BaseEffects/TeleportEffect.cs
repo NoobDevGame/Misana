@@ -42,7 +42,7 @@ namespace Misana.Core.Effects.BaseEffects
                     message.Position += new Vector2(0.5f, 0.5f);
                 }
 
-                if (simulation.Mode == SimulationMode.SinglePlayer || simulation.Mode == SimulationMode.Local || entity.Contains<OnLocalSimulationComponent>())
+                if (simulation.Mode == SimulationMode.Local || entity.Contains<OnLocalSimulationComponent>())
                 {
                     simulation.EffectMessenger.ApplyEffectSelf(ref message);
                 }

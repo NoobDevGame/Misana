@@ -29,26 +29,7 @@ namespace Misana.Core.Effects.BaseEffects
 
         public override async void Apply(Entity entity, ISimulation simulation)
         {
-            if (simulation.Mode == SimulationMode.SinglePlayer)
-            {
-                await simulation.CreateEntity(DefinitionName,e =>
-                {
-                    var transform = e.Get<TransformComponent>();
-
-                    if (SetParent && transform != null)
-                    {
-                        transform.ParentEntityId = entity.Id;
-                    }
-                },
-                e =>{
-                    var wielding = entity.Get<WieldingComponent>();
-                    if (Weapon && wielding != null)
-                    {
-                        wielding.RightHandEntityId = e.Id;
-                    }
-                });
-            }
-            else if (simulation.Mode == SimulationMode.Server)
+            if (simulation.Mode == SimulationMode.Server)
             {
                 var id = await simulation.CreateEntity(DefinitionName,e =>
                 {

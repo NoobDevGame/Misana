@@ -6,7 +6,7 @@ namespace Misana.Core.Entities.BaseDefinition
 {
     public class WieldingDefinition : ComponentDefinition<WieldingComponent>
     {
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, WieldingComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, WieldingComponent component, ISimulation sim)
         {
 
         }

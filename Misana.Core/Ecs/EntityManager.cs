@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using Misana.Core.Ecs.Changes;
+using Misana.Network;
 
 namespace Misana.Core.Ecs
 {
@@ -25,11 +26,9 @@ namespace Misana.Core.Ecs
         internal readonly List<BaseSystem> Systems;
 
         public readonly int Index;
-
-        private int _entityId;
-
+        
         public GameTime GameTime;
-
+        public readonly SimulationMode Mode;
         public string Name { get; set; }
 
         static EntityManager()
@@ -106,11 +105,11 @@ namespace Misana.Core.Ecs
             }
         }
 
-        private EntityManager(List<BaseSystem> systems)
+        private EntityManager(List<BaseSystem> systems, SimulationMode mode)
         {
             _entitesWithChanges =  new EntitesWithChanges(this);
             Index = Interlocked.Increment(ref _entityManagerIndex);
-
+            Mode = mode;
             foreach (var fn in OnNewManager)
                 fn();
 
@@ -120,10 +119,10 @@ namespace Misana.Core.Ecs
             Systems = systems;
         }
         
-        public static EntityManager Create(string name, List<BaseSystem> systems)
+        public static EntityManager Create(string name, List<BaseSystem> systems, SimulationMode mode)
         {
 
-            var manager =  new EntityManager(systems)
+            var manager =  new EntityManager(systems, mode)
             {
                 Name = name,
             };

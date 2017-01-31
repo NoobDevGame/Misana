@@ -7,7 +7,9 @@ namespace Misana.Core.Entities
 {
     public abstract class ComponentDefinition
     {
-        public abstract void ApplyDefinition(EntityBuilder entity,Map map);
+        public RunsOn RunsOn;
+
+        public abstract void ApplyDefinition(EntityBuilder entity,Map map, ISimulation sim);
 
         public virtual void Serialize(Version version,BinaryWriter bw)
         {
@@ -25,11 +27,14 @@ namespace Misana.Core.Entities
     public abstract class ComponentDefinition<T> : ComponentDefinition
          where T : Component<T> , new ()
     {
-        public override void ApplyDefinition(EntityBuilder entity, Map map)
+        public override void ApplyDefinition(EntityBuilder entity, Map map, ISimulation sim)
         {
-            entity.Add<T>(c => OnApplyDefinition(entity, map,c));
+            entity.Add<T>(c => {
+                c.RunsOn = RunsOn;
+                OnApplyDefinition(entity, map, c, sim);
+            });
         }
 
-        public abstract void OnApplyDefinition(EntityBuilder entity,Map map, T component);
+        public abstract void OnApplyDefinition(EntityBuilder entity,Map map, T component, ISimulation sim);
     }
 }

@@ -25,6 +25,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
+            bw.Write((byte)RunsOn);
             if (Condition != null)
             {
                 bw.Write(true);
@@ -46,6 +47,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Deserialize(Version version, BinaryReader br)
         {
+            RunsOn = (RunsOn) br.ReadByte();
             var conditionExist = br.ReadBoolean();
             if (conditionExist)
             {
@@ -77,7 +79,7 @@ namespace Misana.Core.Events.Entities
 
         public override OnEvent Copy()
         {
-            return new ApplyEffectEvent(Effect, Condition);
+            return new ApplyEffectEvent(Effect, Condition) { ApplyTo = ApplyTo, RunsOn = RunsOn, Condition = Condition, CoolDown = CoolDown };
         }
     }
 }

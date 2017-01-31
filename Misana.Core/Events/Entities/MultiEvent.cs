@@ -20,6 +20,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
+            bw.Write((byte)RunsOn);
             bw.Write(_condition != null);
 
             if (_condition != null)
@@ -38,6 +39,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Deserialize(Version version, BinaryReader br)
         {
+            RunsOn = (RunsOn)br.ReadByte();
             var existCondition = br.ReadBoolean();
 
             if (existCondition)
@@ -59,6 +61,9 @@ namespace Misana.Core.Events.Entities
 
         public override void Apply(EntityManager manager, Entity self, Entity other, ISimulation simulation)
         {
+            if (RunsOn != RunsOn.Both && (byte)manager.Mode != (byte)RunsOn)
+                return;
+
             if (!_condition.Test(manager, self, other, simulation))
                 return;
 

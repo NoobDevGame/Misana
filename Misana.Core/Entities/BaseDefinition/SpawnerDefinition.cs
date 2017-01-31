@@ -39,9 +39,9 @@ namespace Misana.Core.Entities.BaseDefinition
             bw.Write(SpawnedDefinitionName);
         }
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, SpawnerComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, SpawnerComponent component, ISimulation sim)
         {
-            component.Template = EntityCreator.CreateEntity(map.GlobalEntityDefinitions[SpawnedDefinitionName], map, new EntityBuilder());
+            component.Template = EntityCreator.CreateEntity(map.GlobalEntityDefinitions[SpawnedDefinitionName], map, new EntityBuilder(), sim);
             component.MaxAlive = MaxAlive;
             component.TotalSpawnLimit = TotalSpawnLimit;
             component.CoolDown = CoolDown;
