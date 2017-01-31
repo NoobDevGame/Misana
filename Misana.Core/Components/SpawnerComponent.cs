@@ -7,17 +7,6 @@ namespace Misana.Core.Components
 {
     public class SpawnerComponent : Component<SpawnerComponent>
     {
-        public override void Reset()
-        {
-            AliveSpawnedEntityIds.Clear();
-            TotalSpawned = 0;
-            LastSpawned = 0;
-            MaxAlive = 0;
-            Template = null;
-            CoolDown = 0;
-            Active = false;
-        }
-
         [Copy, Reset]
         public EntityBuilder Template;
 

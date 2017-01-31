@@ -12,16 +12,7 @@ namespace Misana.Core.Components
 {
     public class EntityColliderComponent : Component<EntityColliderComponent>
     {
-        public override void Reset()
-        {
-            base.Reset();
-            Mass = 50f;
-            Fixed = false;
-            Blocked = false;
-            OnCollisionEvents.Clear();
-        }
-
-        [Copy, Reset(50)]
+        [Copy, Reset(50f)]
         public float Mass = 50f;
 
         [Copy, Reset]

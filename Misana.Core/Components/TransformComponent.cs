@@ -51,17 +51,7 @@ namespace Misana.Core.Components
 
             return Position;
         }
-
-        public override void Reset()
-        {
-            CurrentArea = null;
-            Position = Vector2.Zero;
-            Radius = 0.5f;
-
-            CachedParentId = 0;
-            CachedParent = null;
-        }
-
+        
         public override void CopyTo(TransformComponent other)
         {
             other.CurrentArea = CurrentArea;

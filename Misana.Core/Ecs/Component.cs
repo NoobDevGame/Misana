@@ -15,7 +15,6 @@ namespace Misana.Core.Ecs
         [Copy, Reset]
         public RunsOn RunsOn;
         public bool Unmanaged;
-        public virtual void Reset() { }
         public abstract void CopyTo(Component other);
     }
 

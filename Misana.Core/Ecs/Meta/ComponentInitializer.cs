@@ -22,6 +22,7 @@ namespace Misana.Core.Ecs.Meta
 
             ComponentArrayPool.Initialize(componentCount);
             ComponentRegistry.Release = new Action<Component>[componentCount];
+            ComponentRegistry.Reset = new Action<Component>[componentCount];
             ComponentRegistry.Take = new Func<Component>[componentCount];
             ComponentRegistry.AdditionHooks = new Action<EntityManager, Entity, Component>[componentCount];
             ComponentRegistry.RemovalHooks = new Action<EntityManager, Entity, Component>[componentCount];
@@ -43,7 +44,43 @@ namespace Misana.Core.Ecs.Meta
                 var onmt = rType.GetMethod("OnNewManager", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Public);
 
                 onNewManager.Add(Expression.Lambda<Action>(Expression.Call(null, onmt), false).Compile());
+                
+                GenerateResetMethod(i, componentType, baseComponentParam);
             }
+        }
+
+        private static void GenerateResetMethod(int i, Type componentType, ParameterExpression baseComponentParam)
+        {
+            var fieldsToReset = componentType.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Where(f => f.CustomAttributes.Any(a => a.AttributeType == typeof(ResetAttribute))).ToList();
+            
+            var cVar = Expression.Variable(componentType);
+
+            var resetBody = new List<Expression>();
+            resetBody.Add(Expression.Assign(cVar, Expression.Convert(baseComponentParam, componentType)));
+
+            var listType = typeof(List<>);
+
+            foreach (var f in fieldsToReset)
+            {
+                var resetAttr = f.GetCustomAttributes(typeof(ResetAttribute)).Cast<ResetAttribute>().First();
+                if (resetAttr.DefaultValue != null)
+                {
+                    resetBody.Add(Expression.Assign(Expression.Field(cVar, f), Expression.Constant(resetAttr.DefaultValue, f.FieldType)));
+                    continue;
+                }
+
+                if (f.FieldType.IsGenericType && f.FieldType.GetGenericTypeDefinition() == listType)
+                {
+                    resetBody.Add(Expression.Call(Expression.Field(cVar, f), f.FieldType.GetMethod("Clear")));
+                }
+                else
+                {
+                    resetBody.Add(Expression.Assign(Expression.Field(cVar, f), Expression.Default(f.FieldType)));
+                }
+            }
+
+            ComponentRegistry.Reset[i] = Expression.Lambda<Action<Component>>(Expression.Block(new[] { cVar }, resetBody), baseComponentParam).Compile();
         }
 
         private static void AssignRegistryHooks(int i, Type rType, Type componentType, ParameterExpression cParam, ParameterExpression emParam, ParameterExpression eParam)
