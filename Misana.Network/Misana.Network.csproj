@@ -44,7 +44,6 @@
     <Compile Include="BlockAllocator.cs" />
     <Compile Include="BroadcastList.cs" />
     <Compile Include="Delegates.cs" />
-    <Compile Include="EmptyClient.cs" />
     <Compile Include="INetworkClient.cs" />
     <Compile Include="INetworkReceiver.cs" />
     <Compile Include="IBroadcastSender.cs" />
@@ -61,8 +60,6 @@
     <Compile Include="MessageIdPair.cs" />
     <Compile Include="NetworkClient.cs" />
     <Compile Include="NetworkListener.cs" />
-    <Compile Include="EmptyNetworkReceive.cs" />
-    <Compile Include="EmptyNetworkSender.cs" />
     <Compile Include="NetworkManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UdpListnerClient.cs" />

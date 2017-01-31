@@ -103,8 +103,41 @@ namespace Misana.Network
             {
                 callbacks.Add(typeof(T1),action);
             }
+        }
 
 
+        public void SendTcpBytes(byte[] bytes, int originId) 
+        {
+            foreach (var item in this)
+            {
+                if (item.NetworkId == originId)
+                    continue;
+
+                item.SendTcpBytes(bytes);
+            }
+        }
+
+        public void SendUdpBytes(byte[] bytes, int originId)
+        {
+            foreach (var item in this)
+            {
+                if (item.NetworkId == originId)
+                    continue;
+
+                item.SendUdpBytes(bytes);
+            }
+        }
+
+        public void SendTcpBytes(byte[] bytes)
+        {
+            foreach(var i in this)
+                i.SendTcpBytes(bytes);
+        }
+
+        public void SendUdpBytes(byte[] bytes)
+        {
+            foreach (var i in this)
+                i.SendUdpBytes(bytes);
         }
     }
 }

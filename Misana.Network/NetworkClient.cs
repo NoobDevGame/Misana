@@ -113,6 +113,16 @@ namespace Misana.Network
             handle.SetMessage(message,header,this);
         }
 
+        public void SendTcpBytes(byte[] bytes)
+        {
+           WriteTCPData(ref bytes);
+        }
+
+        public void SendUdpBytes(byte[] bytes)
+        {
+            WriteUDPData(ref bytes);
+        }
+
         public void RegisterOnMessageCallback<T>(MessageReceiveCallback<T> callback)
             where T : struct
         {
@@ -239,7 +249,6 @@ namespace Misana.Network
             _tcpClient.Close();
         }
 
-
-
+        
     }
 }
