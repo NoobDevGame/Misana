@@ -4,12 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Ecs.Meta;
 
 namespace Misana.Core.Components
 {
     public class CharacterComponent : Component<CharacterComponent>
     {
-        public string Name { get; set; }
+        [Copy, Reset]
+        public string Name;
 
         public override void CopyTo(CharacterComponent other)
         {

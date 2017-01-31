@@ -1,5 +1,6 @@
 ﻿using System;
 using Misana.Core.Ecs;
+using Misana.Core.Ecs.Meta;
 
 namespace Misana.Core.Components
 {
@@ -10,6 +11,7 @@ namespace Misana.Core.Components
             other.TimeLeft = TimeLeft;
         }
 
+        [Copy, Reset]
         public TimeSpan TimeLeft;
     }
 }

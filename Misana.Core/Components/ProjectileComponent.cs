@@ -1,4 +1,5 @@
 ﻿using Misana.Core.Ecs;
+using Misana.Core.Ecs.Meta;
 
 namespace Misana.Core.Components
 {
@@ -8,7 +9,7 @@ namespace Misana.Core.Components
         {
             other.Move = Move;
         }
-
+        [Copy, Reset]
         public Vector2 Move;
     }
 }

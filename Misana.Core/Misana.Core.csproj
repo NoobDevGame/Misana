@@ -103,6 +103,8 @@
     <Compile Include="Ecs\EntityBuilder.cs" />
     <Compile Include="Ecs\Changes\EntityChange.cs" />
     <Compile Include="Ecs\EntityManager.cs" />
+    <Compile Include="Ecs\Meta\ComponentAttributes.cs" />
+    <Compile Include="Ecs\Meta\ComponentInitializer.cs" />
     <Compile Include="EffectApplicator.cs" />
     <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
     <Compile Include="Effects\BaseEffects\RemoveSelfEffect.cs" />
