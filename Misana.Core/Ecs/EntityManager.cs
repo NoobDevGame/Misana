@@ -168,8 +168,9 @@ namespace Misana.Core.Ecs
         public void Update(GameTime gameTime)
         {
             GameTime = gameTime;
-            ApplyChanges();
+            
             Tick();
+            ApplyChanges();
         }
 
         public void Tick()
@@ -261,15 +262,11 @@ namespace Misana.Core.Ecs
                     break;
                 }
 
-                Entity e;
-
                 foreach (var id in ids)
                     RemoveEntity(id);
 
                 ApplyChanges();
             }
-
-            _entityId = 0;
         }
 
         public Entity RemoveEntity(int id)

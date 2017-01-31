@@ -10,6 +10,7 @@ using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Entities;
 using Misana.Core.Maps;
+using Misana.Core.Systems;
 using Misana.Network;
 
 namespace Misana.Core
@@ -50,15 +51,44 @@ namespace Misana.Core
             this.client = client;
             _beforeSystems = beforeSystems;
             _afterSystems = afterSystems;
-            Receiver = new EmptyNetworkReceive();
-            Sender = new EmptyNetworkSender();
         }
 
         private void RegisterCallback()
         {
             Receiver.RegisterOnMessageCallback<JoinWorldMessageResponse>(OnJoinWorld);
+            Receiver.RegisterOnMessageCallback<SpawnerTriggeredMessage>(Callback);
         }
 
+        private void Callback(SpawnerTriggeredMessage message, MessageHeader header, INetworkClient client)
+        {
+            var simulation = Simulation;
+            //simulation.Players.ReceiveMessage(ref message, header, client);
+
+            if(Entities.GetEntityById(message.SpawnedEntityId) != null)
+                return;
+
+            var owner = simulation.Entities.GetEntityById(message.SpawnerOwnerId);
+            var spawnerComponent = owner.Get<SpawnerComponent>();
+
+            var tf = ComponentRegistry<TransformComponent>.Take();
+            tf.CurrentArea = simulation.CurrentMap.GetAreaById(message.AreaId);
+            tf.Position = message.Position;
+            tf.Radius = message.Radius;
+
+
+            if (SpawnerSystem.CanSpawn(spawnerComponent, owner.Get<TransformComponent>()))
+            {
+                ProjectileComponent pc = null;
+                if (message.Projectile)
+                {
+                    pc = ComponentRegistry<ProjectileComponent>.Take();
+                    pc.Move = message.Move;
+                }
+
+                SpawnerSystem.SpawnRemote(spawnerComponent, message.SpawnedEntityId, tf, pc);
+             
+            }
+        }
 
         private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, INetworkClient client)
         {
@@ -235,5 +265,7 @@ namespace Misana.Core
                 await Simulation.ChangeMap(map);
             }
         }
+
+        public SpawnerSystem SpawnerSystem => Simulation.SpawnerSystem;
     }
 }

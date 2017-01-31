@@ -23,12 +23,14 @@ namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
+        private readonly INetworkSender _sender;
         public EffectApplicator EffectMessenger { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
         private WieldedWieldableSystem _wieldedWieldableSystem;
         private PositionTrackingSystem _positionTrackingSystem;
+        public SpawnerSystem SpawnerSystem { get; private set; }
 
         public EntityManager Entities { get; private set; }
 
@@ -252,11 +254,21 @@ namespace Misana.Core
             if (State == SimulationState.Running)
             {
                 Entities.Update(gameTime);
+
+                foreach (var msg in Entities.Messages)
+                {
+                    if (msg.Item2)
+                    {
+                        _sender.SendTcpBytes(msg.Item1);
+                    }
+                    else
+                    {
+                        _sender.SendUdpBytes(msg.Item1);
+                    }
+                }
+
+                Entities.Messages.Clear();
             }
-
-
         }
-
-
     }
 }
