@@ -56,10 +56,17 @@ namespace Misana.Core
         private void RegisterCallback()
         {
             Receiver.RegisterOnMessageCallback<JoinWorldMessageResponse>(OnJoinWorld);
-            Receiver.RegisterOnMessageCallback<SpawnerTriggeredMessage>(Callback);
+            Receiver.RegisterOnMessageCallback<SpawnerTriggeredMessage>(OnSpawnerTrigger);
+
+            Receiver.RegisterOnMessageCallback<EntityDeathMessage>(OnEntiytDeath);
         }
 
-        private void Callback(SpawnerTriggeredMessage message, MessageHeader header, INetworkClient client)
+        private void OnEntiytDeath(EntityDeathMessage message, MessageHeader header, INetworkClient client)
+        {
+            Simulation.Entities.RemoveEntity(message.EntityId);
+        }
+
+        private void OnSpawnerTrigger(SpawnerTriggeredMessage message, MessageHeader header, INetworkClient client)
         {
             var simulation = Simulation;
             //simulation.Players.ReceiveMessage(ref message, header, client);
@@ -76,19 +83,15 @@ namespace Misana.Core
             tf.Radius = message.Radius;
 
 
-            if (SpawnerSystem.CanSpawn(spawnerComponent, owner.Get<TransformComponent>()))
+            ProjectileComponent pc = null;
+            if (message.Projectile)
             {
-                ProjectileComponent pc = null;
-                if (message.Projectile)
-                {
-                    pc = ComponentRegistry<ProjectileComponent>.Take();
-                    pc.Move = message.Move;
-                    pc.BaseAttack = message.BaseAttack;
-                }
-
-                SpawnerSystem.SpawnRemote(spawnerComponent, message.SpawnedEntityId, tf, pc);
-             
+                pc = ComponentRegistry<ProjectileComponent>.Take();
+                pc.Move = message.Move;
+                pc.BaseAttack = message.BaseAttack;
             }
+
+            SpawnerSystem.SpawnRemote(spawnerComponent, message.SpawnedEntityId, tf, pc);
         }
 
         private void OnJoinWorld(JoinWorldMessageResponse message, MessageHeader header, INetworkClient client)

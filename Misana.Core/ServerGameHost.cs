@@ -43,7 +43,20 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<EntityPositionMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<OnCreateProjectileEffectMessage>(OnNoOwnerBroadcast);
+
             newClient.RegisterOnMessageCallback<SpawnerTriggeredMessage>(OnSpawnerTriggered);
+            newClient.RegisterOnMessageCallback<EntityDeathMessage>(OnEntiytDeath);
+        }
+
+        private void OnEntiytDeath(EntityDeathMessage message, MessageHeader header, INetworkClient client)
+        {
+            if (players.ContainsKey(client.NetworkId))
+            {
+                var simulation = players[client.NetworkId].Simulation;
+                simulation.BaseSimulation.Entities.RemoveEntity(message.EntityId);
+
+                simulation.Players.SendMessage(ref message, client.NetworkId);
+            }
         }
 
         private void OnSpawnerTriggered(SpawnerTriggeredMessage message, MessageHeader header, INetworkClient client)

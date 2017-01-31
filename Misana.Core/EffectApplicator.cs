@@ -30,10 +30,14 @@ namespace Misana.Core
         private void OnDamageEffect(OnDamageEffectMessage message, MessageHeader header, INetworkClient client)
         {
             var entity = simulation.Entities.GetEntityById(message.EntityId);
-            var healthComponet = entity.Get<HealthComponent>();
 
-            if (healthComponet != null)
-                healthComponet.CurrentDamage += message.Damage;
+            if (entity != null)
+            {
+                var healthComponet = entity.Get<HealthComponent>();
+
+                if (healthComponet != null)
+                    healthComponet.CurrentDamage += message.Damage;
+            }
         }
 
         private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, INetworkClient client)

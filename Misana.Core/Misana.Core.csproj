@@ -50,6 +50,7 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
     <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
+    <Compile Include="Communication\Messages\EntityDeathMessage.cs" />
     <Compile Include="Communication\Messages\EntityHealthMessage.cs" />
     <Compile Include="Communication\Messages\GetOuterPlayersMessageRequest.cs" />
     <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
     <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
+    <Compile Include="Communication\Messages\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
     <Compile Include="Communication\NetworkEffectMessenger.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
@@ -66,7 +68,6 @@
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\SendHealthSystem.cs" />
-    <Compile Include="Communication\Systems\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />

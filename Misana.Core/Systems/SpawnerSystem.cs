@@ -1,4 +1,5 @@
-﻿using Misana.Core.Communication.Systems;
+﻿using Misana.Core.Communication.Messages;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
@@ -75,7 +76,9 @@ namespace Misana.Core.Systems
                 var removed = false;
                 for (int i = 0; i < r1.AliveSpawnedEntityIds.Count; i++)
                 {
-                    if (Manager.GetEntityById(r1.AliveSpawnedEntityIds[i]) == null)
+                    var entity = Manager.GetEntityById(r1.AliveSpawnedEntityIds[i]);
+
+                    if ( entity == null)
                     {
                         removed = true;
                         r1.AliveSpawnedEntityIds.RemoveAt(i--);

@@ -36,7 +36,16 @@ namespace TestMapCreator
             playerDefinition.Definitions.Add(new HealthDefinition());
             playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1, 9)) { RunsOn = RunsOn.Client });
             playerDefinition.Definitions.Add(new MotionComponentDefinition());
-            playerDefinition.Definitions.Add(new EntityColliderDefinition());
+            playerDefinition.Definitions.Add(new EntityColliderDefinition()
+            {
+                OnCollisionEvents = new List<OnEvent>
+                {
+                    new ApplyEffectEvent(new DamageEffect(5)) {
+                        ApplyTo = ApplicableTo.Other,
+                        RunsOn = RunsOn.Server
+                    },
+                }
+            });
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
             playerDefinition.Definitions.Add(new EntityFlagDefintion());
             playerDefinition.Definitions.Add(new EntityInteractableDefinition());
@@ -108,7 +117,7 @@ namespace TestMapCreator
             basicOrc.Definitions.Add(new WieldingDefinition());
             basicOrc.Definitions.Add(new FacingDefinition());
             basicOrc.Definitions.Add(new CharacterDefinition("ORC"));
-            basicOrc.Definitions.Add(new StateDefinition(0,5));
+            basicOrc.Definitions.Add(new StateDefinition(0,0));
 
             map.GlobalEntityDefinitions.Add("orc1", basicOrc);
 

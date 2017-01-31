@@ -38,6 +38,8 @@ namespace Misana.Core.Ecs.Changes
                     ComponentArrayPool.Release(e.Entity.Components);
                     e.Entity.Components = null;
                 }
+
+                e.Entity.Manager = null;
             }
 
             _list.Clear();

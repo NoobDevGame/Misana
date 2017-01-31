@@ -1,7 +1,7 @@
 ﻿using Misana.Core.Components;
 using Misana.Network;
 
-namespace Misana.Core.Communication.Systems
+namespace Misana.Core.Communication.Messages
 {
     [MessageDefinition]
     public struct SpawnerTriggeredMessage

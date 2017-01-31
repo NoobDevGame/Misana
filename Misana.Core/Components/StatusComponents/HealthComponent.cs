@@ -6,6 +6,9 @@ namespace Misana.Core.Components.StatusComponents
     public class HealthComponent : Component<HealthComponent>
     {
         [Copy, Reset]
+        public bool IsDeath;
+
+        [Copy, Reset]
         public float Current;
 
         [Copy, Reset]
