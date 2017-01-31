@@ -26,10 +26,5 @@ namespace Misana.Core.Components.Events
 
             return false;
         }
-
-        public override void CopyTo(EntityFlagComponent other)
-        {
-            other.flags = new Dictionary<string, bool>(flags);
-        }
     }
 }

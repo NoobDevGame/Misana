@@ -16,12 +16,5 @@ namespace Misana.Core.Components
 
         [Copy, Reset]
         public bool Use;
-
-        public override void CopyTo(WieldingComponent other)
-        {
-            other.TwoHanded = TwoHanded;
-            other.LeftHandEntityId = LeftHandEntityId;
-            other.RightHandEntityId = RightHandEntityId;
-        }
     }
 }

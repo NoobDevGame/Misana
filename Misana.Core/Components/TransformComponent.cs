@@ -51,12 +51,5 @@ namespace Misana.Core.Components
 
             return Position;
         }
-        
-        public override void CopyTo(TransformComponent other)
-        {
-            other.CurrentArea = CurrentArea;
-            other.Position = Position;
-            other.Radius = Radius;
-        }
     }
 }

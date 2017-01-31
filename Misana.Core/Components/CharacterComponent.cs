@@ -12,10 +12,5 @@ namespace Misana.Core.Components
     {
         [Copy, Reset]
         public string Name;
-
-        public override void CopyTo(CharacterComponent other)
-        {
-            other.Name = Name;
-        }
     }
 }

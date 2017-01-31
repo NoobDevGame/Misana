@@ -19,12 +19,5 @@ namespace Misana.Core.Components
         
         [Reset]
         public SpawnerComponent Spawner;
-        
-        public override void CopyTo(WieldedComponent other)
-        {
-            other.ParentFacing = ParentFacing;
-            other.Offset = Offset;
-            other.ParentPosition = ParentPosition;
-        }
     }
 }

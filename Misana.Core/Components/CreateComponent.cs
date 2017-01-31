@@ -10,12 +10,5 @@ namespace Misana.Core.Components
     {
         [Copy, Reset]
         public List<OnEvent> OnCreateEvent = new List<OnEvent>(2);
-
-        public override void CopyTo(CreateComponent other)
-        {
-            other.OnCreateEvent = new List<OnEvent>(OnCreateEvent.Select(e => e.Copy())); //TODO: :(
-        }
-
-
     }
 }

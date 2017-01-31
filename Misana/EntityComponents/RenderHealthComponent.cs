@@ -16,11 +16,5 @@ namespace Misana.EntityComponents
         public Rectangle FillRect;
         [Reset]
         public Rectangle Background;
-
-        public override void CopyTo(RenderHealthComponent other)
-        {
-            other.Render = Render;
-            other.Offset = Offset;
-        }
     }
 }

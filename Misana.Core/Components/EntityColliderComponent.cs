@@ -23,15 +23,5 @@ namespace Misana.Core.Components
 
         [Copy, Reset]
         public bool Blocked;
-
-        public override void CopyTo(EntityColliderComponent other)
-        {
-            other.Mass = Mass;
-            other.Fixed = Fixed;
-            other.Blocked = Blocked;
-            other.OnCollisionEvents = new List<OnEvent>(OnCollisionEvents.Select(e => e.Copy())); //TODO: :(
-        }
     }
-
-    
 }

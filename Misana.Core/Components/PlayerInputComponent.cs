@@ -30,12 +30,5 @@ namespace Misana.Core.Components
 
         [Copy, Reset]
         public Vector2 MousePosition;
-
-        public override void CopyTo(PlayerInputComponent other)
-        {
-            other.Move = Move;
-            other.Facing = Facing;
-            other.Attacking = Attacking;
-        }
     }
 }

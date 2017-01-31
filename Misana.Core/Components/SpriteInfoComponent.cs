@@ -11,10 +11,5 @@ namespace Misana.Core.Components
     public class SpriteInfoComponent : Component<SpriteInfoComponent>
     {
         [Copy, Reset] public Index2 TilePosition;
-
-        public override void CopyTo(SpriteInfoComponent other)
-        {
-            other.TilePosition = TilePosition;
-        }
     }
 }

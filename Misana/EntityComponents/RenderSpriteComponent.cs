@@ -22,12 +22,5 @@ namespace Misana.EntityComponents
         public Rectangle Destination;
         [Copy, Reset]
         public Color Color;
-
-        public override void CopyTo(RenderSpriteComponent other)
-        {
-            other.Render = Render;
-            other.Center = Center;
-            //other.TilePosition = TilePosition;
-        }
     }
 }

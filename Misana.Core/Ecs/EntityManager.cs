@@ -162,7 +162,7 @@ namespace Misana.Core.Ecs
             var a = ComponentRegistry<T>.TakeManagedAddition();
             a.EntityId = e.Id;
             a.Component = ComponentRegistry<T>.Take();
-            template.CopyTo(a.Component);
+            ComponentRegistry.Copy[ComponentRegistry<T>.Index](template, a.Component);
             _entitesWithChanges.Add(a);
             return this;
         }

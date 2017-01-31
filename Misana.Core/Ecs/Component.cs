@@ -15,16 +15,9 @@ namespace Misana.Core.Ecs
         [Copy, Reset]
         public RunsOn RunsOn;
         public bool Unmanaged;
-        public abstract void CopyTo(Component other);
     }
 
     public abstract class Component<T> : Component where T : Component<T>
     {
-        public abstract void CopyTo(T other);
-        public override void CopyTo(Component other)
-        {
-            other.RunsOn = RunsOn;
-            CopyTo((T)other);
-        }
     }
 }

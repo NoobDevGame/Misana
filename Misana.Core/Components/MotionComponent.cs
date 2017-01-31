@@ -12,10 +12,5 @@ namespace Misana.Core.Components
     {
         [Copy, Reset]
         public Vector2 Move;
-
-        public override void CopyTo(MotionComponent other)
-        {
-            other.Move = Move;
-        }
     }
 }

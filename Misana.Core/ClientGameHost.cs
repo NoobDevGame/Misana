@@ -241,7 +241,7 @@ namespace Misana.Core
             return CreateEntity("Player", b =>
             {
                 var transfrom = b.Get<TransformComponent>();
-                transfrom.CopyTo(playerTransform);
+                ComponentRegistry.Copy[ComponentRegistry<TransformComponent>.Index](transfrom, playerTransform);
                 b.Add(playerTransform);
                 b.Add(playerInput);
                 b.Add<SendComponent>();

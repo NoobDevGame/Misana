@@ -15,12 +15,6 @@ namespace Misana.Core.Components
 
         [Copy, Reset]
         public List<OnEvent> OnInteractionEvents = new List<OnEvent>(2);
-
-        public override void CopyTo(EntityInteractableComponent other)
-        {
-            other.Interacting = Interacting;
-            other.InteractionRadius = InteractionRadius;
-            other.OnInteractionEvents = new List<OnEvent>(OnInteractionEvents);
-        }
+        
     }
 }

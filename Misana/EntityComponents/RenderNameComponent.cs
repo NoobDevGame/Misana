@@ -13,12 +13,5 @@ namespace Misana.EntityComponents
         public engenious.Vector2 Offset;
         [Copy, Reset]
         public engenious.Vector2 Position;
-
-        public override void CopyTo(RenderNameComponent other)
-        {
-            other.Render = Render;
-            other.Text = Text;
-            other.Offset = Offset;
-        }
     }
 }

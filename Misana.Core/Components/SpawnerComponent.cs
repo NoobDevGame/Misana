@@ -31,15 +31,5 @@ namespace Misana.Core.Components
         public double LastSpawned;
         [Reset]
         public List<int> AliveSpawnedEntityIds = new List<int>();
-
-        public override void CopyTo(SpawnerComponent other)
-        {
-            other.Template = Template.Copy();
-            other.Active = Active;
-            other.MaxAlive = MaxAlive;
-            other.TotalSpawnLimit = TotalSpawnLimit;
-            other.CoolDown = CoolDown;
-            other.SpawnDirection = SpawnDirection;
-        }
     }
 }

@@ -92,7 +92,7 @@ namespace Misana.Core.Ecs
                 if (_components[i] != null)
                 {
                     eb._components[i] = ComponentRegistry.Take[i]();
-                    _components[i].CopyTo(eb._components[i]);
+                    ComponentRegistry.Copy[i](_components[i], eb._components[i]);
                 }
             }
 

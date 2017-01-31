@@ -17,20 +17,11 @@ namespace Misana.Core.Components
         }
 
         public List<InventorySlot> Slots;
-        public override void CopyTo(InventoryComponent other)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
     public class ItemDescriptionComponent : Component<ItemDescriptionComponent>
     {
         public string Name;
-
-        public override void CopyTo(ItemDescriptionComponent other)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 
     public class InventorySlot
