@@ -20,7 +20,7 @@ namespace Misana.Core.Events.Entities
 
         private readonly object _lockObj = new object();
         
-        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, ISimulation simulation);
+        internal abstract bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Ecs.Entity target, Ecs.Entity self,ISimulation simulation);
 
         public virtual void Apply(EntityManager manager, Ecs.Entity self, Ecs.Entity other, ISimulation simulation)
         {
@@ -61,7 +61,7 @@ namespace Misana.Core.Events.Entities
                     }
 
                     if(apply)
-                        applied = ApplyToEntity(manager, true, self, simulation);
+                        applied = ApplyToEntity(manager, true, self, self, simulation);
                 }
             }
 
@@ -92,7 +92,7 @@ namespace Misana.Core.Events.Entities
 
                     if (apply)
                     {
-                        applied = ApplyToEntity(manager, false, other, simulation) || applied;
+                        applied = ApplyToEntity(manager, false, other, self, simulation) || applied;
                     }
                 }
             }

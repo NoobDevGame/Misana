@@ -6,6 +6,7 @@ using Misana.Core;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 using Misana.Core.Maps;
 using Misana.EntityComponents;

@@ -28,7 +28,7 @@ namespace Misana.Core.Effects.BaseEffects
             AreaId = areaID;
         }
 
-        public override void Apply(Entity entity, ISimulation simulation)
+        public override void Apply(Entity entity, Entity self, ISimulation simulation)
         {
             var positionComponent = entity.Get<TransformComponent>();
 

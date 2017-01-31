@@ -4,6 +4,7 @@ using Misana.Core.Communication;
 using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 using Misana.Core.Effects.BaseEffects;
 using Misana.Core.Effects.Messages;
@@ -32,7 +33,7 @@ namespace Misana.Core
             var healthComponet = entity.Get<HealthComponent>();
 
             if (healthComponet != null)
-                healthComponet.Current -= message.Damage;
+                healthComponet.CurrentDamage += message.Damage;
         }
 
         private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, INetworkClient client)

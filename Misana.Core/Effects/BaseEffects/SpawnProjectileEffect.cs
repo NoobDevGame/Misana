@@ -19,7 +19,7 @@ namespace Misana.Core.Effects.BaseEffects
             Speed = 0.25f;
         }
 
-        public override void Apply(Entity entity, ISimulation simulation)
+        public override void Apply(Entity entity, Entity self, ISimulation simulation)
         {
             Vector2 direction;
 

@@ -13,6 +13,7 @@ namespace Misana.Core.Communication.Systems
         public int AreaId;
         public bool Projectile;
         public Vector2 Move;
+        public int BaseAttack;
 
         public SpawnerTriggeredMessage(int spawnerOwnerEntityId, int spawnedEntityId, TransformComponent spawnedTransform, ProjectileComponent spawnedProjectile)
         {
@@ -26,10 +27,12 @@ namespace Misana.Core.Communication.Systems
             if (Projectile = spawnedProjectile != null)
             {
                 Move = spawnedProjectile.Move;
+                BaseAttack = spawnedProjectile.BaseAttack;
             }
             else
             {
                 Move = Vector2.Zero;
+                BaseAttack = 0;
             }
         }
     }

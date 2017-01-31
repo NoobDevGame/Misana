@@ -25,7 +25,7 @@ namespace Misana.Core.Events.Entities
             
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, Entity self, ISimulation world)
         {
             _action(manager, target, world);
             return true;

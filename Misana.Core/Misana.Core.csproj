@@ -80,10 +80,11 @@
     <Compile Include="Components\Events\EntityFlagComponent.cs" />
     <Compile Include="Components\ExpiringComponent.cs" />
     <Compile Include="Components\FacingComponent.cs" />
-    <Compile Include="Components\HealthComponent.cs" />
     <Compile Include="Components\MotionComponent.cs" />
     <Compile Include="Components\ProjectileComponent.cs" />
-    <Compile Include="Components\StatusComponent\TimeDamageComponent.cs" />
+    <Compile Include="Components\StatusComponents\HealthComponent.cs" />
+    <Compile Include="Components\StatusComponents\StatsComponent.cs" />
+    <Compile Include="Components\StatusEffectComponents\TimeDamageComponent.cs" />
     <Compile Include="Components\WieldableComponent.cs" />
     <Compile Include="Components\WieldedComponent.cs" />
     <Compile Include="Components\WieldingComponent.cs" />
@@ -107,6 +108,7 @@
     <Compile Include="Ecs\Meta\ComponentInitializer.cs" />
     <Compile Include="EffectApplicator.cs" />
     <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
+    <Compile Include="Effects\BaseEffects\ProjectileDamageEffect.cs" />
     <Compile Include="Effects\BaseEffects\RemoveSelfEffect.cs" />
     <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
@@ -124,7 +126,6 @@
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityInteractableDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\FacingDefinition.cs" />
-    <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\SpawnerDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />
@@ -132,6 +133,8 @@
     <Compile Include="Entities\BaseDefinition\WieldedDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\WieldingDefinition.cs" />
     <Compile Include="Entities\ComponentDefinition.cs" />
+    <Compile Include="Entities\StatusDefinitions\HealthDefinition.cs" />
+    <Compile Include="Entities\StatusDefinitions\StateDefinition.cs" />
     <Compile Include="Events\Entities\AddComponentEvent.cs" />
     <Compile Include="Events\Entities\ApplicableTo.cs" />
     <Compile Include="Events\Entities\ApplyEffectEvent.cs" />
@@ -144,7 +147,6 @@
     <Compile Include="Effects\BaseEffects\DamageEffect.cs" />
     <Compile Include="Effects\BaseEffects\SetEntityFlagEffect.cs" />
     <Compile Include="Effects\BaseEffects\TeleportEffect.cs" />
-    <Compile Include="Effects\BaseEffects\TimeDamageEvent.cs" />
     <Compile Include="Effects\Conditions\FlagCondition.cs" />
     <Compile Include="Events\Conditions\FlagCondition.cs" />
     <Compile Include="Events\EffectCondition.cs" />
@@ -176,6 +178,7 @@
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
+    <Compile Include="Systems\DamageAccumulator.cs" />
     <Compile Include="Systems\PositionTrackingSystem.cs" />
     <Compile Include="SimulationMode.cs" />
     <Compile Include="SimulationState.cs" />

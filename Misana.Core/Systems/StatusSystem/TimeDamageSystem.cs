@@ -1,5 +1,6 @@
 ﻿using Misana.Core.Components;
-using Misana.Core.Components.StatusComponent;
+using Misana.Core.Components.StatusComponents;
+using Misana.Core.Components.StatusEffectComponents;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Systems.StatusSystem

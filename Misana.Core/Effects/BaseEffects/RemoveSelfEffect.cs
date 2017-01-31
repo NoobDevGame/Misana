@@ -6,7 +6,7 @@ namespace Misana.Core.Effects.BaseEffects
 {
     public class RemoveSelfEffect : EffectDefinition
     {
-        public override void Apply(Entity entity, ISimulation simulation)
+        public override void Apply(Entity entity, Entity self, ISimulation simulation)
         {
             simulation.Entities.RemoveEntity(entity);
         }

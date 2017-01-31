@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
-using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 using Misana.Core.Maps;
 
-namespace Misana.Core.Entities.BaseDefinition
+namespace Misana.Core.Entities.StatusDefinitions
 {
     public class HealthDefinition : ComponentDefinition<HealthComponent>
     {

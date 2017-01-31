@@ -1,7 +1,7 @@
 ﻿using Misana.Core.Ecs;
 using Misana.Core.Ecs.Meta;
 
-namespace Misana.Core.Components
+namespace Misana.Core.Components.StatusComponents
 {
     public class HealthComponent : Component<HealthComponent>
     {
@@ -10,6 +10,9 @@ namespace Misana.Core.Components
 
         [Copy, Reset]
         public float Max;
+
+        [Reset]
+        public float CurrentDamage;
 
         public float Ratio => Current / Max;
     }

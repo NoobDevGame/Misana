@@ -71,9 +71,9 @@ namespace Misana.Core.Events.Entities
             return Condition?.Test(target, simulation) ?? true;
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation simulation)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, Entity self, ISimulation simulation)
         {
-            Effect.Apply(target, simulation);
+            Effect.Apply(target,self, simulation);
             return true;
         }
 

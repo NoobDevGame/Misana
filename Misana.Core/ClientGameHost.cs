@@ -83,6 +83,7 @@ namespace Misana.Core
                 {
                     pc = ComponentRegistry<ProjectileComponent>.Take();
                     pc.Move = message.Move;
+                    pc.BaseAttack = message.BaseAttack;
                 }
 
                 SpawnerSystem.SpawnRemote(spawnerComponent, message.SpawnedEntityId, tf, pc);

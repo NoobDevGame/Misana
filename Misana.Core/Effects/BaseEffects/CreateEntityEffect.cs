@@ -27,7 +27,7 @@ namespace Misana.Core.Effects.BaseEffects
             Weapon = true;
         }
 
-        public override async void Apply(Entity entity, ISimulation simulation)
+        public override async void Apply(Entity entity, Entity self, ISimulation simulation)
         {
             if (simulation.Mode == SimulationMode.Server)
             {

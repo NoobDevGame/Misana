@@ -69,6 +69,7 @@ namespace Misana.Core
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
             systems.Add(new ExpirationSystem());
+            systems.Add(new DamageAccumulator());
             systems.Add(SpawnerSystem);
             if (afterSystems != null)
                 systems.AddRange(afterSystems);

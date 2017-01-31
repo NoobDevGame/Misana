@@ -29,7 +29,7 @@ namespace Misana.Core.Events.Entities
             //throw new NotImplementedException();
         }
 
-        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, Entity self, ISimulation world)
         {
             var a = ComponentRegistry<T>.TakeManagedAddition();
             a.EntityId = target.Id;

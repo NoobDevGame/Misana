@@ -9,8 +9,10 @@ using Misana.Core.Events.OnUse;
 using Misana.Core.Effects.BaseEffects;
 using Misana.Core;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 using Misana.Core.Entities.Events;
+using Misana.Core.Entities.StatusDefinitions;
 using Misana.Core.Events.Entities;
 
 namespace TestMapCreator
@@ -41,6 +43,7 @@ namespace TestMapCreator
             playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(11, 8), map.StartArea, 0.5f));
             playerDefinition.Definitions.Add(new WieldingDefinition());
             playerDefinition.Definitions.Add(new FacingDefinition());
+            playerDefinition.Definitions.Add(new StateDefinition(2,0));
 
             var createDefinition = new CreateDefinition();
             createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow", true)) {ApplyTo = ApplicableTo.Self});
@@ -52,6 +55,11 @@ namespace TestMapCreator
             var arrow = new EntityDefinition("Arrow", map.GetNextDefinitionId());
             arrow.Definitions.Add(new EntityColliderDefinition {
                     OnCollisionEvents = new List<OnEvent> {
+                        new ApplyEffectEvent(new ProjectileDamageEffect())
+                        {
+                            ApplyTo = ApplicableTo.Other,
+                            RunsOn = RunsOn.Server
+                        },
                         new ApplyEffectEvent(new DamageEffect(2)) {
                             ApplyTo = ApplicableTo.Other,
                             RunsOn = RunsOn.Server
@@ -61,7 +69,7 @@ namespace TestMapCreator
                 });
             arrow.Definitions.Add(new TransformDefinition { Radius = 0.2f, AreaId = -1});
             arrow.Definitions.Add(new MotionComponentDefinition());
-            arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0) ) { RunsOn = RunsOn.Client });
+            arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0) ) { RunsOn = RunsOn.Client });;
             map.GlobalEntityDefinitions.Add("Arrow", arrow);
             {
                 //Bogen
@@ -69,6 +77,7 @@ namespace TestMapCreator
                 var wieldable = new WieldableDefinition();
                 //wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) {CoolDown = TimeSpan.FromSeconds(1)});
                 bowDefinition.Definitions.Add(wieldable);
+                bowDefinition.Definitions.Add(new StateDefinition(2,0));
                 bowDefinition.Definitions.Add(new SpawnerDefinition
                 {
                     Active = true,
@@ -99,6 +108,7 @@ namespace TestMapCreator
             basicOrc.Definitions.Add(new WieldingDefinition());
             basicOrc.Definitions.Add(new FacingDefinition());
             basicOrc.Definitions.Add(new CharacterDefinition("ORC"));
+            basicOrc.Definitions.Add(new StateDefinition(0,5));
 
             map.GlobalEntityDefinitions.Add("orc1", basicOrc);
 
@@ -119,7 +129,8 @@ namespace TestMapCreator
                 SpawnedDefinitionName = "orc1",
                 SpawnDirection = new Vector2(-1,1),
                 Projectile = true,
-                RunsOn = RunsOn.Server
+                RunsOn = RunsOn.Server,
+                MaxAlive = 1,
             }));
 
             MapLoader.Save(map, $"{map.Name}.mm");

@@ -1,5 +1,6 @@
 ﻿using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 
 namespace Misana.Core.Systems
@@ -34,6 +35,8 @@ namespace Misana.Core.Systems
             {
                 pc = ComponentRegistry<ProjectileComponent>.Take();
                 pc.Move = r1.SpawnDirection * 0.25f;
+                var attack = CalcAttack(e);
+                pc.BaseAttack = attack;
             }
             
             var spawned = SpawnRemote(r1, Manager.NextId(), tf, pc);
@@ -50,10 +53,13 @@ namespace Misana.Core.Systems
             if (spawnedProjectileComponent != null)
                 temp.Add(spawnedProjectileComponent);
 
+
+
             if (r1.MaxAlive > 0)
                 r1.AliveSpawnedEntityIds.Add(entityId);
 
             return temp.Commit(Manager, entityId);
+
         }
 
         public bool CanSpawn(SpawnerComponent r1, TransformComponent r2)
@@ -80,6 +86,27 @@ namespace Misana.Core.Systems
                     return false ;
             }
             return true;
+        }
+
+        private int CalcAttack(Entity entity)
+        {
+            int attack = 0;
+
+            do
+            {
+                var state = entity.Get<StatsComponent>();
+
+                attack += state?.Attack ?? 0;
+
+                var transform = entity.Get<TransformComponent>();
+                entity = transform?.Parent(Manager);
+                if (entity == null)
+                    break;
+
+
+            } while (true);
+
+            return attack;
         }
     }
 }

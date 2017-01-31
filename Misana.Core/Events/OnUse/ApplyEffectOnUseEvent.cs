@@ -22,7 +22,7 @@ namespace Misana.Core.Events.OnUse
 
         protected override bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, ISimulation simulation)
         {
-            _eff?.Apply(self, simulation);
+            _eff?.Apply(self,self, simulation);
             return true;
         }
 

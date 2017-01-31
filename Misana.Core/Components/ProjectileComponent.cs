@@ -7,5 +7,8 @@ namespace Misana.Core.Components
     {
         [Copy, Reset]
         public Vector2 Move;
+
+        [Copy, Reset]
+        public int BaseAttack;
     }
 }

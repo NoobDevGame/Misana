@@ -2,7 +2,7 @@
 using Misana.Core.Ecs;
 using Misana.Core.Ecs.Meta;
 
-namespace Misana.Core.Components.StatusComponent
+namespace Misana.Core.Components.StatusEffectComponents
 {
     public class TimeDamageComponent : Component<TimeDamageComponent>
     {

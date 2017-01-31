@@ -6,7 +6,7 @@ namespace Misana.Core.Effects
 {
     public abstract class EffectDefinition
     {
-        public abstract void Apply(Entity entity, ISimulation simulation);
+        public abstract void Apply(Entity entity, Entity self, ISimulation simulation);
 
         public abstract void Serialize(Version version,BinaryWriter bw);
         public abstract void Deserialize(Version version, BinaryReader br);

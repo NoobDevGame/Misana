@@ -1,6 +1,7 @@
 ﻿using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
+using Misana.Core.Components.StatusComponents;
 using Misana.Core.Ecs;
 using Misana.Network;
 
