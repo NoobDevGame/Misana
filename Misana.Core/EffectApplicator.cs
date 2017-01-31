@@ -38,7 +38,7 @@ namespace Misana.Core
         private void OnTeleport(OnTeleportEffectMessage message, MessageHeader header, INetworkClient client)
         {
             var entity = simulation.Entities.GetEntityById(message.EntityId);
-            var positionComponent = entity.Get<TransformComponent>();
+            var positionComponent = entity?.Get<TransformComponent>();
 
             if (positionComponent != null)
             {
