@@ -39,8 +39,9 @@ namespace Misana.Core
         public SimulationMode Mode { get; private set; }
 
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
-            , INetworkSender sender,INetworkReceiver receiver)
+            , INetworkSender sender,INetworkReceiver receiver, int start)
         {
+            _sender = sender;
             EffectMessenger = new EffectApplicator(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
@@ -83,25 +84,25 @@ namespace Misana.Core
             _wieldedWieldableSystem.ChangeSimulation(this);
             _positionTrackingSystem.ChangeMap(map);
 
-
+            int nextId = 1;
             foreach (var area in CurrentMap.Areas)
             {
-                foreach (var entity in area.Entities)
+                for (var i = 0; i < area.Entities.Count; i++)
                 {
+                    var entity = area.Entities[i];
                     try
                     {
-                        await CreateEntity(entity, b =>
-                        {
-                            if (Mode == SimulationMode.Server)
-                                b.Add<SendComponent>();
-                        }, null);
+                        await CreateEntity(entity, nextId++,b => {
+                                if (Mode == SimulationMode.Server)
+                                    b.Add<SendComponent>();
+                            },
+                            null);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
                         //throw;
                     }
-
                 }
             }
         }

@@ -145,27 +145,21 @@ namespace Misana.Core
         {
             ISimulation simulation = null;
 
-            if (client.IsConnected)
-            {
-                CreateWorldMessageRequest message = new CreateWorldMessageRequest(name);
-                var waitobject = client.SendRequestMessage(ref message);
+            if (!client.IsConnected)
+                throw new InvalidOperationException();
+            
+            CreateWorldMessageRequest message = new CreateWorldMessageRequest(name);
+            var waitobject = client.SendRequestMessage(ref message);
 
-                var responseMessage = await waitobject.Wait<CreateWorldMessageResponse>();
+            var responseMessage = await waitobject.Wait<CreateWorldMessageResponse>();
 
-                if (!responseMessage.Result)
-                    throw  new NotSupportedException();
+            if (!responseMessage.Result)
+                throw new NotSupportedException();
 
-                simulation = CreateNetworkSimulation();
-            }
-            else
-            {
-                simulation = new Simulation(SimulationMode.SinglePlayer, _beforeSystems,_afterSystems,new EmptyNetworkSender(), new EmptyNetworkReceive());
-            }
-
-            Simulation = simulation;
+            Simulation = CreateNetworkSimulation(responseMessage.FirstLocalId);
         }
 
-        private ISimulation CreateNetworkSimulation()
+        private ISimulation CreateNetworkSimulation(int firstLocalId)
         {
             List<BaseSystem> beforeSystems = new List<BaseSystem>();
             beforeSystems.Add(new ReceiveEntityPositionSystem(Receiver));
@@ -179,7 +173,7 @@ namespace Misana.Core
             afterSystems.Add(new SendEntityPositionSystem(Sender));
 
 
-            var simulation = new Simulation(SimulationMode.Local, beforeSystems, afterSystems, client, client);
+            var simulation = new Simulation(SimulationMode.Local, beforeSystems, afterSystems, client, client, firstLocalId);
             return simulation;
         }
 
@@ -232,7 +226,7 @@ namespace Misana.Core
             JoinWorldMessageRequest messageRequest= new JoinWorldMessageRequest(id);
             var respone = await Sender.SendRequestMessage<JoinWorldMessageRequest>(ref messageRequest).Wait<JoinWorldMessageResponse>();
 
-            Simulation = CreateNetworkSimulation();
+            Simulation = CreateNetworkSimulation(respone.FirstLocalEntityId);
 
             if (respone.HaveWorld)
             {

@@ -60,7 +60,7 @@ namespace Misana.Core
         {
             var simulation = simulations.FirstOrDefault(i => i.Id == message.Id);
             JoinWorldMessageResponse response = new JoinWorldMessageResponse(simulation != null
-                ,simulation.BaseSimulation.CurrentMap != null,simulation.BaseSimulation.CurrentMap?.Name);
+                ,simulation.BaseSimulation.CurrentMap != null,simulation.BaseSimulation.CurrentMap?.Name, 50001 + simulation.Players.Count * 50000);
 
             if (simulation != null)
             {
@@ -193,7 +193,7 @@ namespace Misana.Core
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);
 
-            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,simulation.Id );
+            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,simulation.Id, 50001);
             client.SendResponseMessage(ref messageResponse,header.MessageId);
 
         }
