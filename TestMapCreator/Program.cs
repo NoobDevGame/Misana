@@ -8,6 +8,8 @@ using Misana.Core.Entities.BaseDefinition;
 using Misana.Core.Events.OnUse;
 using Misana.Core.Effects.BaseEffects;
 using Misana.Core;
+using Misana.Core.Components;
+using Misana.Core.Ecs;
 using Misana.Core.Entities.Events;
 using Misana.Core.Events.Entities;
 
@@ -30,7 +32,7 @@ namespace TestMapCreator
             //Player
             EntityDefinition playerDefinition = new EntityDefinition("Player", map.GetNextDefinitionId());
             playerDefinition.Definitions.Add(new HealthDefinition());
-            playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1, 9)));
+            playerDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(1, 9)) { RunsOn = RunsOn.Client });
             playerDefinition.Definitions.Add(new MotionComponentDefinition());
             playerDefinition.Definitions.Add(new EntityColliderDefinition());
             playerDefinition.Definitions.Add(new BlockColliderDefinition());
@@ -50,13 +52,17 @@ namespace TestMapCreator
             var arrow = new EntityDefinition("Arrow", map.GetNextDefinitionId());
             arrow.Definitions.Add(new EntityColliderDefinition {
                     OnCollisionEvents = new List<OnEvent> {
-                        new ApplyEffectEvent(new DamageEffect(2)) { ApplyTo = ApplicableTo.Other },
+                        new ApplyEffectEvent(new DamageEffect(2)) {
+                            ApplyTo = ApplicableTo.Other,
+                            RunsOn = RunsOn.Server
+                        },
                         new ApplyEffectEvent(new RemoveSelfEffect()) { ApplyTo = ApplicableTo.Self }
                     }
                 });
             arrow.Definitions.Add(new TransformDefinition { Radius = 0.2f, AreaId = -1});
-            arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0)));
-
+            arrow.Definitions.Add(new MotionComponentDefinition());
+            arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0) ) { RunsOn = RunsOn.Client });
+            map.GlobalEntityDefinitions.Add("Arrow", arrow);
             {
                 //Bogen
                 EntityDefinition bowDefinition = new EntityDefinition("Bow", map.GetNextDefinitionId());
@@ -67,11 +73,13 @@ namespace TestMapCreator
                 {
                     Active = true,
                     CoolDown = 0.2f,
-                    SpawnedDefinitionName = "orc1",
+                    SpawnedDefinitionName = "Arrow",
                     //MaxAlive = 2,
-                    Projectile = true
+                    Projectile = true,
                 });
-                bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52, 0)));
+                bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52, 0)) {
+                    RunsOn = RunsOn.Client
+                });
                 bowDefinition.Definitions.Add(new WieldedDefinition(0.5f, 0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());
                 bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f, 0.3f), map.StartArea));
@@ -110,7 +118,8 @@ namespace TestMapCreator
                 CoolDown = 5,
                 SpawnedDefinitionName = "orc1",
                 SpawnDirection = new Vector2(-1,1),
-                Projectile = true
+                Projectile = true,
+                RunsOn = RunsOn.Server
             }));
 
             MapLoader.Save(map, $"{map.Name}.mm");
@@ -120,7 +129,7 @@ namespace TestMapCreator
         {
             var id = map.GetNextDefinitionId();
             var def = new EntityDefinition($"Spawner_{id}", id);
-            def.Definitions.Add(new CharacterRenderDefinition());
+            def.Definitions.Add(new CharacterRenderDefinition() { RunsOn = RunsOn.Client });
             def.Definitions.Add(new TransformDefinition(new Vector2(x, y), area, 0.4f));
             def.Definitions.Add(sdef);
             return def;
@@ -134,11 +143,11 @@ namespace TestMapCreator
 
             var entityCollider = new EntityColliderDefinition();
             entityCollider.OnCollisionEvents.Add(
-                new ApplyEffectEvent(new TeleportEffect(targeX, targeY, targetArea.Id)) {ApplyTo = ApplicableTo.Other});
+                new ApplyEffectEvent(new TeleportEffect(targeX, targeY, targetArea.Id)) {ApplyTo = ApplicableTo.Other, RunsOn = RunsOn.Server});
             //entityCollider.OnCollisionEvents.Add(new ApplyEffectEvent(new DamageEffect(10)) {ApplyTo = ApplicableTo.Other});
 
             testTeleporter.Definitions.Add(entityCollider);
-            testTeleporter.Definitions.Add(new CharacterRenderDefinition());
+            testTeleporter.Definitions.Add(new CharacterRenderDefinition() { RunsOn = RunsOn.Client });
             testTeleporter.Definitions.Add(new TransformDefinition(new Vector2(x, y), area, 0.4f));
 
             return testTeleporter;
