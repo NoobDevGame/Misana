@@ -50,6 +50,7 @@ namespace Misana.Core
             
             _interactionSystem = new EntityInteractionSystem();
             _wieldedWieldableSystem = new WieldedWieldableSystem();
+            SpawnerSystem = new SpawnerSystem();
 
             List<BaseSystem> systems = new List<BaseSystem>();
             if (beforSystems != null)
@@ -66,12 +67,17 @@ namespace Misana.Core
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
             systems.Add(new ExpirationSystem());
-            systems.Add(new SpawnerSystem());
+            systems.Add(SpawnerSystem);
             if (afterSystems != null)
                 systems.AddRange(afterSystems);
 
 
-            Entities = EntityManager.Create("LocalWorld",systems);
+            Entities = EntityManager.Create("LocalWorld",systems, mode);
+
+            for (int i = start; i < start + 50000; i++)
+            {
+                Entities.AvailableEntityIds.Enqueue(i);
+            }
         }
 
         public async Task ChangeMap(Map map)

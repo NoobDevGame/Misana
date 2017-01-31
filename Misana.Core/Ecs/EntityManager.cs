@@ -321,10 +321,30 @@ namespace Misana.Core.Ecs
             return e;
         }
 
+        private readonly object _idLock = new object();
+
         public int NextId()
         {
-            var id = Interlocked.Increment(ref _entityId);
-            return id;
+            lock (_idLock)
+            {
+                return AvailableEntityIds.Dequeue();
+            }
+        }
+        
+        public Queue<int> AvailableEntityIds = new Queue<int>();
+
+        public List<Tuple<byte[], bool>> Messages = new List<Tuple<byte[], bool>>(); 
+
+        private readonly object _messageLock = new object();
+
+        public void NoteForSend<T>(T msg) where T : struct
+        {
+            var bytes = MessageHandle<T>.Serialize(ref msg);
+
+            lock (_messageLock)
+            {
+                Messages.Add(Tuple.Create(bytes, MessageHandle<T>.IsUDPMessage));
+            }
         }
     }
 }

@@ -21,14 +21,17 @@ namespace Misana.Core.Communication.Messages
         public bool Result;
         public bool HaveWorld;
 
+        public int FirstLocalEntityId;
+
         [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string MapName;
 
-        public JoinWorldMessageResponse(bool result, bool haveWorld, string mapName)
+        public JoinWorldMessageResponse(bool result, bool haveWorld, string mapName, int firstLocalEntityId)
         {
             Result = result;
             HaveWorld = haveWorld;
             MapName = mapName;
+            FirstLocalEntityId = firstLocalEntityId;
         }
     }
 

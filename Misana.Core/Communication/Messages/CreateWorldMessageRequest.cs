@@ -21,11 +21,13 @@ namespace Misana.Core.Communication.Messages
     {
         public bool Result;
         public int Id;
+        public int FirstLocalId;
 
-        public CreateWorldMessageResponse(bool result, int id)
+        public CreateWorldMessageResponse(bool result, int id, int firstLocalId)
         {
             Result = result;
             Id = id;
+            FirstLocalId = firstLocalId;
         }
     }
 }
