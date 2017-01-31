@@ -57,7 +57,7 @@ namespace Misana.Components
         protected override void LoadContent()
         {
             base.LoadContent();
-            var foo = EntityManager.ComponentCount;
+            EntityManager.Initialize();
 
 
             SpriteRenderSystem = new SpriteRenderSystem(Game);

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using Misana.Core.Ecs.Meta;
 
 namespace Misana.Core.Ecs
 {
@@ -11,20 +12,12 @@ namespace Misana.Core.Ecs
 
     public abstract class Component
     {
+        [Copy, Reset]
         public RunsOn RunsOn;
         public bool Unmanaged;
-        public virtual void Reset() { }
-        public abstract void CopyTo(Component other);
-        //public abstract void Serialize(Entity e, BinaryWriter writer);
     }
 
     public abstract class Component<T> : Component where T : Component<T>
     {
-        public abstract void CopyTo(T other);
-        public override void CopyTo(Component other)
-        {
-            other.RunsOn = RunsOn;
-            CopyTo((T)other);
-        }
     }
 }

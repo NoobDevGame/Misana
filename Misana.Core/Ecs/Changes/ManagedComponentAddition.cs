@@ -54,7 +54,8 @@ namespace Misana.Core.Ecs.Changes
                 else
                 {
                     var c = ComponentRegistry<T>.Take();
-                    Template?.CopyTo(c);
+                    if (Template != null)
+                        ComponentRegistry.Copy[ComponentRegistry<T>.Index](Template, c);
                     cmp = c;
                     e.Components[Index] = c;
                 }
@@ -68,10 +69,11 @@ namespace Misana.Core.Ecs.Changes
             else
             {
                 if (Component != null)
-                    Component.CopyTo(existing);
+                    ComponentRegistry.Copy[ComponentRegistry<T>.Index](Component, existing);
                 else
                 {
-                    Template?.CopyTo(existing);
+                    if(Template != null)
+                        ComponentRegistry.Copy[ComponentRegistry<T>.Index](Template, existing);
                 }
             }
 

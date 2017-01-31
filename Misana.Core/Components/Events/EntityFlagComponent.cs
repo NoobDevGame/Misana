@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
 using Misana.Core.Ecs;
+using Misana.Core.Ecs.Meta;
 
 namespace Misana.Core.Components.Events
 {
     public class EntityFlagComponent : Component<EntityFlagComponent>
     {
+        [Copy, Reset]
         private Dictionary<string,bool> flags = new Dictionary<string, bool>();
 
         public void Set(string name)
@@ -23,11 +25,6 @@ namespace Misana.Core.Components.Events
                 return flags[name];
 
             return false;
-        }
-
-        public override void CopyTo(EntityFlagComponent other)
-        {
-            other.flags = new Dictionary<string, bool>(flags);
         }
     }
 }

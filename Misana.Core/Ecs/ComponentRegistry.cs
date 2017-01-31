@@ -73,7 +73,7 @@ namespace Misana.Core.Ecs
 
         public static void Release(T item)
         {
-            item.Reset();
+            ComponentRegistry.Reset[Index](item);
             _freeList.Push(item);
         }
 
@@ -138,5 +138,7 @@ namespace Misana.Core.Ecs
         public static Action<EntityManager, Entity, Component>[] RemovalHooks;
         public static Action<Component>[] Release;
         public static Func<Component>[] Take;
+        public static Action<Component>[] Reset;
+        public static Action<Component, Component>[] Copy;
     }
 }
