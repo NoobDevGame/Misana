@@ -127,9 +127,9 @@ namespace Misana.Core
             return CreateEntity(definition,entityId,createCallback, createdCallback);
         }
 
-        public async Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder(), this);
 
             createCallback?.Invoke(entityBuilder);
 
@@ -139,7 +139,7 @@ namespace Misana.Core
 
             StartCreateEvent(entity);
 
-            return await Task.FromResult( entity.Id);
+            return Task.FromResult( entity.Id);
         }
 
         private void StartCreateEvent(Entity entity)
@@ -157,7 +157,7 @@ namespace Misana.Core
 
         public async Task<int> CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder(), this);
 
             createCallback?.Invoke(entityBuilder);
 
