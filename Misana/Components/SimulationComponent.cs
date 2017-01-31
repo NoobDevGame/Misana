@@ -57,8 +57,6 @@ namespace Misana.Components
         protected override void LoadContent()
         {
             base.LoadContent();
-            EntityManager.Initialize();
-
 
             SpriteRenderSystem = new SpriteRenderSystem(Game);
             //SpriteRenderSystem.LoadContent();

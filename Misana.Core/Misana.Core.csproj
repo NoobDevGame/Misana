@@ -170,6 +170,7 @@
     <Compile Include="Maps\TiledMapConverter.cs" />
     <Compile Include="Maps\TileProperty.cs" />
     <Compile Include="Maps\Tilesheet.cs" />
+    <Compile Include="MisanaSerializer.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ServerGameHost.cs" />
@@ -196,6 +197,10 @@
     <ProjectReference Include="..\Misana.Network\Misana.Network.csproj">
       <Project>{3C60961E-26F1-4769-A090-0297C946ADA2}</Project>
       <Name>Misana.Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Misana.Serialization\Misana.Serialization.csproj">
+      <Project>{7B71B5A3-1E6A-4F61-91CA-2A09AFACB109}</Project>
+      <Name>Misana.Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
