@@ -52,5 +52,15 @@ namespace Misana.Core.Communication
         {
             Client.RegisterOnMessageCallback(callback);
         }
+
+        public void SendTcpBytes(byte[] bytes)
+        {
+            Client.SendTcpBytes(bytes);
+        }
+
+        public void SendUdpBytes(byte[] bytes)
+        {
+            Client.SendUdpBytes(bytes);
+        }
     }
 }

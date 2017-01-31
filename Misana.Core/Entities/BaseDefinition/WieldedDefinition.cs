@@ -25,7 +25,7 @@ namespace Misana.Core.Entities.BaseDefinition
             Offset = offset;
         }
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, WieldedComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, WieldedComponent component, ISimulation sim)
         {
             component.Offset = Offset;
         }

@@ -20,15 +20,16 @@ namespace Misana.Network
             _listener = listener;
         }
 
-        public async Task Connect(IPAddress addr)
+        public Task Connect(IPAddress addr)
         {
             if (addr != IPAddress.Any)
                 throw new ArgumentException();
 
             UdpClient = new UdpClient(new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort));
-            UdpClient.BeginReceive(OnReadUdpData,null);
+            UdpClient.BeginReceive(OnReadUdpData, null);
             IsConnected = true;
 
+            return Task.CompletedTask;
         }
 
         public void Disconnect()
@@ -39,12 +40,32 @@ namespace Misana.Network
 
         private void OnReadUdpData(IAsyncResult ar)
         {
+            byte[] data;
             IPEndPoint sender = null;
-            var data = UdpClient.EndReceive(ar,ref sender);
 
-             ReceiveData(data,_listener.GetClientByIp(sender.Address));
+            try
+            {
+                data = UdpClient.EndReceive(ar, ref sender);
+            }
+            catch (Exception e)
+            {
+                data = null;
+                Console.WriteLine(e);
+                throw;
+            }
 
-            UdpClient.BeginReceive(OnReadUdpData,null);
+            try
+            {
+                UdpClient.BeginReceive(OnReadUdpData, null);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+
+            if(data != null)
+                ReceiveData(data,_listener.GetClientByIp(sender.Address));
         }
 
         private void ReceiveData(byte[] data,NetworkClient client)
@@ -84,6 +105,16 @@ namespace Misana.Network
         {
             message = default(T);
             return false;
+        }
+
+        public void SendTcpBytes(byte[] bytes)
+        {
+            throw new NotSupportedException();
+        }
+
+        public void SendUdpBytes(byte[] bytes)
+        {
+            throw new NotSupportedException();
         }
     }
 }

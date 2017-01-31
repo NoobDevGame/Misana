@@ -17,7 +17,7 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public float Mass { get; set; } = 50f;
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityColliderComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityColliderComponent component, ISimulation sim)
         {
             component.Blocked = Blocked;
             component.Fixed = Fixed;

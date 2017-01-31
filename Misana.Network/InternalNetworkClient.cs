@@ -51,6 +51,32 @@ namespace Misana.Network
             SendRequestMessage(ref message);
         }
 
+        public void SendTcpBytes(byte[] bytes)
+        {
+            _outer.ReceiveData(bytes);
+        }
+
+        public void SendUdpBytes(byte[] bytes)
+        {
+            _outer.ReceiveData(bytes);
+        }
+
+        public void ReceiveData(byte[] data)
+        {
+            var header = MessageHandle.DeserializeHeader(ref data);
+            var index = header.MessageTypeIndex;
+
+            if (!_messageHandles.ExistHandle(index))
+            {
+                return;
+            }
+
+            var handle = _messageHandles.GetHandle(index);
+            var message = handle.Derserialize(ref data);
+
+            handle.SetMessage(message, header, this);
+        }
+
         public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
         {
             MessageWaitObject waitObject = null;

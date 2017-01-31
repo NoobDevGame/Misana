@@ -33,6 +33,7 @@ namespace Misana.Core.Events.OnUse
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
+            bw.Write((byte)RunsOn);
             bw.Write(_eff.GetType().AssemblyQualifiedName);
             _eff.Serialize(version,bw);
             bw.Write(CoolDown.TotalMilliseconds);
@@ -40,6 +41,7 @@ namespace Misana.Core.Events.OnUse
 
         public override void Deserialize(Version version, BinaryReader br)
         {
+            RunsOn = (RunsOn)br.ReadByte();
             var name = br.ReadString();
             var type = Type.GetType(name);
             _eff = (EffectDefinition) Activator.CreateInstance(type);

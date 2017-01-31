@@ -66,12 +66,14 @@
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\SendHealthSystem.cs" />
+    <Compile Include="Communication\Systems\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
     <Compile Include="Components\DroppedItemComponent.cs" />
     <Compile Include="Components\InventoryComponent.cs" />
     <Compile Include="Components\CreateComponent.cs" />
+    <Compile Include="Components\SpawnerComponent.cs" />
     <Compile Include="Components\SpriteInfoComponent.cs" />
     <Compile Include="Components\EntityColliderComponent.cs" />
     <Compile Include="Components\EntityInteractalComponent.cs" />
@@ -122,6 +124,7 @@
     <Compile Include="Entities\BaseDefinition\FacingDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\SpawnerDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\TransformDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\WieldableDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\WieldedDefinition.cs" />
@@ -181,6 +184,7 @@
     <Compile Include="Systems\InputSystem.cs" />
     <Compile Include="Systems\MoverSystem.cs" />
     <Compile Include="Systems\ProjectileSystem.cs" />
+    <Compile Include="Systems\SpawnerSystem.cs" />
     <Compile Include="Systems\StatusSystem\TimeDamageSystem.cs" />
     <Compile Include="Systems\WieldedSystem.cs" />
     <Compile Include="Systems\WieldedWieldableSystem.cs" />

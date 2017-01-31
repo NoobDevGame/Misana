@@ -25,18 +25,18 @@ namespace Misana.Network
 
         }
 
-        public async Task Start()
+        public void StartListening()
         {
             _tokenSource = new CancellationTokenSource();
             _listener.Start();
             _listener.BeginAcceptTcpClient(TcpClientConnected, _tokenSource.Token);
 
             udpListener = new UdpListnerClient(this);
-            await udpListener.Connect(IPAddress.Any);
+            udpListener.Connect(IPAddress.Any).Wait();
             OnConnectClient(udpListener);
         }
 
-        public void Stop()
+        public void StopListening()
         {
             if (_tokenSource == null)
                 return;
@@ -51,9 +51,7 @@ namespace Misana.Network
             OnConnectClient(client.ServerClient);
             return client;
         }
-
-
-
+        
         private void TcpClientConnected(IAsyncResult ar)
         {
             var token = (CancellationToken)ar.AsyncState;

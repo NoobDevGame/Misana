@@ -6,7 +6,7 @@ namespace Misana.Core.Entities.BaseDefinition
 {
     public class FacingDefinition : ComponentDefinition<FacingComponent>
     {
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, FacingComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, FacingComponent component, ISimulation sim)
         {
 
         }

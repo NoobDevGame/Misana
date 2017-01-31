@@ -12,7 +12,7 @@ namespace Misana.Core.Entities.BaseDefinition
     {
         public List<OnEvent> OnInteractEvents= new List<OnEvent>();
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityInteractableComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, EntityInteractableComponent component, ISimulation sim)
         {
             component.OnInteractionEvents = new List<OnEvent>( OnInteractEvents);
         }

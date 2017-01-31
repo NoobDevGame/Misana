@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Misana.Network
 {
-    internal abstract class MessageHandle
+    public abstract class MessageHandle
     {
         private static readonly int HeaderSize = Marshal.SizeOf(typeof(MessageHeader));
         public readonly Type Type;
@@ -93,7 +93,7 @@ namespace Misana.Network
         public abstract void SetMessage(object message, MessageHeader header, INetworkClient networkClient);
     }
 
-    internal sealed partial class MessageHandle<T> : MessageHandle
+    public sealed partial class MessageHandle<T> : MessageHandle
         where T : struct
     {
         private static int? index;
@@ -192,6 +192,12 @@ namespace Misana.Network
                 throw new NotSupportedException("For Responsemessages only");
 
             return MessageHandle.Serialize<T>(new MessageHeader(Index.Value,messageId),ref data);
+        }
+
+        public static byte[] Serialize(ref T data)
+        {
+            
+            return MessageHandle.Serialize<T>(new MessageHeader(Index.Value, (byte)0), ref data);
         }
 
 

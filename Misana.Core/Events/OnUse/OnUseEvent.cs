@@ -18,6 +18,9 @@ namespace Misana.Core.Events.OnUse
 
         public virtual void Apply(EntityManager manager, Entity self, Vector2 target, ISimulation simulation)
         {
+            if (RunsOn != RunsOn.Both && (byte)manager.Mode != (byte)RunsOn)
+                return;
+
             if (LastExecution != TimeSpan.Zero && CoolDown != TimeSpan.Zero)
             {
                 if (manager.GameTime.TotalTime - LastExecution < CoolDown)

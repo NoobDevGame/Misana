@@ -2,8 +2,16 @@
 
 namespace Misana.Core.Ecs
 {
+    public enum RunsOn : byte
+    {
+        Both = 0,
+        Server = 1,
+        Client = 2
+    }
+
     public abstract class Component
     {
+        public RunsOn RunsOn;
         public bool Unmanaged;
         public virtual void Reset() { }
         public abstract void CopyTo(Component other);
@@ -15,6 +23,7 @@ namespace Misana.Core.Ecs
         public abstract void CopyTo(T other);
         public override void CopyTo(Component other)
         {
+            other.RunsOn = RunsOn;
             CopyTo((T)other);
         }
     }

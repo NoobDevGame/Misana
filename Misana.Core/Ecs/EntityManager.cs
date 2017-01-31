@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading;
 using Misana.Core.Ecs.Changes;
+using Misana.Network;
 
 namespace Misana.Core.Ecs
 {
@@ -25,11 +26,9 @@ namespace Misana.Core.Ecs
         internal readonly List<BaseSystem> Systems;
 
         public readonly int Index;
-
-        private int _entityId;
-
+        
         public GameTime GameTime;
-
+        public readonly SimulationMode Mode;
         public string Name { get; set; }
 
         static EntityManager()
@@ -106,11 +105,11 @@ namespace Misana.Core.Ecs
             }
         }
 
-        private EntityManager(List<BaseSystem> systems)
+        private EntityManager(List<BaseSystem> systems, SimulationMode mode)
         {
             _entitesWithChanges =  new EntitesWithChanges(this);
             Index = Interlocked.Increment(ref _entityManagerIndex);
-
+            Mode = mode;
             foreach (var fn in OnNewManager)
                 fn();
 
@@ -120,10 +119,10 @@ namespace Misana.Core.Ecs
             Systems = systems;
         }
         
-        public static EntityManager Create(string name, List<BaseSystem> systems)
+        public static EntityManager Create(string name, List<BaseSystem> systems, SimulationMode mode)
         {
 
-            var manager =  new EntityManager(systems)
+            var manager =  new EntityManager(systems, mode)
             {
                 Name = name,
             };
@@ -169,8 +168,9 @@ namespace Misana.Core.Ecs
         public void Update(GameTime gameTime)
         {
             GameTime = gameTime;
-            ApplyChanges();
+            
             Tick();
+            ApplyChanges();
         }
 
         public void Tick()
@@ -262,15 +262,11 @@ namespace Misana.Core.Ecs
                     break;
                 }
 
-                Entity e;
-
                 foreach (var id in ids)
                     RemoveEntity(id);
 
                 ApplyChanges();
             }
-
-            _entityId = 0;
         }
 
         public Entity RemoveEntity(int id)
@@ -321,10 +317,30 @@ namespace Misana.Core.Ecs
             return e;
         }
 
+        private readonly object _idLock = new object();
+
         public int NextId()
         {
-            var id = Interlocked.Increment(ref _entityId);
-            return id;
+            lock (_idLock)
+            {
+                return AvailableEntityIds.Dequeue();
+            }
+        }
+        
+        public Queue<int> AvailableEntityIds = new Queue<int>();
+
+        public List<Tuple<byte[], bool>> Messages = new List<Tuple<byte[], bool>>(); 
+
+        private readonly object _messageLock = new object();
+
+        public void NoteForSend<T>(T msg) where T : struct
+        {
+            var bytes = MessageHandle<T>.Serialize(ref msg);
+
+            lock (_messageLock)
+            {
+                Messages.Add(Tuple.Create(bytes, MessageHandle<T>.IsUDPMessage));
+            }
         }
     }
 }

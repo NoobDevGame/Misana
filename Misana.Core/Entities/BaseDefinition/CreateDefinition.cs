@@ -12,14 +12,13 @@ namespace Misana.Core.Entities.BaseDefinition
     {
         public List<OnEvent> OnCreateEvents= new List<OnEvent>();
 
-        public override void OnApplyDefinition(EntityBuilder entity, Map map, CreateComponent component)
+        public override void OnApplyDefinition(EntityBuilder entity, Map map, CreateComponent component, ISimulation sim)
         {
             component.OnCreateEvent = new List<OnEvent>(OnCreateEvents);
         }
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
-
             bw.Write(OnCreateEvents.Count);
 
             foreach (var @event in OnCreateEvents)

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Misana.Core.Ecs;
 using Misana.Core.Entities;
 
 namespace Misana.Core.Maps.MapSerializers
@@ -106,7 +107,9 @@ namespace Misana.Core.Maps.MapSerializers
             {
                 var componentType = br.ReadString();
                var componentDefinition = (ComponentDefinition)Activator.CreateInstance(Type.GetType( componentType));
+                componentDefinition.RunsOn = (RunsOn) br.ReadByte();
                 componentDefinition.Deserialize(MapVersion, br);
+
                 definition.Definitions.Add(componentDefinition);
             }
 
@@ -206,6 +209,7 @@ namespace Misana.Core.Maps.MapSerializers
             foreach (var definition in entityDefinition.Definitions)
             {
                 bw.Write(definition.GetType().AssemblyQualifiedName);
+                bw.Write((byte)definition.RunsOn);
                 definition.Serialize(MapVersion,bw);
             }
         }

@@ -23,12 +23,14 @@ namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
+        private readonly INetworkSender _sender;
         public EffectApplicator EffectMessenger { get; }
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
         private WieldedWieldableSystem _wieldedWieldableSystem;
         private PositionTrackingSystem _positionTrackingSystem;
+        public SpawnerSystem SpawnerSystem { get; private set; }
 
         public EntityManager Entities { get; private set; }
 
@@ -39,8 +41,9 @@ namespace Misana.Core
         public SimulationMode Mode { get; private set; }
 
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
-            , INetworkSender sender,INetworkReceiver receiver)
+            , INetworkSender sender,INetworkReceiver receiver, int start)
         {
+            _sender = sender;
             EffectMessenger = new EffectApplicator(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
@@ -49,6 +52,7 @@ namespace Misana.Core
             
             _interactionSystem = new EntityInteractionSystem();
             _wieldedWieldableSystem = new WieldedWieldableSystem();
+            SpawnerSystem = new SpawnerSystem();
 
             List<BaseSystem> systems = new List<BaseSystem>();
             if (beforSystems != null)
@@ -58,18 +62,24 @@ namespace Misana.Core
             systems.Add(new InputSystem(_positionTrackingSystem,this));
             systems.Add(_collidingMoverSystem);
             systems.Add(_interactionSystem);
-            systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new WieldedSystem());
             systems.Add(_wieldedWieldableSystem);
             systems.Add(new ProjectileSystem());
+            systems.Add(new BlockCollidingMoverSystem());
             systems.Add(new MoverSystem());
             systems.Add(new TimeDamageSystem());
             systems.Add(new ExpirationSystem());
+            systems.Add(SpawnerSystem);
             if (afterSystems != null)
                 systems.AddRange(afterSystems);
 
 
-            Entities = EntityManager.Create("LocalWorld",systems);
+            Entities = EntityManager.Create("LocalWorld",systems, mode);
+
+            for (int i = start; i < start + 50000; i++)
+            {
+                Entities.AvailableEntityIds.Enqueue(i);
+            }
         }
 
         public async Task ChangeMap(Map map)
@@ -82,25 +92,25 @@ namespace Misana.Core
             _wieldedWieldableSystem.ChangeSimulation(this);
             _positionTrackingSystem.ChangeMap(map);
 
-
+            int nextId = 1;
             foreach (var area in CurrentMap.Areas)
             {
-                foreach (var entity in area.Entities)
+                for (var i = 0; i < area.Entities.Count; i++)
                 {
+                    var entity = area.Entities[i];
                     try
                     {
-                        await CreateEntity(entity, b =>
-                        {
-                            if (Mode == SimulationMode.Server)
-                                b.Add<SendComponent>();
-                        }, null);
+                        await CreateEntity(entity, nextId++,b => {
+                                if (Mode == SimulationMode.Server)
+                                    b.Add<SendComponent>();
+                            },
+                            null);
                     }
                     catch (Exception e)
                     {
                         Console.WriteLine(e);
                         //throw;
                     }
-
                 }
             }
         }
@@ -117,9 +127,9 @@ namespace Misana.Core
             return CreateEntity(definition,entityId,createCallback, createdCallback);
         }
 
-        public async Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder(), this);
 
             createCallback?.Invoke(entityBuilder);
 
@@ -129,7 +139,7 @@ namespace Misana.Core
 
             StartCreateEvent(entity);
 
-            return await Task.FromResult( entity.Id);
+            return Task.FromResult( entity.Id);
         }
 
         private void StartCreateEvent(Entity entity)
@@ -147,7 +157,7 @@ namespace Misana.Core
 
         public async Task<int> CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
-            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder());
+            var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder(), this);
 
             createCallback?.Invoke(entityBuilder);
 
@@ -244,11 +254,21 @@ namespace Misana.Core
             if (State == SimulationState.Running)
             {
                 Entities.Update(gameTime);
+
+                foreach (var msg in Entities.Messages)
+                {
+                    if (msg.Item2)
+                    {
+                        _sender.SendTcpBytes(msg.Item1);
+                    }
+                    else
+                    {
+                        _sender.SendUdpBytes(msg.Item1);
+                    }
+                }
+
+                Entities.Messages.Clear();
             }
-
-
         }
-
-
     }
 }

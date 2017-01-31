@@ -2,8 +2,8 @@
 {
     public enum SimulationMode
     {
-        Server,
-        SinglePlayer,
-        Local,
+        None = 0,
+        Server = 1,
+        Local = 2,
     }
 }

@@ -20,6 +20,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Serialize(Version version, BinaryWriter bw)
         {
+            bw.Write((byte)RunsOn);
             bw.Write(_condition != null);
 
             if (_condition != null)
@@ -38,6 +39,7 @@ namespace Misana.Core.Events.Entities
 
         public override void Deserialize(Version version, BinaryReader br)
         {
+            RunsOn = (RunsOn)br.ReadByte();
             var existCondition = br.ReadBoolean();
 
             if (existCondition)
@@ -59,13 +61,16 @@ namespace Misana.Core.Events.Entities
 
         public override void Apply(EntityManager manager, Entity self, Entity other, ISimulation simulation)
         {
+            if (RunsOn != RunsOn.Both && (byte)manager.Mode != (byte)RunsOn)
+                return;
+
             if (!_condition.Test(manager, self, other, simulation))
                 return;
 
             base.Apply(manager, self, other, simulation);
         }
 
-        internal override async Task<bool> ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
+        internal override bool ApplyToEntity(EntityManager manager, bool targetIsSelf, Entity target, ISimulation world)
         {
             var applied = false;
 
@@ -76,7 +81,7 @@ namespace Misana.Core.Events.Entities
                 || (!targetIsSelf &&  (_events[i].ApplyTo == ApplicableTo.Other || _events[i].ApplyTo == ApplicableTo.Both) )
                 )
 
-                    applied |= await _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
+                    applied |= _events[i].ApplyToEntity(manager, targetIsSelf, target, world);
             }
 
             return applied;

@@ -6,6 +6,7 @@ namespace Misana.Core.Events
 {
     public abstract class EventDefinition
     {
+        public RunsOn RunsOn;
         public int Id { get;}
 
         public EventDefinition()

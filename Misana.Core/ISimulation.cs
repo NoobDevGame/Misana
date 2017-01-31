@@ -6,6 +6,7 @@ using Misana.Core.Ecs;
 using Misana.Core.Entities;
 using Misana.Core.Events;
 using Misana.Core.Maps;
+using Misana.Core.Systems;
 using Misana.Network;
 
 namespace Misana.Core
@@ -19,6 +20,8 @@ namespace Misana.Core
         SimulationState State { get; }
 
         SimulationMode Mode { get; }
+
+        SpawnerSystem SpawnerSystem { get; }
 
         EffectApplicator EffectMessenger { get; }
 

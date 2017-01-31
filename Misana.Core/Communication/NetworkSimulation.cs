@@ -36,7 +36,7 @@ namespace Misana.Core.Communication
             afterSystems.Add(new SendHealthSystem(Players));
 
 
-            BaseSimulation = new Simulation(SimulationMode.Server, beforeSystems,afterSystems,Players,Players);
+            BaseSimulation = new Simulation(SimulationMode.Server, beforeSystems,afterSystems,Players,Players, 10001 );
         }
     }
 }

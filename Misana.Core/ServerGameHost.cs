@@ -2,7 +2,9 @@
 using System.Linq;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
+using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
 using Misana.Core.Maps;
 using Misana.Network;
@@ -41,6 +43,38 @@ namespace Misana.Core
             newClient.RegisterOnMessageCallback<OnPickupEffectMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<EntityPositionMessage>(OnNoOwnerBroadcast);
             newClient.RegisterOnMessageCallback<OnCreateProjectileEffectMessage>(OnNoOwnerBroadcast);
+            newClient.RegisterOnMessageCallback<SpawnerTriggeredMessage>(OnSpawnerTriggered);
+        }
+
+        private void OnSpawnerTriggered(SpawnerTriggeredMessage message, MessageHeader header, INetworkClient client)
+        {
+            if (players.ContainsKey(client.NetworkId))
+            {
+                var simulation = players[client.NetworkId].Simulation;
+                //simulation.Players.ReceiveMessage(ref message, header, client);
+
+                var owner = simulation.BaseSimulation.Entities.GetEntityById(message.SpawnerOwnerId);
+                var spawnerComponent = owner.Get<SpawnerComponent>();
+
+                var tf = ComponentRegistry<TransformComponent>.Take();
+                tf.CurrentArea = simulation.BaseSimulation.CurrentMap.GetAreaById(message.AreaId);
+                tf.Position = message.Position;
+                tf.Radius = message.Radius;
+
+
+                if (simulation.BaseSimulation.SpawnerSystem.CanSpawn(spawnerComponent, owner.Get<TransformComponent>()))
+                {
+                    ProjectileComponent pc = null;
+                    if (message.Projectile)
+                    {
+                        pc = ComponentRegistry<ProjectileComponent>.Take();
+                        pc.Move = message.Move;
+                    }
+
+                    simulation.BaseSimulation.SpawnerSystem.SpawnRemote(spawnerComponent, message.SpawnedEntityId, tf, pc);
+                    simulation.Players.SendMessage(ref message, client.NetworkId);
+                }
+            }
         }
 
         private void OnGetOuterPlayers(GetOuterPlayersMessageRequest message, MessageHeader header, INetworkClient client)
@@ -60,7 +94,7 @@ namespace Misana.Core
         {
             var simulation = simulations.FirstOrDefault(i => i.Id == message.Id);
             JoinWorldMessageResponse response = new JoinWorldMessageResponse(simulation != null
-                ,simulation.BaseSimulation.CurrentMap != null,simulation.BaseSimulation.CurrentMap?.Name);
+                ,simulation.BaseSimulation.CurrentMap != null,simulation.BaseSimulation.CurrentMap?.Name, 50001 + simulation.Players.Count * 50000);
 
             if (simulation != null)
             {
@@ -193,7 +227,7 @@ namespace Misana.Core
             networkPlayer.SetSimulation(simulation);
             simulations.Add(simulation);
 
-            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,simulation.Id );
+            CreateWorldMessageResponse messageResponse = new CreateWorldMessageResponse(true,simulation.Id, 50001);
             client.SendResponseMessage(ref messageResponse,header.MessageId);
 
         }
