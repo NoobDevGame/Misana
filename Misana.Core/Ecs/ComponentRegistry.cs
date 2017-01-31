@@ -139,5 +139,6 @@ namespace Misana.Core.Ecs
         public static Action<Component>[] Release;
         public static Func<Component>[] Take;
         public static Action<Component>[] Reset;
+        public static Action<Component, Component>[] Copy;
     }
 }
