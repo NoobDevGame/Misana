@@ -9,26 +9,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
-
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class EntityEditor : SingleInstanceDockWindow, IMDIForm
+    public partial class EntityEditor : Control
     {
-        public DockState DefaultDockState => DockState.Document;
 
         public EntityDefinition EntityDefinition { get { return entityDefinition; } }
 
-        private MainForm mainForm;
+        private Application app;
         private EntityDefinition entityDefinition;
 
-        public EntityEditor(MainForm mainForm, EntityDefinition entityDefinition)
+        public EntityEditor(Application mainForm, EntityDefinition entityDefinition)
         {
             InitializeComponent();
 
             textBox_name.Text = entityDefinition.Name;
             this.entityDefinition = entityDefinition;
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             foreach(var cdef in entityDefinition.Definitions)
             {
@@ -46,14 +43,14 @@ namespace Misana.Editor.Forms.MDI
 
         private void button_save_Click(object sender, EventArgs e)
         {
-            if(mainForm.Map.GlobalEntityDefinitions.ContainsKey(textBox_name.Text) && mainForm.Map.GlobalEntityDefinitions[textBox_name.Text] != entityDefinition)
+            if(app.Map.GlobalEntityDefinitions.ContainsKey(textBox_name.Text) && app.Map.GlobalEntityDefinitions[textBox_name.Text] != entityDefinition)
             {
-                mainForm.EventBus.Publish<ErrorEvent>(new ErrorEvent("Error", "Already a definition with that name"));
+                app.EventBus.Publish<ErrorEvent>(new ErrorEvent("Error", "Already a definition with that name"));
                 return;
             }
 
             entityDefinition.Name = textBox_name.Text;
-            mainForm.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
+            app.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
         }
 
         private void EntityEditor_Load(object sender, EventArgs e)
@@ -75,7 +72,7 @@ namespace Misana.Editor.Forms.MDI
                 return;
             entityDefinition.Definitions.Add(def);
             listView.Items.Add(new ListViewItem(def.GetType().Name) { Tag = def });
-            mainForm.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
+            app.EventBus.Publish(new EntityDefinitionChangedEvent(entityDefinition));
         }
 
         private void listView_Click(object sender, EventArgs e)
@@ -85,7 +82,7 @@ namespace Misana.Editor.Forms.MDI
                 var def = entityDefinition.Definitions.FirstOrDefault(t => t.GetType() == listView.SelectedItems[0].Tag.GetType());
 
                 if(def != null)
-                    mainForm.WindowManager.GetWindow<PropertyView>().SelectObject(def);
+                    app.WindowManager.GetWindow<PropertyView>().SelectObject(def);
             }
         }
     }

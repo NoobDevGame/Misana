@@ -106,15 +106,12 @@
             // 
             // EntityEditor
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(643, 492);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.listView);
             this.Controls.Add(this.button_save);
             this.Name = "EntityEditor";
             this.Text = "EntityEditor";
-            this.Load += new System.EventHandler(this.EntityEditor_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);

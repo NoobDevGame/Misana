@@ -10,19 +10,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class EntityExplorer : SingleInstanceDockWindow, IMDIForm
+    public partial class EntityExplorer : Control
     {
-        public DockState DefaultDockState => DockState.DockRight;
+        private Application app;
 
-        private MainForm mainForm;
-
-        public EntityExplorer(MainForm mainForm)
+        public EntityExplorer(Application mainForm)
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             InitializeComponent();
 
@@ -35,10 +32,10 @@ namespace Misana.Editor.Forms.MDI
 
         private void LoadDefinitions()
         {
-            if (mainForm.Map == null)
+            if (app.Map == null)
                 return;
 
-            foreach(var edef in mainForm.Map.GlobalEntityDefinitions)
+            foreach(var edef in app.Map.GlobalEntityDefinitions)
             {
                 listView.Items.Add(new ListViewItem(edef.Value.Name) { Tag = edef.Value });
             }
@@ -56,27 +53,27 @@ namespace Misana.Editor.Forms.MDI
             if (item != null)
             {
                 item.Text = ev.EntityDefinition.Name;
-                mainForm.Map.GlobalEntityDefinitions.Remove(mainForm.Map.GlobalEntityDefinitions.FirstOrDefault(t => t.Value == ev.EntityDefinition).Key);
-                mainForm.Map.GlobalEntityDefinitions.Add(ev.EntityDefinition.Name, ev.EntityDefinition);
+                app.Map.GlobalEntityDefinitions.Remove(app.Map.GlobalEntityDefinitions.FirstOrDefault(t => t.Value == ev.EntityDefinition).Key);
+                app.Map.GlobalEntityDefinitions.Add(ev.EntityDefinition.Name, ev.EntityDefinition);
             }
         }
 
         private void button_add_Click(object sender, EventArgs e)
         {
-            if(mainForm.Map == null)
+            if(app.Map == null)
             {
-                mainForm.EventBus.Publish(new ErrorEvent("Error", "No map opened"));
+                app.EventBus.Publish(new ErrorEvent("Error", "No map opened"));
                 return;
             }
 
-            EntityDefinition eDef = new EntityDefinition("Entity"+(listView.Items.Count+1));
-            mainForm.Map.GlobalEntityDefinitions.Add(eDef.Name,eDef);
-            var lvi = new ListViewItem(eDef.Name) { Tag = eDef };
-            listView.Items.Add(lvi);
+            //EntityDefinition eDef = new EntityDefinition("Entity"+(listView.Items.Count+1));
+            //app.Map.GlobalEntityDefinitions.Add(eDef.Name,eDef);
+            //var lvi = new ListViewItem(eDef.Name) { Tag = eDef };
+            //listView.Items.Add(lvi);
             
 
-            EntityEditor ee = new EntityEditor(mainForm, eDef);
-            mainForm.WindowManager.AddShowWindow(ee);
+            //EntityEditor ee = new EntityEditor(app, eDef);
+            ////app.WindowManager.AddShowWindow(ee);
         }
 
         public void RemoveEntityDefinition(EntityDefinition edef)
@@ -89,18 +86,18 @@ namespace Misana.Editor.Forms.MDI
             if (listView.SelectedItems.Count == 0)
                 return;
 
-            var window = mainForm.WindowManager.Windows.FirstOrDefault(t => t.GetType() == typeof(EntityEditor) && ((EntityEditor)t).EntityDefinition == (EntityDefinition)listView.SelectedItems[0].Tag && t.Visible);
+            //    var window = app.WindowManager.Windows.FirstOrDefault(t => t.GetType() == typeof(EntityEditor) && ((EntityEditor)t).EntityDefinition == (EntityDefinition)listView.SelectedItems[0].Tag && t.Visible);
 
-            if (window != null)
-            {
-                window.Select();
-                window.Focus();
-            }
-            else
-            {
-                EntityEditor ee = new EntityEditor(mainForm, (EntityDefinition)listView.SelectedItems[0].Tag);
-                mainForm.WindowManager.AddShowWindow(ee);
-            }
+            //    if (window != null)
+            //    {
+            //        window.Select();
+            //        window.Focus();
+            //    }
+            //    else
+            //    {
+            //        EntityEditor ee = new EntityEditor(app, (EntityDefinition)listView.SelectedItems[0].Tag);
+            //        app.WindowManager.AddShowWindow(ee);
+            //    }
         }
 
         private void listView_ItemDrag(object sender, ItemDragEventArgs e)

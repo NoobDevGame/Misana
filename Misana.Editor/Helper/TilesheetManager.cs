@@ -13,12 +13,12 @@ namespace Misana.Editor.Helper
     {
         public Dictionary<string, Tilesheet> Tilesheets { get { return tilesheets; } }
 
-        private MainForm mainForm;
+        private Application app;
         private Dictionary<string,Tilesheet> tilesheets = new Dictionary<string, Tilesheet>();
 
-        public TilesheetManager(MainForm mainForm)
+        public TilesheetManager(Application application)
         {
-            this.mainForm = mainForm;
+            this.app = application;
         }
 
         public void LoadTilesheets(string path = "Content/Tilesheets/")
@@ -38,7 +38,7 @@ namespace Misana.Editor.Helper
             }
             catch (Exception e)
             {
-                mainForm.EventBus.Publish(new ErrorEvent("Tilesheet", "Could not load tilesheet " + Path.GetFileNameWithoutExtension(path)));
+                app.EventBus.Publish(new ErrorEvent("Tilesheet", "Could not load tilesheet " + Path.GetFileNameWithoutExtension(path)));
             }
         }
     }

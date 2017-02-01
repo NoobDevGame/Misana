@@ -28,12 +28,12 @@ namespace Misana.Editor.Controls
 
         public Index2[] SelectedTiles { get { return selectedTiles.ToArray(); } }
 
-        public AreaEntity[] SelectedEntities { get { return selectedEntities.ToArray(); } }
+        //public AreaEntity[] SelectedEntities { get { return selectedEntities.ToArray(); } }
 
         public int? SelectedLayer { get { return selectedLayer; } }
 
         private List<Index2> selectedTiles = new List<Index2>();
-        private List<AreaEntity> selectedEntities = new List<AreaEntity>();
+        //private List<AreaEntity> selectedEntities = new List<AreaEntity>();
         private int selectedLayer;
 
         public Area Area { get; private set; }
@@ -59,7 +59,7 @@ namespace Misana.Editor.Controls
 
         public AreaMode Mode { get; set; }
 
-        private MainForm mainForm;
+        private Application app;
         private AreaRenderer areaRenderer;
 
         private Bitmap bitmapCache;
@@ -79,9 +79,9 @@ namespace Misana.Editor.Controls
         private int tilesheetTileID;
         private Index2 tilesheetTileIndex;
 
-        public AreaRenderControl(MainForm mainForm, AreaRenderer areaRenderer, Area area)
+        public AreaRenderControl(Application mainForm, AreaRenderer areaRenderer, Area area)
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
             this.areaRenderer = areaRenderer;
 
             AllowDrop = true;
@@ -120,10 +120,10 @@ namespace Misana.Editor.Controls
 
         protected override void OnInvalidated(InvalidateEventArgs e)
         {
-            if (mainForm == null || areaRenderer == null)
+            if (app == null || areaRenderer == null)
                 return;
 
-            if (mainForm.Map == null || Area == null)
+            if (app.Map == null || Area == null)
                 return;
 
             if(Width != Area.Width*32 || Height != Area.Height * 32)
@@ -140,15 +140,15 @@ namespace Misana.Editor.Controls
             if (e.Graphics == null)
                 return;
 
-            if (mainForm == null || areaRenderer == null)
+            if (app == null || areaRenderer == null)
                 return;
 
-            if (mainForm.Map == null || Area == null)
+            if (app.Map == null || Area == null)
                 return;
 
             var g = e.Graphics;
 
-            var hiddenLayers = mainForm.WindowManager.GetWindow<LayerView>().HiddenLayers;
+            var hiddenLayers = app.WindowManager.LayerView.HiddenLayers;
 
             using (Bitmap bitMap = new Bitmap(Area.Width * 32, Area.Height * 32))
             using (Graphics bg = Graphics.FromImage(bitMap))
@@ -177,7 +177,7 @@ namespace Misana.Editor.Controls
                             var tilesheetName = Area.TilesheetName(tile.TilesheetID);
                             var tileID = tile.TextureID - 1;
 
-                            var sheet = mainForm.TilesheetManager.Tilesheets[tilesheetName];
+                            var sheet = app.TilesheetManager.Tilesheets[tilesheetName];
 
                             var image = sheet.Texture;
 
@@ -193,7 +193,7 @@ namespace Misana.Editor.Controls
                     if(SelectedLayer != null && SelectedLayer == Area.Layers[l].Id)
                     {
                         if (Mode == AreaMode.Paint && tilesheetName != null && tilesheetTileIndex != null)
-                            bg.DrawImage(mainForm.TilesheetManager.Tilesheets[tilesheetName].Texture, new Rectangle(lastMousePoint.X / 32 * 32, lastMousePoint.Y / 32 * 32, 32, 32), new Rectangle(tilesheetTileIndex.X * 17, tilesheetTileIndex.Y * 17, 16, 16), GraphicsUnit.Pixel);
+                            bg.DrawImage(app.TilesheetManager.Tilesheets[tilesheetName].Texture, new Rectangle(lastMousePoint.X / 32 * 32, lastMousePoint.Y / 32 * 32, 32, 32), new Rectangle(tilesheetTileIndex.X * 17, tilesheetTileIndex.Y * 17, 16, 16), GraphicsUnit.Pixel);
                     }
 
                    
@@ -207,14 +207,14 @@ namespace Misana.Editor.Controls
 
             g.DrawImage(bitmapCache, new Point(0, 0));
 
-            foreach (var eD in Area.Entities)
-            {
-                var transformDefintion = (TransformDefinition)eD.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
-                if (transformDefintion == null)
-                    continue;
+            //foreach (var eD in Area.Entities)
+            //{
+            //    var transformDefintion = (TransformDefinition)eD.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+            //    if (transformDefintion == null)
+            //        continue;
 
-                g.FillEllipse(new SolidBrush(Color.Red), new Rectangle((int)transformDefintion.Position.X * 32, (int)transformDefintion.Position.Y * 32, 32, 32));
-            }
+            //    g.FillEllipse(new SolidBrush(Color.Red), new Rectangle((int)transformDefintion.Position.X * 32, (int)transformDefintion.Position.Y * 32, 32, 32));
+            //}
 
 
             //var selWidth = SelectionEnd.X - SelectionStart.X+1;
@@ -325,7 +325,7 @@ namespace Misana.Editor.Controls
                     }
                 }catch(Exception ex)
                 {
-                    mainForm.EventBus.Publish(new ErrorEvent("Paint Error", "Could not paint tile " + tileIndex + " on Layer " + tile.Z, false, ex));
+                    app.EventBus.Publish(new ErrorEvent("Paint Error", "Could not paint tile " + tileIndex + " on Layer " + tile.Z, false, ex));
                 }
             }
         }
@@ -353,7 +353,7 @@ namespace Misana.Editor.Controls
             if (!keepSelection)
             {
                 selectedTiles.Clear();
-                selectedEntities.Clear();
+                //selectedEntities.Clear();
             }
 
             start.X = Math.Max(0, Math.Min(start.X, Area.Width - 1));
@@ -372,9 +372,10 @@ namespace Misana.Editor.Controls
                     
                     foreach(var en in Area.Entities)
                     {
-                        var transform = (TransformDefinition)en.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
-                        if (transform != null && (int) transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
-                            selectedEntities.Add(en); 
+                        //TODO: REDO!
+                        //var transform = (TransformDefinition)en.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                        //if (transform != null && (int) transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
+                        //    selectedEntities.Add(en); 
                     }
                 }
             }
@@ -392,7 +393,7 @@ namespace Misana.Editor.Controls
                     count++;
                 }
 
-                mainForm.EventBus.Publish(new MapTileSelectionEvent((int)SelectedLayer,sTiles.ToArray(),SelectedTiles));
+                app.EventBus.Publish(new MapTileSelectionEvent((int)SelectedLayer,sTiles.ToArray(),SelectedTiles));
             }
         }
 
@@ -433,7 +434,7 @@ namespace Misana.Editor.Controls
             z.Position = new Vector2(x+0.5f, y+0.5f);
             z.Radius = 0.9f;
 
-            Area.Entities.Add(new AreaEntity() { Name = new Random().Next().ToString(), Definition =  ndef });
+            //Area.Entities.Add(new AreaEntity() { Name = new Random().Next().ToString(), Definition =  ndef });
 
             Invalidate();
 
@@ -444,11 +445,11 @@ namespace Misana.Editor.Controls
         {
             if(e.KeyCode == Keys.Delete)
             {
-                if(selectedEntities.Count > 0)
-                {
-                    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
-                    selectedEntities.Clear();
-                }
+                //if(selectedEntities.Count > 0)
+                //{
+                //    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
+                //    selectedEntities.Clear();
+                //}
             }
             base.OnKeyDown(e);
         }

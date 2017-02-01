@@ -12,23 +12,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class MapView : SingleInstanceDockWindow, IMDIForm
+    public partial class MapView : Control
     {
-        public DockState DefaultDockState => DockState.DockLeft;
-
-        private MainForm mainForm;
+        private Application app;
 
         private List<SubscriptionToken> subscriptionTokens = new List<SubscriptionToken>();
 
-        public MapView(MainForm mainForm) : base()
+        public MapView(Application mainForm) : base()
         {
             InitializeComponent();
 
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             var token = mainForm.EventBus.Subscribe<MapChangedEvent>(MainForm_MapChanged);
             subscriptionTokens.Add(token);
@@ -38,8 +35,6 @@ namespace Misana.Editor.Forms.MDI
             treeView.ImageList = IconHelper.ImageList;
 
             treeView.MouseDoubleClick += TreeView_MouseDoubleClick;
-
-            mainForm.VSToolStripExtender.SetStyle(toolStrip1, VisualStudioToolStripExtender.VsVersion.Vs2015, mainForm.Theme);
         }
 
         private void TreeView_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -47,8 +42,11 @@ namespace Misana.Editor.Forms.MDI
             if (treeView.SelectedNode == null)
                 return;
 
-            if(treeView.SelectedNode.Tag is Area)
-                mainForm.EventBus.Publish(new AreaSelectionEvent((Area)treeView.SelectedNode.Tag));
+            if (treeView.SelectedNode.Tag is Area)
+            {
+                app.WindowManager.AddControl(new AreaRenderer(app, (Area)treeView.SelectedNode.Tag), Helper.WindowManager.ControlPosition.Center);
+                app.EventBus.Publish(new AreaSelectionEvent((Area)treeView.SelectedNode.Tag));
+            }
         }
 
         private void MainForm_MapChanged(MapChangedEvent ev)
@@ -59,11 +57,11 @@ namespace Misana.Editor.Forms.MDI
         private void RebuildTree()
         {
             treeView.Nodes.Clear();
-            TreeNode mapNode = new TreeNode(mainForm.Map.Name);
+            TreeNode mapNode = new TreeNode(app.Map.Name);
             mapNode.ImageKey = "Map";
             mapNode.SelectedImageKey = "Map";
-            mapNode.Tag = mainForm.Map;
-            foreach (var area in mainForm.Map.Areas)
+            mapNode.Tag = app.Map;
+            foreach (var area in app.Map.Areas)
             {
                 TreeNode areaNode = new TreeNode(area.Name);
                 areaNode.ImageKey = "Area";
@@ -77,13 +75,13 @@ namespace Misana.Editor.Forms.MDI
 
         private void toolStripButton_addArea_Click(object sender, EventArgs e)
         {
-            if (mainForm.Map == null)
+            if (app.Map == null)
                 return;
 
             var a = new NewAreaForm();
             if (a.ShowDialog() == DialogResult.OK)
             {
-                Area area = new Area(a.AreaName, mainForm.Map.Areas.Count + 1, a.AreaWidth, a.AreaHeight);
+                Area area = new Area(a.AreaName, app.Map.Areas.Count + 1, a.AreaWidth, a.AreaHeight);
                 area.SpawnPoint = new Vector2(1, 1);
 
                 var tiles = new Tile[area.Height * area.Width];
@@ -94,12 +92,12 @@ namespace Misana.Editor.Forms.MDI
                 Layer l = new Layer(0, tiles);
 
                 area.Layers.Add(l);
-                mainForm.Map.Areas.Add(area);
+                app.Map.Areas.Add(area);
 
-                if (mainForm.Map.StartArea == null)
-                    mainForm.Map.StartArea = area;
+                if (app.Map.StartArea == null)
+                    app.Map.StartArea = area;
 
-                mainForm.EventBus.Publish(new AreaAddEvent(area));
+                app.EventBus.Publish(new AreaAddEvent(area));
             }
 
         }
@@ -107,7 +105,7 @@ namespace Misana.Editor.Forms.MDI
         private void treeView_AfterLabelEdit(object sender, NodeLabelEditEventArgs e)
         {
             if (e.Node.Tag is Map)
-                mainForm.Name = e.Label;
+                app.Map.Name = e.Label;
         }
     }
 }

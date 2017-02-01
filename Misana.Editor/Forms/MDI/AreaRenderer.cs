@@ -10,14 +10,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class AreaRenderer : DockContent, IMDIForm
+    public partial class AreaRenderer : Control
     {
-        public DockState DefaultDockState => DockState.Document;
-
         public Area Area { get { return areaRenderControl.Area; } }
 
         public Index2[] SelectedTiles { get { return areaRenderControl.SelectedTiles; }}
@@ -25,17 +22,15 @@ namespace Misana.Editor.Forms.MDI
 
         public bool IsSingleTileSelected { get { return areaRenderControl.IsSingleTileSelected; } }
 
-        private MainForm mainForm;
+        private Application app;
 
         private AreaRenderControl areaRenderControl;
         
-        public AreaRenderer(MainForm mainForm, Area area)
+        public AreaRenderer(Application mainForm, Area area)
         {
             InitializeComponent();
 
-            this.mainForm = mainForm;
-
-            AutoScroll = true;
+            this.app = mainForm;
 
             areaRenderControl = new AreaRenderControl(mainForm,this,area);
             control_panel.AutoScroll = true;

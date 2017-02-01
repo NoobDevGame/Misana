@@ -47,14 +47,9 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="WeifenLuo.WinFormsUI.Docking, Version=2.11.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
-      <HintPath>..\packages\DockPanelSuite.2.12.0\lib\net40\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
-    </Reference>
-    <Reference Include="WeifenLuo.WinFormsUI.Docking.ThemeVS2015, Version=2.11.0.0, Culture=neutral, PublicKeyToken=5cded1a1a0a7b481, processorArchitecture=MSIL">
-      <HintPath>..\packages\DockPanelSuite.ThemeVS2015.2.12.0\lib\net40\WeifenLuo.WinFormsUI.Docking.ThemeVS2015.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Application.cs" />
     <Compile Include="Commands\MainFormCommands.cs" />
     <Compile Include="Controls\AreaRenderControl.cs">
       <SubType>Component</SubType>
@@ -81,59 +76,55 @@
     <Compile Include="Events\SelectedLayerChangedEvent.cs" />
     <Compile Include="Events\TilesheetTileSelectionEvent.cs" />
     <Compile Include="Forms\MDI\AreaRenderer.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\AreaRenderer.Designer.cs">
       <DependentUpon>AreaRenderer.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\EntityComponentToolbox.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\EntityComponentToolbox.Designer.cs">
       <DependentUpon>EntityComponentToolbox.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\EntityEditor.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\EntityEditor.Designer.cs">
       <DependentUpon>EntityEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\EntityExplorer.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\EntityExplorer.Designer.cs">
       <DependentUpon>EntityExplorer.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MDI\IMDIForm.cs" />
     <Compile Include="Forms\MDI\LayerView.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\LayerView.Designer.cs">
       <DependentUpon>LayerView.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\LogWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\LogWindow.Designer.cs">
       <DependentUpon>LogWindow.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\MapView.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\MapView.Designer.cs">
       <DependentUpon>MapView.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\MDI\PropertyView.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\PropertyView.Designer.cs">
       <DependentUpon>PropertyView.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\MDI\SingleInstanceDockWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Forms\MDI\TilesheetWindow.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MDI\TilesheetWindow.Designer.cs">
       <DependentUpon>TilesheetWindow.cs</DependentUpon>

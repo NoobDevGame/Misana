@@ -11,11 +11,11 @@ namespace Misana.Editor.Commands
 {
     internal class MainFormCommands
     {
-        private MainForm mainForm;
+        private Application application;
 
-        public MainFormCommands(MainForm mainForm)
+        public MainFormCommands(Application application)
         {
-            this.mainForm = mainForm;
+            this.application = application;
         }
 
         #region File Menu
@@ -23,36 +23,36 @@ namespace Misana.Editor.Commands
         public void CreateMap()
         {
             var map = new MapModel("Map");
-            mainForm.SetMap(map);
+            application.SetMap(map);
         }
 
         public void OpenMap()
         {
-            var map = mainForm.FileManager.OpenMap();
+            var map = application.FileManager.OpenMap();
             if (map != null)
-                mainForm.SetMap(new MapModel(map));
+                application.SetMap(new MapModel(map));
         }
 
         public void ImportTiledMap()
         {
-            var map = mainForm.FileManager.ImportTiledMap();
+            var map = application.FileManager.ImportTiledMap();
             if (map != null)
-                mainForm.SetMap(new MapModel(map));
+                application.SetMap(new MapModel(map));
         }
 
         public void SaveMap()
         {
-            mainForm.FileManager.SaveMap();
+            application.FileManager.SaveMap();
         }
 
         public void SaveMapAs()
         {
-            mainForm.FileManager.SaveMapAs();
+            application.FileManager.SaveMapAs();
         }
 
         public void Exit()
         {
-            mainForm.Close();
+            application.Close();
         }
 
         #endregion
@@ -64,22 +64,7 @@ namespace Misana.Editor.Commands
         #region View Menu
         internal void LogStateChanged(bool showLog)
         {
-            if(showLog)
-            {
-                if (mainForm.WindowManager.Windows.FirstOrDefault(t => t.GetType() == typeof(LogWindow)) != null)
-                    return;
-
-                LogWindow lWindow = new LogWindow(mainForm);
-                mainForm.WindowManager.AddWindow(lWindow);
-                mainForm.WindowManager.ShowWindow(lWindow, WeifenLuo.WinFormsUI.Docking.DockState.DockBottom);
-
-            }
-            else
-            {
-                var windows = mainForm.WindowManager.Windows.Where(t => t.GetType() == typeof(LogWindow)).ToArray();
-                for(int i = 0; i < windows.Count(); i++)
-                    windows[i].Close();
-            }
+           
         }
         #endregion
     }

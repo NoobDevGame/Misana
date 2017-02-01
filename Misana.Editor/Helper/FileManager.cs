@@ -15,11 +15,11 @@ namespace Misana.Editor.Helper
 
         private string originalPath;
 
-        private MainForm mainForm;
+        private Application app;
 
-        public FileManager(MainForm mainForm)
+        public FileManager(Application application)
         {
-            this.mainForm = mainForm;
+            this.app = application;
         }
 
         //public Map NewMap()
@@ -90,11 +90,11 @@ namespace Misana.Editor.Helper
 
             try
             {
-                MapLoader.Save(mainForm.Map.ToMap(), SavePath);
+                MapLoader.Save(app.Map.ToMap(), SavePath);
             }
             catch(Exception ex)
             {
-                mainForm.ShowErrorMessage("Could not save map!", "Save Error");
+                app.ShowErrorMessage("Could not save map!", "Save Error");
             }
         }
     }

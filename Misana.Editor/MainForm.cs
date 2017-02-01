@@ -14,72 +14,47 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor
 {
     public partial class MainForm : Form
     {
-        public Redbus.EventBus EventBus { get; private set; }
 
-        public MapModel Map { get; private set; }
+        public TabControl TabLeftTop => tabControl_left_top;
+        public TabControl TabLeftBottom => tabControl_left_bottom;
+        public TabControl TabCenter => tabControl_center;
+        public TabControl TabRightTop => tabControl_right_top;
+        public TabControl TabRightBottom=> tabControl_right_bottom;
 
-        public FileManager FileManager { get; private set; }
-
-        public TilesheetManager TilesheetManager { get; private set; }
+        private Application app;
 
         private MainFormCommands commandManager;
 
-        public Logger Logger { get; private set; }
+        public event EventHandler OnInitialize;
 
-        public WindowManager WindowManager { get; private set; }
-
-        public VisualStudioToolStripExtender VSToolStripExtender { get { return visualStudioToolStripExtender1; } }
-
-        public ThemeBase Theme { get { return vS2015LightTheme1; } }
-
-        public MainForm()
+        public MainForm(Application application)
         {
+            app = application;
             InitializeComponent();
 
-            commandManager = new MainFormCommands(this);
-
-            this.EventBus = new Redbus.EventBus();
-
-            FileManager = new FileManager(this);
-
-            TilesheetManager = new TilesheetManager(this);
-
-            Logger = new Logger(this);
-
-            WindowManager = new WindowManager(this, dockPanel);
-
-            this.dockPanel.Theme = Theme;
-            visualStudioToolStripExtender1.SetStyle(statusStrip, VisualStudioToolStripExtender.VsVersion.Vs2015, Theme);
-            visualStudioToolStripExtender1.SetStyle(menuStrip, VisualStudioToolStripExtender.VsVersion.Vs2015, Theme);
-
+            commandManager = new MainFormCommands(app);
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            TilesheetManager.LoadTilesheets();
-
-            EventBus.Subscribe<AreaSelectionEvent>((a) =>
-            {
-                AreaRenderer ar = new AreaRenderer(this, a.Area);
-                WindowManager.AddWindow(ar);
-                ar.Show(dockPanel, DockState.Document);
-            }); 
-
-            WindowManager.InitialLoad();
-            menuStrip.Items.Add(WindowManager.GetViewMenu());
-            base.OnLoad(e);
+            TabCenter.MouseDown += TabCenter_MouseDown;
+            OnInitialize?.Invoke(this,null);
         }
 
-        public void SetMap(MapModel map)
+        private void TabCenter_MouseDown(object sender, MouseEventArgs e)
         {
-            Map = map;
-            EventBus.Publish(new MapChangedEvent(map));
+           if(e.Button == MouseButtons.Middle)
+            {
+                if(TabCenter.GetTabRect(TabCenter.SelectedIndex).Contains(e.Location))
+                {
+                    app.WindowManager.CloseCenterTabPage(TabCenter.SelectedTab);
+                }
+            }
         }
 
         public void ShowErrorMessage(string message, string name = "Error")

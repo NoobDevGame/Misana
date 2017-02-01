@@ -9,15 +9,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class LayerView : SingleInstanceDockWindow, IMDIForm
+    public partial class LayerView : Control
     {
-        public DockState DefaultDockState => DockState.DockLeft;
-
-        MainForm mainForm;
+        private Application app;
 
         public List<int> HiddenLayers { get; private set; } = new List<int>();
 
@@ -25,16 +22,14 @@ namespace Misana.Editor.Forms.MDI
 
         private Area area;
 
-        public LayerView(MainForm mainForm) : base()
+        public LayerView(Application mainForm) : base()
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
             InitializeComponent();
 
             mainForm.EventBus.Subscribe<AreaSelectionEvent>(t => UpdateArea(t.Area));
 
             listView.HideSelection = false;
-
-            mainForm.VSToolStripExtender.SetStyle(toolStrip1, VisualStudioToolStripExtender.VsVersion.Vs2015, mainForm.Theme);
 
             mainForm.EventBus.Subscribe<AreaChangedEvent>(t => UpdateArea(t.Area));
         }
@@ -78,7 +73,7 @@ namespace Misana.Editor.Forms.MDI
             else if (!HiddenLayers.Contains(ids[0]) && e.NewValue == CheckState.Unchecked)
                 HiddenLayers.Add(ids[0]);
 
-            mainForm.EventBus.Publish(new LayerVisibilityChangedEvent(ids[0]));
+            app.EventBus.Publish(new LayerVisibilityChangedEvent(ids[0]));
         }
 
         private void listView_SelectedIndexChanged(object sender, EventArgs e)
@@ -94,7 +89,7 @@ namespace Misana.Editor.Forms.MDI
             if (HiddenLayers.Contains((ids[0])))
                 HiddenLayers.Remove(ids[0]);
 
-            mainForm.EventBus.Publish(new SelectedLayerChangedEvent(ids[0]));
+            app.EventBus.Publish(new SelectedLayerChangedEvent(ids[0]));
 
             
         }
@@ -115,12 +110,12 @@ namespace Misana.Editor.Forms.MDI
             Layer l = new Layer(maxId + 1, "Layer " + (maxId + 1),tx );
             area.Layers.Add(l);
 
-            mainForm.EventBus.Publish(new AreaChangedEvent(area));
+            app.EventBus.Publish(new AreaChangedEvent(area));
         }
 
         private void toolStripButton_toggleEntities_CheckedChanged(object sender, EventArgs e)
         {
-            mainForm.EventBus.Publish(new EntityVisibilityChangedEvent(toolStripButton_toggleEntities.Checked));
+            app.EventBus.Publish(new EntityVisibilityChangedEvent(toolStripButton_toggleEntities.Checked));
         }
 
         private void listView_MouseClick(object sender, MouseEventArgs e)
@@ -153,7 +148,7 @@ namespace Misana.Editor.Forms.MDI
                     changed = true;
                 }
             }
-            mainForm.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
+            app.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
         }
 
         private void listView_AfterLabelEdit(object sender, LabelEditEventArgs e)
@@ -163,7 +158,7 @@ namespace Misana.Editor.Forms.MDI
 
             ((Layer)listView.SelectedItems[0].Tag).Name = e.Label;
 
-            mainForm.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
+            app.EventBus.Publish<AreaChangedEvent>(new AreaChangedEvent(area));
         }
     }
 }

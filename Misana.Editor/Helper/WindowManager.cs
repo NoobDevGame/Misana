@@ -5,173 +5,149 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using WeifenLuo.WinFormsUI.Docking;
 using System.Windows.Forms;
 
 namespace Misana.Editor.Helper
 {
-    public class WindowManager
+    public sealed class WindowManager
     {
-        public List<DockContent> Windows { get { return windows; } }
-
-        private List<DockContent> windows = new List<DockContent>();
-
         private MainForm mainForm;
-        private DockPanel dockPanel;
 
-        public WindowManager(MainForm mainForm, DockPanel dockPanel)
+        private Dictionary<Control, ControlPane> controls = new Dictionary<Control, ControlPane>();
+
+        private Application app;
+
+        public LayerView LayerView { get; private set; }
+        public MapView MapView { get; private set; }
+        public PropertyView PropertyView { get; private set; }
+        public EntityExplorer EntityExplorer { get; private set; }
+        public EntityComponentToolbox EntityComponentToolbox { get; private set; }
+        public TilesheetWindow TilesheetWindow { get; private set; }
+
+        public WindowManager(Application app, MainForm mainForm)
         {
             this.mainForm = mainForm;
-            this.dockPanel = dockPanel;
+            this.app = app;
         }
 
-        public void InitialLoad()
+        public void Initialize()
         {
-            MapView mapView = new MapView(mainForm);
-            AddWindow(mapView);
+            LayerView = new LayerView(app);
+            AddControl(LayerView, ControlPosition.LeftBottom);
 
-            TilesheetWindow ts = new TilesheetWindow(mainForm);
-            AddWindow(ts);
+            MapView = new MapView(app);
+            AddControl(MapView, ControlPosition.LeftTop);
 
-            LayerView lv = new LayerView(mainForm);
-            AddWindow(lv);
+            TilesheetWindow = new TilesheetWindow(app);
+            AddControl(TilesheetWindow, ControlPosition.RightTop);
 
-            PropertyView pv = new PropertyView(mainForm);
-            AddWindow(pv);
+            PropertyView = new PropertyView(app);
+            AddControl(PropertyView, ControlPosition.RightBottom);
 
-            EntityExplorer ex = new EntityExplorer(mainForm);
-            AddWindow(ex);
+            EntityComponentToolbox = new EntityComponentToolbox(app);
+            AddControl(EntityComponentToolbox, ControlPosition.LeftTop);
 
-            EntityComponentToolbox ect = new EntityComponentToolbox(mainForm);
-            AddWindow(ect);
+            EntityExplorer = new EntityExplorer(app);
+            AddControl(EntityExplorer, ControlPosition.RightTop);
+        }
 
-            LogWindow lw = new LogWindow(mainForm);
-            AddWindow(lw);
+        public T GetWindow<T>() where T : Control
+        {
+            return (T)controls.FirstOrDefault(t => t.GetType() == typeof(T)).Key;
+        }
 
-            if (File.Exists("layout.xml"))
+        public void AddControl(Control c, ControlPosition p, string name = null)
+        {
+            if (controls.ContainsKey(c))
+                throw new NotSupportedException("Control already added");
+
+            if (name == null)
+                name = c.Name;
+
+            TabPage page = new TabPage(name);
+            c.Dock = DockStyle.Fill;
+            page.Controls.Add(c);
+
+
+            ControlPane cPane = new ControlPane(c, page, name, p);
+            controls.Add(c, cPane);
+
+            TabControl  tControl = GetTabControl(p);
+            tControl.TabPages.Add(page);
+        }
+
+        public void RemoveControl(Control c)
+        {
+            if (!controls.ContainsKey(c))
+                throw new NotSupportedException("Control not added");
+
+            ControlPane cPane = controls[c];
+            RemoveControlPane(cPane);
+
+            controls.Remove(c);
+        }
+
+        public void CloseCenterTabPage(TabPage tp)
+        {
+            var c = controls.FirstOrDefault(t => t.Value.TabPage == tp);
+            RemoveControl(c.Key);
+        }
+
+        private void AddControlPane(ControlPane p)
+        {
+            TabControl tControl = GetTabControl(p.ControlPosition);
+            tControl.TabPages.Add(p.TabPage);
+        }
+
+
+        private void RemoveControlPane(ControlPane p)
+        {
+            TabControl tControl = GetTabControl(p.ControlPosition);
+            tControl.TabPages.Remove(p.TabPage);
+        }
+
+        private TabControl GetTabControl(ControlPosition pos)
+        {
+            switch(pos)
             {
-                using (FileStream fs = File.Open("layout.xml", FileMode.Open))
-                {
-                    dockPanel.LoadFromXml(fs, (s) =>
-                    {
-                        if (s == typeof(MapView).ToString())
-                            return mapView;
-                        else if (s == typeof(TilesheetWindow).ToString())
-                            return ts;
-                        else if (s == typeof(LayerView).ToString())
-                            return lv;
-                        else if (s == typeof(PropertyView).ToString())
-                            return pv;
-                        else if (s == typeof(PropertyView).ToString())
-                            return pv;
-                        else if (s == typeof(EntityExplorer).ToString())
-                            return ex;
-                        else if (s == typeof(EntityComponentToolbox).ToString())
-                            return ect;
-                        return null;
-                    });
-                }
-            }
-            else
-            {
-                ShowWindow(mapView);
-                ShowWindow(ts);
-                ShowWindow(lv);
-                ShowWindow(pv);
-                ShowWindow(ex);
-                ShowWindow(ect);
-            }
-        }
-
-        public ToolStripMenuItem GetViewMenu()
-        {
-            ToolStripMenuItem viewMenu = new ToolStripMenuItem("View");
-            
-            foreach(var window in Windows.Where(t => typeof(SingleInstanceDockWindow).IsAssignableFrom(t.GetType())))
-            {
-                ToolStripMenuItem wItem = new ToolStripMenuItem(window.Text);
-                wItem.Checked = !window.IsHidden;
-                window.VisibleChanged += (s, e) => wItem.Checked = !window.IsHidden;
-                wItem.Click += (s, e)=>{
-                    wItem.Checked = !wItem.Checked;
-
-                    if (wItem.Checked)
-                        ShowWindow(window);
-                    else
-                        window.Hide();
-                };
-                viewMenu.DropDownItems.Add(wItem);
-            }
-
-            ToolStripMenuItem saveItem = new ToolStripMenuItem("Save Layout");
-            saveItem.Click += (s, e) => SaveLayout();
-            viewMenu.DropDownItems.Add(new ToolStripSeparator());
-            viewMenu.DropDownItems.Add(saveItem);
-            return viewMenu;
-        }
-
-        public void SaveLayout()
-        {
-            dockPanel.SaveAsXml("layout.xml");
-        }
-
-        public void AddShowWindow(DockContent dockContent)
-        {
-            AddWindow(dockContent);
-            ShowWindow(dockContent);
-        }
-
-        public void AddShowWindow(DockContent dockContent, DockState dockState)
-        {
-            AddWindow(dockContent);
-            ShowWindow(dockContent, dockState);
-        }
-
-        public void AddWindow(DockContent dockContent)
-        {
-            Windows.Add(dockContent);
-            dockContent.FormClosed += (s,e)=>
-            {
-                windows.Remove(dockContent);
-                //TODO Raise Event
-            };
-        }
-
-        public void ShowWindow(DockContent window)
-        {
-            window.Show(dockPanel, ((IMDIForm)window).DefaultDockState);
-        }
-
-        public void ShowWindow(DockContent window, DockState dockstate)
-        {
-            window.Show(dockPanel, dockstate);
-        }
-
-        public void ToggleWindow<T>() where T : DockContent
-        {
-            var window = GetWindow<T>();
-            ToggleWindow<T>(window.IsHidden);
-        }
-
-        public void ToggleWindow<T>(bool show) where T : DockContent
-        {
-            if (typeof(T) != typeof(SingleInstanceDockWindow) && typeof(T).IsSubclassOf(typeof(SingleInstanceDockWindow)) == false)
-                throw new NotSupportedException();
-
-            var window = GetWindow<T>();
-
-            if (window != null)
-            {
-                if (show && window.IsHidden)
-                    window.Show();
-                else if (!show && !window.IsHidden)
-                    window.Hide();
+                case ControlPosition.Center:
+                    return mainForm.TabCenter;
+                case ControlPosition.LeftBottom:
+                    return mainForm.TabLeftBottom;
+                case ControlPosition.LeftTop:
+                    return mainForm.TabLeftTop;
+                case ControlPosition.RightBottom:
+                    return mainForm.TabRightBottom;
+                case ControlPosition.RightTop:
+                    return mainForm.TabRightTop;
+                default:
+                    return null;
             }
         }
 
-        public T GetWindow<T>() where T : DockContent
+        private class ControlPane
         {
-            return (T) Windows.FirstOrDefault(t => t.GetType() == typeof(T));
+            public Control Control { get; set; }
+            public TabPage TabPage { get; set; }
+            public ControlPosition ControlPosition { get; set; }
+            public string Name { get; set; }
+
+            public ControlPane(Control c, TabPage t, string name, ControlPosition p)
+            {
+                Control = c;
+                TabPage = t;
+                ControlPosition = p;
+                Name = name;
+            }
+        }
+
+        public enum ControlPosition
+        {
+            Center,
+            LeftTop,
+            LeftBottom,
+            RightTop,
+            RightBottom
         }
     }
 }

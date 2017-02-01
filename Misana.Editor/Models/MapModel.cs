@@ -34,7 +34,7 @@ namespace Misana.Editor.Models
 
         public Map ToMap()
         {
-            return new Map(Name, StartArea, Areas) { GlobalEntityDefinitions = GlobalEntityDefinitions };
+            return new Map(Name, StartArea, Areas,0) { GlobalEntityDefinitions = GlobalEntityDefinitions };
         }
 
         private MapModel() { }

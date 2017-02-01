@@ -8,19 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class LogWindow : SingleInstanceDockWindow, IMDIForm
+    public partial class LogWindow : Control
     {
-        public DockState DefaultDockState => DockState.DockBottomAutoHide;
+        private Application app;
 
-        private MainForm mainForm;
-
-        public LogWindow(MainForm mainForm) : base()
+        public LogWindow(Application mainForm) : base()
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             InitializeComponent();
 
@@ -40,13 +37,8 @@ namespace Misana.Editor.Forms.MDI
             });
 
             listView.ContextMenuStrip = contextMenuStrip1;
-        }
 
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-
-            foreach(var ev in mainForm.Logger.Log)
+            foreach (var ev in mainForm.Logger.Log)
             {
                 ListViewItem lvi = new ListViewItem();
 
@@ -56,7 +48,7 @@ namespace Misana.Editor.Forms.MDI
                 if (ev.GetType() == typeof(ErrorEvent))
                 {
                     lvi.Text = "Error";
-                    if(((ErrorEvent)ev).Exception != null)
+                    if (((ErrorEvent)ev).Exception != null)
                         lvi.SubItems.Add(((ErrorEvent)ev).Exception.Message);
                 }
 

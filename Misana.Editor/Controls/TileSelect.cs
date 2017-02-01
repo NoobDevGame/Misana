@@ -13,7 +13,7 @@ namespace Misana.Editor.Controls
 
     public partial class TileSelect : Control
     {
-        private MainForm mainForm;
+        private Application app;
 
         private TabControl tabControl;
 
@@ -30,7 +30,7 @@ namespace Misana.Editor.Controls
 
                 selection = new KeyValuePair<string, Index2>(value.Key, value.Value);
                 ChangeSelection(selection.Key, selection.Value);
-                mainForm.EventBus.Publish(new TilesheetTileSelectionEvent(SelectedTileId, selection.Key, selection.Value));
+                app.EventBus.Publish(new TilesheetTileSelectionEvent(SelectedTileId, selection.Key, selection.Value));
             }
         }
 
@@ -40,7 +40,7 @@ namespace Misana.Editor.Controls
             {
                 if (Selection.Key == null)
                     return 0;
-                var ts = mainForm.TilesheetManager.Tilesheets[Selection.Key];
+                var ts = app.TilesheetManager.Tilesheets[Selection.Key];
 
                 return (Selection.Value.Y) * ts.Columns + Selection.Value.X + 1;
             }
@@ -50,9 +50,9 @@ namespace Misana.Editor.Controls
 
         private Dictionary<string, TilesheetRenderer> tilesheetRenderer = new Dictionary<string, TilesheetRenderer>();
 
-        public TileSelect(MainForm mainForm)
+        public TileSelect(Application mainForm)
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             tabControl = new TabControl();
             tabControl.Dock = DockStyle.Fill;
@@ -63,7 +63,7 @@ namespace Misana.Editor.Controls
 
         private void RenderTilesheets()
         {
-            foreach (Tilesheet sheet in mainForm.TilesheetManager.Tilesheets.Values)
+            foreach (Tilesheet sheet in app.TilesheetManager.Tilesheets.Values)
             {
                 TabPage p = new TabPage(sheet.Name);
 
@@ -166,7 +166,7 @@ namespace Misana.Editor.Controls
 
         private void ChangeSelection(string tilesheetname, Index2 position)
         {
-            if (!mainForm.TilesheetManager.Tilesheets.ContainsKey(tilesheetname))
+            if (!app.TilesheetManager.Tilesheets.ContainsKey(tilesheetname))
                 return;
 
             foreach (TilesheetRenderer sr in tilesheetRenderer.Values)

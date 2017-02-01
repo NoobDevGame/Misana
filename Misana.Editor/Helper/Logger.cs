@@ -10,13 +10,13 @@ namespace Misana.Editor.Helper
 {
     public class Logger
     {
-        private MainForm mainForm;
+        private Application app;
 
         public List<ILoggerEvent> Log { get; private set; } = new List<ILoggerEvent>();
 
-        public Logger(MainForm mainForm)
+        public Logger(Application application)
         {
-            mainForm.EventBus.Subscribe<ErrorEvent>(HandleError);
+            application.EventBus.Subscribe<ErrorEvent>(HandleError);
         }
 
         private void HandleError(ErrorEvent ev)

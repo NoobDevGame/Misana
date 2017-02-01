@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.menuItem_file = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,12 +49,32 @@
             this.menuItem_about_about = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about_credits = new System.Windows.Forms.ToolStripMenuItem();
             this.menuItem_about_help = new System.Windows.Forms.ToolStripMenuItem();
-            this.dockPanel = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.vS2015DarkTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme();
-            this.vS2015BlueTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
-            this.visualStudioToolStripExtender1 = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
-            this.vS2015LightTheme1 = new WeifenLuo.WinFormsUI.Docking.VS2015LightTheme();
+            this.splitContainer_left = new System.Windows.Forms.SplitContainer();
+            this.splitContainer_left_v = new System.Windows.Forms.SplitContainer();
+            this.tabControl_left_top = new System.Windows.Forms.TabControl();
+            this.tabControl_left_bottom = new System.Windows.Forms.TabControl();
+            this.splitContainer_right = new System.Windows.Forms.SplitContainer();
+            this.tabControl_center = new System.Windows.Forms.TabControl();
+            this.splitContainer_right_v = new System.Windows.Forms.SplitContainer();
+            this.tabControl_right_top = new System.Windows.Forms.TabControl();
+            this.tabControl_right_bottom = new System.Windows.Forms.TabControl();
             this.menuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_left)).BeginInit();
+            this.splitContainer_left.Panel1.SuspendLayout();
+            this.splitContainer_left.Panel2.SuspendLayout();
+            this.splitContainer_left.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_left_v)).BeginInit();
+            this.splitContainer_left_v.Panel1.SuspendLayout();
+            this.splitContainer_left_v.Panel2.SuspendLayout();
+            this.splitContainer_left_v.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_right)).BeginInit();
+            this.splitContainer_right.Panel1.SuspendLayout();
+            this.splitContainer_right.Panel2.SuspendLayout();
+            this.splitContainer_right.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_right_v)).BeginInit();
+            this.splitContainer_right_v.Panel1.SuspendLayout();
+            this.splitContainer_right_v.Panel2.SuspendLayout();
+            this.splitContainer_right_v.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip
@@ -202,39 +221,144 @@
             // menuItem_about_about
             // 
             this.menuItem_about_about.Name = "menuItem_about_about";
-            this.menuItem_about_about.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_about_about.Size = new System.Drawing.Size(111, 22);
             this.menuItem_about_about.Text = "About";
             // 
             // menuItem_about_credits
             // 
             this.menuItem_about_credits.Name = "menuItem_about_credits";
-            this.menuItem_about_credits.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_about_credits.Size = new System.Drawing.Size(111, 22);
             this.menuItem_about_credits.Text = "Credits";
             // 
             // menuItem_about_help
             // 
             this.menuItem_about_help.Name = "menuItem_about_help";
-            this.menuItem_about_help.Size = new System.Drawing.Size(152, 22);
+            this.menuItem_about_help.Size = new System.Drawing.Size(111, 22);
             this.menuItem_about_help.Text = "Help";
             // 
-            // dockPanel
+            // splitContainer_left
             // 
-            this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dockPanel.Location = new System.Drawing.Point(0, 24);
-            this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(1249, 587);
-            this.dockPanel.TabIndex = 2;
+            this.splitContainer_left.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer_left.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+            this.splitContainer_left.Location = new System.Drawing.Point(0, 24);
+            this.splitContainer_left.Name = "splitContainer_left";
             // 
-            // visualStudioToolStripExtender1
+            // splitContainer_left.Panel1
             // 
-            this.visualStudioToolStripExtender1.DefaultRenderer = null;
+            this.splitContainer_left.Panel1.Controls.Add(this.splitContainer_left_v);
+            // 
+            // splitContainer_left.Panel2
+            // 
+            this.splitContainer_left.Panel2.Controls.Add(this.splitContainer_right);
+            this.splitContainer_left.Size = new System.Drawing.Size(1249, 587);
+            this.splitContainer_left.SplitterDistance = 202;
+            this.splitContainer_left.TabIndex = 5;
+            // 
+            // splitContainer_left_v
+            // 
+            this.splitContainer_left_v.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer_left_v.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer_left_v.Name = "splitContainer_left_v";
+            this.splitContainer_left_v.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer_left_v.Panel1
+            // 
+            this.splitContainer_left_v.Panel1.Controls.Add(this.tabControl_left_top);
+            // 
+            // splitContainer_left_v.Panel2
+            // 
+            this.splitContainer_left_v.Panel2.Controls.Add(this.tabControl_left_bottom);
+            this.splitContainer_left_v.Size = new System.Drawing.Size(202, 587);
+            this.splitContainer_left_v.SplitterDistance = 248;
+            this.splitContainer_left_v.TabIndex = 0;
+            // 
+            // tabControl_left_top
+            // 
+            this.tabControl_left_top.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_left_top.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_left_top.Name = "tabControl_left_top";
+            this.tabControl_left_top.SelectedIndex = 0;
+            this.tabControl_left_top.Size = new System.Drawing.Size(202, 248);
+            this.tabControl_left_top.TabIndex = 0;
+            // 
+            // tabControl_left_bottom
+            // 
+            this.tabControl_left_bottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_left_bottom.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_left_bottom.Name = "tabControl_left_bottom";
+            this.tabControl_left_bottom.SelectedIndex = 0;
+            this.tabControl_left_bottom.Size = new System.Drawing.Size(202, 335);
+            this.tabControl_left_bottom.TabIndex = 1;
+            // 
+            // splitContainer_right
+            // 
+            this.splitContainer_right.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer_right.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+            this.splitContainer_right.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer_right.Name = "splitContainer_right";
+            // 
+            // splitContainer_right.Panel1
+            // 
+            this.splitContainer_right.Panel1.Controls.Add(this.tabControl_center);
+            // 
+            // splitContainer_right.Panel2
+            // 
+            this.splitContainer_right.Panel2.Controls.Add(this.splitContainer_right_v);
+            this.splitContainer_right.Size = new System.Drawing.Size(1043, 587);
+            this.splitContainer_right.SplitterDistance = 816;
+            this.splitContainer_right.TabIndex = 0;
+            // 
+            // tabControl_center
+            // 
+            this.tabControl_center.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_center.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_center.Name = "tabControl_center";
+            this.tabControl_center.SelectedIndex = 0;
+            this.tabControl_center.Size = new System.Drawing.Size(816, 587);
+            this.tabControl_center.TabIndex = 2;
+            // 
+            // splitContainer_right_v
+            // 
+            this.splitContainer_right_v.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer_right_v.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer_right_v.Name = "splitContainer_right_v";
+            this.splitContainer_right_v.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer_right_v.Panel1
+            // 
+            this.splitContainer_right_v.Panel1.Controls.Add(this.tabControl_right_top);
+            // 
+            // splitContainer_right_v.Panel2
+            // 
+            this.splitContainer_right_v.Panel2.Controls.Add(this.tabControl_right_bottom);
+            this.splitContainer_right_v.Size = new System.Drawing.Size(223, 587);
+            this.splitContainer_right_v.SplitterDistance = 256;
+            this.splitContainer_right_v.TabIndex = 0;
+            // 
+            // tabControl_right_top
+            // 
+            this.tabControl_right_top.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_right_top.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_right_top.Name = "tabControl_right_top";
+            this.tabControl_right_top.SelectedIndex = 0;
+            this.tabControl_right_top.Size = new System.Drawing.Size(223, 256);
+            this.tabControl_right_top.TabIndex = 2;
+            // 
+            // tabControl_right_bottom
+            // 
+            this.tabControl_right_bottom.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl_right_bottom.Location = new System.Drawing.Point(0, 0);
+            this.tabControl_right_bottom.Name = "tabControl_right_bottom";
+            this.tabControl_right_bottom.SelectedIndex = 0;
+            this.tabControl_right_bottom.Size = new System.Drawing.Size(223, 327);
+            this.tabControl_right_bottom.TabIndex = 2;
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1249, 633);
-            this.Controls.Add(this.dockPanel);
+            this.Controls.Add(this.splitContainer_left);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.IsMdiContainer = true;
@@ -243,6 +367,22 @@
             this.Text = "MainForm";
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.splitContainer_left.Panel1.ResumeLayout(false);
+            this.splitContainer_left.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_left)).EndInit();
+            this.splitContainer_left.ResumeLayout(false);
+            this.splitContainer_left_v.Panel1.ResumeLayout(false);
+            this.splitContainer_left_v.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_left_v)).EndInit();
+            this.splitContainer_left_v.ResumeLayout(false);
+            this.splitContainer_right.Panel1.ResumeLayout(false);
+            this.splitContainer_right.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_right)).EndInit();
+            this.splitContainer_right.ResumeLayout(false);
+            this.splitContainer_right_v.Panel1.ResumeLayout(false);
+            this.splitContainer_right_v.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer_right_v)).EndInit();
+            this.splitContainer_right_v.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -252,7 +392,6 @@
 
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.MenuStrip menuStrip;
-        private WeifenLuo.WinFormsUI.Docking.DockPanel dockPanel;
         private System.Windows.Forms.ToolStripMenuItem menuItem_file;
         private System.Windows.Forms.ToolStripMenuItem menuItem_map;
         private System.Windows.Forms.ToolStripMenuItem menuItem_about;
@@ -271,10 +410,15 @@
         private System.Windows.Forms.ToolStripMenuItem menuItem_about_about;
         private System.Windows.Forms.ToolStripMenuItem menuItem_about_credits;
         private System.Windows.Forms.ToolStripMenuItem menuItem_about_help;
-        private WeifenLuo.WinFormsUI.Docking.VS2015DarkTheme vS2015DarkTheme1;
-        private WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme vS2015BlueTheme1;
-        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender1;
         private System.Windows.Forms.ToolStripMenuItem menuItem_file_import_tiled;
-        private WeifenLuo.WinFormsUI.Docking.VS2015LightTheme vS2015LightTheme1;
+        private System.Windows.Forms.SplitContainer splitContainer_left;
+        private System.Windows.Forms.SplitContainer splitContainer_left_v;
+        private System.Windows.Forms.TabControl tabControl_left_top;
+        private System.Windows.Forms.TabControl tabControl_left_bottom;
+        private System.Windows.Forms.SplitContainer splitContainer_right;
+        private System.Windows.Forms.TabControl tabControl_center;
+        private System.Windows.Forms.SplitContainer splitContainer_right_v;
+        private System.Windows.Forms.TabControl tabControl_right_top;
+        private System.Windows.Forms.TabControl tabControl_right_bottom;
     }
 }

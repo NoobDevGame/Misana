@@ -9,21 +9,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Misana.Editor.Forms.MDI
 {
-    public partial class PropertyView : SingleInstanceDockWindow, IMDIForm
+    public partial class PropertyView : Control
     {
-        public DockState DefaultDockState => DockState.DockRight;
-
-        private MainForm mainForm;
+        private Application app;
 
         private bool preferEntities;
 
-        public PropertyView(MainForm mainForm)
+        public PropertyView(Application mainForm)
         {
-            this.mainForm = mainForm;
+            this.app = mainForm;
 
             InitializeComponent();
 
