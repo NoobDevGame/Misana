@@ -191,10 +191,6 @@
       <Project>{34AD5B6C-6C25-4F80-8231-EA8D5AF51138}</Project>
       <Name>Misana.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Misana.Network\Misana.Network.csproj">
-      <Project>{3C60961E-26F1-4769-A090-0297C946ADA2}</Project>
-      <Name>Misana.Network</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Misana.Serialization\Misana.Serialization.csproj">
       <Project>{7b71b5a3-1e6a-4f61-91ca-2a09afacb109}</Project>
       <Name>Misana.Serialization</Name>

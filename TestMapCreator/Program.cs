@@ -42,10 +42,10 @@ namespace TestMapCreator
             playerDefinition.Definitions.Add(new WieldingDefinition());
             playerDefinition.Definitions.Add(new FacingDefinition());
 
-            var createDefinition = new CreateDefinition();
-            createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow", true)) {ApplyTo = ApplicableTo.Self});
+            //var createDefinition = new CreateDefinition();
+            //createDefinition.OnCreateEvents.Add(new ApplyEffectEvent(new CreateEntityEffect("Bow", true)) {ApplyTo = ApplicableTo.Self});
 
-            playerDefinition.Definitions.Add(createDefinition);
+            //playerDefinition.Definitions.Add(createDefinition);
             map.GlobalEntityDefinitions.Add("Player", playerDefinition);
            
 

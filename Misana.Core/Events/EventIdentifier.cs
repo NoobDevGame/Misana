@@ -1,17 +1,19 @@
 ﻿
 using System.Threading;
 
-public static class EventIdentifier
-{
-    private static int _eventIndex = 0;
-
-    public static void Reset()
+namespace Misana.Core.Events {
+    public static class EventIdentifier
     {
-        _eventIndex = 0;
-    }
+        private static int _eventIndex = 0;
 
-    public static int NextId()
-    {
-        return Interlocked.Increment(ref _eventIndex);
+        public static void Reset()
+        {
+            _eventIndex = 0;
+        }
+
+        public static int NextId()
+        {
+            return Interlocked.Increment(ref _eventIndex);
+        }
     }
 }

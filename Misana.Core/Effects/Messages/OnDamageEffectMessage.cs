@@ -1,9 +1,8 @@
-﻿using Misana.Network;
+﻿using Misana.Core.Network;
 
 namespace Misana.Core.Effects.Messages
 {
-    [MessageDefinition]
-    public struct OnDamageEffectMessage
+    public class OnDamageEffectMessage : TcpGameMessage
     {
         public int EntityId;
         public float Damage;
@@ -12,6 +11,18 @@ namespace Misana.Core.Effects.Messages
         {
             EntityId = entityId;
             Damage = damage;
+        }
+
+        private OnDamageEffectMessage(){}
+
+        public override void ApplyOnClient(IClientGameMessageApplicator a)
+        {
+            a.Apply(this);
+        }
+
+        public override void ApplyOnServer(IServerGameMessageApplicator a, IClientOnServer client)
+        {
+            a.Apply(this, client);
         }
     }
 }

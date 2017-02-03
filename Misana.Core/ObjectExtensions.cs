@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
-using System.ArrayExtensions;
+using Misana.Core.ArrayExtensions;
 
-namespace System
+namespace Misana.Core
 {
     public static class ObjectExtensions
     {
@@ -68,7 +69,7 @@ namespace System
         }
     }
 
-    public class ReferenceEqualityComparer : EqualityComparer<Object>
+    public class ReferenceEqualityComparer : EqualityComparer<object>
     {
         public override bool Equals(object x, object y)
         {

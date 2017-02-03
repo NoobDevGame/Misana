@@ -1,9 +1,8 @@
-﻿using Misana.Network;
+﻿using Misana.Core.Network;
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition(UseUDP = true)]
-    public struct EntityHealthMessage
+    public class EntityHealthMessage : UdpGameMessage
     {
         public int EntityId;
         public float Health;
@@ -12,6 +11,17 @@ namespace Misana.Core.Communication.Messages
         {
             EntityId = entityId;
             Health = health;
+        }
+
+        private EntityHealthMessage(){}
+        public override void ApplyOnClient(IClientGameMessageApplicator a)
+        {
+            a.Apply(this);
+        }
+
+        public override void ApplyOnServer(IServerGameMessageApplicator a, IClientOnServer client)
+        {
+            a.Apply(this, client);
         }
     }
 }

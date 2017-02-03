@@ -9,10 +9,10 @@ namespace Misana.Core.Ecs.Meta
 {
     internal static class ComponentInitializer
     {
-        internal static void Initialize(List<Type> concreteTypes, out int componentCount, out List<Action> onNewManager)
+        internal static void Initialize(List<Type> concreteTypes, out int componentCount, out List<Action> onNewManager, out List<Type> componentTypes)
         {
             var baseComponentType = typeof(Component);
-            var componentTypes = concreteTypes
+            componentTypes = concreteTypes
                 .Where(t => baseComponentType.IsAssignableFrom(t))
                 .ToList();
 

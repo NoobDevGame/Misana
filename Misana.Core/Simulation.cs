@@ -15,16 +15,15 @@ using Misana.Core.Events;
 using Misana.Core.Events.Entities;
 using Misana.Core.Events.OnUse;
 using Misana.Core.Maps;
+using Misana.Core.Network;
 using Misana.Core.Systems;
 using Misana.Core.Systems.StatusSystem;
-using Misana.Network;
 
 namespace Misana.Core
 {
     public class Simulation : ISimulation
     {
-        private readonly INetworkSender _sender;
-        public EffectApplicator EffectMessenger { get; }
+        private readonly IOutgoingMessageQueue _queue;
 
         private EntityCollidingMoverSystem _collidingMoverSystem;
         private EntityInteractionSystem _interactionSystem;
@@ -41,10 +40,11 @@ namespace Misana.Core
         public SimulationMode Mode { get; private set; }
 
         public Simulation(SimulationMode mode,List<BaseSystem> beforSystems,List<BaseSystem> afterSystems
-            , INetworkSender sender,INetworkReceiver receiver, int start)
+            ,IOutgoingMessageQueue queue, int start)
         {
-            _sender = sender;
-            EffectMessenger = new EffectApplicator(this,sender,receiver);
+            _queue = queue;
+            //_sender = sender;
+           // EffectMessenger = new EffectApplicator(this,sender,receiver);
             _positionTrackingSystem = new PositionTrackingSystem();
             _collidingMoverSystem = new EntityCollidingMoverSystem(_positionTrackingSystem);
             Mode = mode;
@@ -74,7 +74,7 @@ namespace Misana.Core
                 systems.AddRange(afterSystems);
 
 
-            Entities = EntityManager.Create("LocalWorld",systems, mode);
+            Entities = EntityManager.Create("LocalWorld",systems, mode, _queue);
 
             for (int i = start; i < start + 50000; i++)
             {
@@ -155,7 +155,7 @@ namespace Misana.Core
             }
         }
 
-        public async Task<int> CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
+        public Task<int> CreateEntity(EntityDefinition definition,int entityId,Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
         {
             var entityBuilder = EntityCreator.CreateEntity(definition, CurrentMap, new EntityBuilder(), this);
 
@@ -166,7 +166,7 @@ namespace Misana.Core
 
             StartCreateEvent(entity);
 
-            return await Task.FromResult( entity.Id) ;
+            return Task.FromResult( entity.Id) ;
         }
 
         public Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
@@ -254,20 +254,6 @@ namespace Misana.Core
             if (State == SimulationState.Running)
             {
                 Entities.Update(gameTime);
-
-                foreach (var msg in Entities.Messages)
-                {
-                    if (msg.Item2)
-                    {
-                        _sender.SendTcpBytes(msg.Item1);
-                    }
-                    else
-                    {
-                        _sender.SendUdpBytes(msg.Item1);
-                    }
-                }
-
-                Entities.Messages.Clear();
             }
         }
     }

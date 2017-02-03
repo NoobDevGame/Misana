@@ -1,27 +1,45 @@
 ﻿using System.Runtime.InteropServices;
-using Misana.Network;
+using Misana.Core.Client;
+using Misana.Core.Network;
+using Misana.Core.Server;
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition]
-    public struct ReadWorldsMessageRequest
+    public class ReadWorldsMessageRequest : NetworkRequest
     {
+        private ReadWorldsMessageRequest(){}
+        public override void HandleOnClient(IClientRpcMessageHandler h)
+        {
+            h.Handle(this);
+        }
 
+        public override void HandleOnServer(IServerRpcMessageHandler h, byte messageId, IClientOnServer client)
+        {
+            h.Handle(this, messageId, client);
+        }
     }
 
-    [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Unicode)]
-    [MessageDefinition]
-    public struct WorldInformationMessage
+    public class WorldInformationMessage : NetworkResponse
     {
         public int WorldId;
 
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
         public string Name;
 
+        private WorldInformationMessage(){}
         public WorldInformationMessage(int worldId, string name)
         {
             WorldId = worldId;
             Name = name;
+        }
+
+        public override void HandleOnClient(IClientRpcMessageHandler h)
+        {
+            h.Handle(this);
+        }
+
+        public override void HandleOnServer(IServerRpcMessageHandler h, byte messageId, IClientOnServer client)
+        {
+            h.Handle(this, messageId, client);
         }
     }
 }

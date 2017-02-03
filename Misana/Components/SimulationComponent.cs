@@ -1,16 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using engenious;
 using Misana.Core;
+using Misana.Core.Client;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Maps;
+using Misana.Core.Network;
+using Misana.Core.Server;
 using Misana.EntityComponents;
 using Misana.EntitySystems;
-using Misana.Network;
 using GameTime = engenious.GameTime;
 
 namespace Misana.Components
@@ -27,7 +30,7 @@ namespace Misana.Components
 
         private ClientGameHost host;
         private ServerGameHost serverHost;
-        private INetworkClient networkClient;
+        private IServerOnClient networkClient;
         private List<BaseSystem> renderSystems;
 
         public List<WorldInformation> WorldInformations { get;} = new List<WorldInformation>();
@@ -89,18 +92,44 @@ namespace Misana.Components
         public async Task CreateLocalServer(string localplayer)
         {
             serverHost.StartListening();
-            networkClient = serverHost.CreateLocalClient();
-            host = new ClientGameHost(networkClient, null,renderSystems);
+            host = new ClientGameHost(null,renderSystems);
+            var c = serverHost.CreateLocalClient(host);
+            networkClient = c.ServerOnClient;
+            host.Server = this.networkClient;
+            networkClient.ClientRpcHandler = host;
+
             var id = await host.Connect("Test",IPAddress.Loopback);
             LocalPlayerInfo = new PlayerInfo("Test",id);
         }
 
         public async Task ConnectToServer(string name, IPAddress address)
         {
-            networkClient = NetworkManager.CreateNetworkClient();
-            host = new ClientGameHost(networkClient, null,renderSystems);
+            networkClient = new ServerOnClient();
+            host = new ClientGameHost(null,renderSystems);
+            host.Server = this.networkClient;
+            networkClient.ClientRpcHandler = host;
+
+            host.SimulationStarted += OnSimulationStarted;
+            host.WorldInfoReceived += OnWorldInfoReceived;
+            host.PlayerInfoReceived += OnPlayerInfoReceived;
+
             var id = await host.Connect(name,address);
             LocalPlayerInfo = new PlayerInfo(name,id);
+        }
+
+        private void OnWorldInfoReceived(WorldInformation obj)
+        {
+            WorldInformations.Add(obj);
+        }
+
+        private void OnPlayerInfoReceived(PlayerInfo obj)
+        {
+            Players.Add(obj);
+        }
+
+        private void OnSimulationStarted()
+        {
+            Simulation.Start();
         }
 
         public async Task CreateWorld(string name, Map map)
@@ -158,43 +187,12 @@ namespace Misana.Components
             await Simulation.Start();
         }
 
+
+
         public override void Update(GameTime gameTime)
         {
-            if (host?.Receiver == null || host?.Sender == null)
+            if (host?.Server == null)
                 return;
-
-            {
-                WorldInformationMessage message;
-                while (host.Receiver.TryGetMessage(out message))
-                {
-                    WorldInformations.Add(new WorldInformation(message));
-                }
-            }
-
-            {
-                OnJoinWorldMessage message;
-                while (host.Receiver.TryGetMessage(out message))
-                {
-                    Players.Add(new PlayerInfo(message.Name,message.PlayerId));
-                }
-            }
-
-            {
-                PlayerInfoMessage message;
-                while (host.Receiver.TryGetMessage(out message))
-                {
-
-                    Players.Add(new PlayerInfo(message.Name,message.PlayerId));
-                }
-            }
-
-            {
-                OnStartSimulationMessage message;
-                while (host.Receiver.TryGetMessage(out message))
-                {
-                    StartWorld();
-                }
-            }
             
             base.Update(gameTime);
 

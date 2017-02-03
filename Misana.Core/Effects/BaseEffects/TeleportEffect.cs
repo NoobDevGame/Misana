@@ -42,16 +42,28 @@ namespace Misana.Core.Effects.BaseEffects
                     message.Position += new Vector2(0.5f, 0.5f);
                 }
 
-                if (simulation.Mode == SimulationMode.Local || entity.Contains<OnLocalSimulationComponent>())
-                {
-                    simulation.EffectMessenger.ApplyEffectSelf(ref message);
-                }
-                else if (simulation.Mode == SimulationMode.Server)
-                {
-                    simulation.EffectMessenger.SendMessage(ref message,true);
-                }
+                if(CanApply(message, entity, positionComponent, simulation))
+                    ApplyLocally(message, entity, positionComponent, simulation);
 
             }
+        }
+
+        public static bool CanApply(OnTeleportEffectMessage effect, Entity e, TransformComponent transform, ISimulation simulation)
+        {
+            return true;
+        }
+
+        public static void ApplyLocally(OnTeleportEffectMessage effect, Entity e, TransformComponent transform, ISimulation simulation)
+        {
+            ApplyFromRemote(effect, e, transform, simulation);
+            simulation.Entities.NoteForSend(effect);
+        }
+
+        public static void ApplyFromRemote(OnTeleportEffectMessage message, Entity e, TransformComponent transform, ISimulation simulation)
+        {
+            var area = simulation.CurrentMap.GetAreaById( message.AreaId);
+            transform.CurrentArea = area;
+            transform.Position = message.Position;
         }
 
         public override void Serialize(Version version, BinaryWriter bw)

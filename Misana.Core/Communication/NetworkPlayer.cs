@@ -1,10 +1,11 @@
-﻿using Misana.Network;
+﻿using System.Net;
+using Misana.Core.Network;
 
 namespace Misana.Core.Communication
 {
-    public class NetworkPlayer : INetworkSender ,INetworkReceiver, INetworkIdentifier
+    public class NetworkPlayer : IClientOnServer
     {
-        public NetworkPlayer(string name, INetworkClient client)
+        public NetworkPlayer(string name, IClientOnServer client)
         {
             Name = name;
             Client = client;
@@ -12,9 +13,43 @@ namespace Misana.Core.Communication
 
         public string Name { get; private set; }
 
-        public INetworkClient Client { get; private set; }
+        public IClientOnServer Client { get; private set; }
 
         public int NetworkId => Client.NetworkId;
+        public EndPoint UdpEndpoint
+        {
+            get { return Client.UdpEndpoint; }
+        }
+
+        public void Respond<T>(T response, byte messageId) where T : NetworkResponse
+        {
+            Client.Respond(response, messageId);
+        }
+
+        public bool TryDequeue(out IGameMessage msg)
+        {
+            return Client.TryDequeue(out msg);
+        }
+
+        public void FlushQueue()
+        {
+            Client.FlushQueue();
+        }
+
+        public void Start()
+        {
+            Client.Start();
+        }
+
+        public void HandleData(byte[] udpBuffer, ref int processed)
+        {
+            Client.HandleData(udpBuffer, ref processed);
+        }
+
+        public void Send<T>(T msg) where T : RpcMessage
+        {
+            Client.Send(msg);
+        }
 
         public NetworkSimulation Simulation { get; private set; }
 
@@ -23,44 +58,9 @@ namespace Misana.Core.Communication
             Simulation = simulation;
         }
 
-        public void SendMessage<T>(ref T message) where T : struct
+        public void Enqueue<T>(T msg) where T : NetworkMessage, IGameMessage
         {
-            Client.SendMessage(ref message);
-        }
-
-        public MessageWaitObject SendRequestMessage<T>(ref T message) where T : struct
-        {
-            return Client.SendRequestMessage(ref message);
-        }
-
-        public void SendResponseMessage<T>(ref T message, byte messageid) where T : struct
-        {
-            Client.SendResponseMessage(ref message,messageid);
-        }
-
-        public bool TryGetMessage<T>(out T message, out INetworkIdentifier senderClient) where T : struct
-        {
-            return Client.TryGetMessage(out message, out senderClient);
-        }
-
-        public bool TryGetMessage<T>(out T message) where T : struct
-        {
-            return Client.TryGetMessage<T>(out message);
-        }
-
-        public void RegisterOnMessageCallback<T>(MessageReceiveCallback<T> callback) where T : struct
-        {
-            Client.RegisterOnMessageCallback(callback);
-        }
-
-        public void SendTcpBytes(byte[] bytes)
-        {
-            Client.SendTcpBytes(bytes);
-        }
-
-        public void SendUdpBytes(byte[] bytes)
-        {
-            Client.SendUdpBytes(bytes);
+            Client.Enqueue(msg);
         }
     }
 }

@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Effects.Messages;
-using Misana.Network;
 
 namespace Misana.Core.Systems
 {
@@ -41,14 +40,11 @@ namespace Misana.Core.Systems
                        
                         if (wieldedEntity != null)
                         {
-                            var msg = new OnDropWieldedEffectMessage {
+                            ApplyLocally(new OnDropWieldedEffectMessage {
                                 OwnerId = e.Id,
                                 WieldedId = wieldedEntity.Id,
                                 TwoHanded = wieldedEntity.Id
-                            };
-                            _simulation.EffectMessenger.SendMessage(ref msg,true);
-
-                            wielding.RightHandEntityId = 0;
+                            }, Manager);
                         }
                     }
                 }
@@ -71,8 +67,7 @@ namespace Misana.Core.Systems
 
                         if (wielding.RightHandEntityId == 0)
                         {
-                           OnPickupEffectMessage message = new OnPickupEffectMessage(e.Id,id);
-                           _simulation.EffectMessenger.SendMessage(ref message,true);
+                            ApplyLocally(new OnPickupEffectMessage(e.Id, id), Manager);
                         }
                     }
                 }
@@ -83,7 +78,70 @@ namespace Misana.Core.Systems
             if (interacting != null)
                 interacting.Interacting = r1.Interact;
         }
-    }
 
-    
+        private void ApplyLocally(OnPickupEffectMessage message, EntityManager manager)
+        {
+            ApplyFromRemote(message, manager);
+            manager.NoteForSend(message);
+        }
+
+        public static void ApplyFromRemote(OnPickupEffectMessage message, EntityManager manager)
+        {
+            var parentEntity = manager.GetEntityById(message.ParentEntityId);
+            var entity = manager.GetEntityById(message.EntityId);
+
+            var wieldedTransform = entity.Get<TransformComponent>();
+            wieldedTransform.ParentEntityId = parentEntity.Id;
+            wieldedTransform.Position = Vector2.Zero;
+            entity.Remove<DroppedItemComponent>();
+            wieldedTransform.Radius *= 2;
+
+            var w = ComponentRegistry<WieldedComponent>.Take();
+            manager.Add(entity, w, false);
+
+            var wielding = parentEntity.Get<WieldingComponent>();
+
+            wielding.RightHandEntityId = entity.Id;
+            wielding.TwoHanded = true;
+        }
+
+        private static void ApplyLocally(OnDropWieldedEffectMessage message, EntityManager manager)
+        {
+            ApplyFromRemote(message, manager);
+            manager.NoteForSend(message);
+        }
+
+        public static void ApplyFromRemote(OnDropWieldedEffectMessage message, EntityManager manager)
+        {
+            var em = manager;
+            var owner = em.GetEntityById(message.OwnerId);
+            var wielded = em.GetEntityById(message.WieldedId);
+
+            if (wielded == null || owner == null)
+                return;
+
+            var ownerWielding = owner.Get<WieldingComponent>();
+            var ownerTransform = owner.Get<TransformComponent>();
+
+            if (ownerWielding == null || ownerTransform == null)
+                return;
+
+            if (ownerWielding.RightHandEntityId != message.WieldedId)
+                return;
+
+            var wieldedTransform = wielded.Get<TransformComponent>();
+
+            if (wieldedTransform == null)
+                return;
+
+            wielded.Remove<WieldedComponent>().Add<DroppedItemComponent>();
+
+            ownerWielding.TwoHanded = false;
+            ownerWielding.RightHandEntityId = 0;
+
+            wieldedTransform.Radius /= 2;
+            wieldedTransform.ParentEntityId = 0;
+            wieldedTransform.Position = ownerTransform.Position;
+        }
+    }
 }

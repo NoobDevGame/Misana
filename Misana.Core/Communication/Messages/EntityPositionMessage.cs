@@ -1,10 +1,9 @@
 ﻿using Misana.Core.Components;
-using Misana.Network;
+using Misana.Core.Network;
 
 namespace Misana.Core.Communication.Messages
 {
-    [MessageDefinition(UseUDP = true)]
-    public struct EntityPositionMessage
+    public class EntityPositionMessage : UdpGameMessage
     {
         public int entityId;
 
@@ -16,6 +15,18 @@ namespace Misana.Core.Communication.Messages
             this.entityId = entityId;
             position = component.Position;
             Facing = Vector2.Zero;
+        }
+
+        private EntityPositionMessage(){}
+
+        public override void ApplyOnClient(IClientGameMessageApplicator a)
+        {
+            a.Apply(this);
+        }
+
+        public override void ApplyOnServer(IServerGameMessageApplicator a, IClientOnServer client)
+        {
+            a.Apply(this, client);
         }
     }
 }

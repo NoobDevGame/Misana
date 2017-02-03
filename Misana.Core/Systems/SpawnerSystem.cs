@@ -1,4 +1,5 @@
-﻿using Misana.Core.Communication.Systems;
+﻿using Misana.Core.Communication.Messages;
+using Misana.Core.Communication.Systems;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 

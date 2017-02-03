@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using Misana.Core.Ecs.Changes;
 using Misana.Core.Ecs.Meta;
-using Misana.Network;
+using Misana.Core.Network;
 
 namespace Misana.Core.Ecs
 {
@@ -28,21 +28,25 @@ namespace Misana.Core.Ecs
         
         public GameTime GameTime;
         public readonly SimulationMode Mode;
+        private readonly IOutgoingMessageQueue _queue;
         public string Name { get; set; }
 
         public static void Initialize()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
             var concreteTypes = assemblies.SelectMany(a => a.GetTypes()).Where(t => !t.IsAbstract).ToList();
-            
-            ComponentInitializer.Initialize(concreteTypes, out ComponentCount, out OnNewManager);
+
+            List<Type> componentTypes;
+            ComponentInitializer.Initialize(concreteTypes, out ComponentCount, out OnNewManager, out componentTypes);
+            SerializationInitializer.Initialize(concreteTypes, componentTypes);
         }
 
-        private EntityManager(List<BaseSystem> systems, SimulationMode mode)
+        private EntityManager(List<BaseSystem> systems, SimulationMode mode, IOutgoingMessageQueue queue)
         {
             _entitesWithChanges =  new EntitesWithChanges(this);
             Index = Interlocked.Increment(ref _entityManagerIndex);
             Mode = mode;
+            _queue = queue;
             foreach (var fn in OnNewManager)
                 fn();
 
@@ -52,10 +56,10 @@ namespace Misana.Core.Ecs
             Systems = systems;
         }
         
-        public static EntityManager Create(string name, List<BaseSystem> systems, SimulationMode mode)
+        public static EntityManager Create(string name, List<BaseSystem> systems, SimulationMode mode, IOutgoingMessageQueue queue)
         {
 
-            var manager =  new EntityManager(systems, mode)
+            var manager =  new EntityManager(systems, mode, queue)
             {
                 Name = name,
             };
@@ -262,18 +266,9 @@ namespace Misana.Core.Ecs
         
         public Queue<int> AvailableEntityIds = new Queue<int>();
 
-        public List<Tuple<byte[], bool>> Messages = new List<Tuple<byte[], bool>>(); 
-
-        private readonly object _messageLock = new object();
-
-        public void NoteForSend<T>(T msg) where T : struct
+        public void NoteForSend<T>(T msg) where T : NetworkMessage, IGameMessage
         {
-            var bytes = MessageHandle<T>.Serialize(ref msg);
-
-            lock (_messageLock)
-            {
-                Messages.Add(Tuple.Create(bytes, MessageHandle<T>.IsUDPMessage));
-            }
+            _queue.Enqueue(msg);
         }
     }
 }

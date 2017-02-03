@@ -7,7 +7,6 @@ using Misana.Core.Entities;
 using Misana.Core.Events;
 using Misana.Core.Maps;
 using Misana.Core.Systems;
-using Misana.Network;
 
 namespace Misana.Core
 {
@@ -22,8 +21,6 @@ namespace Misana.Core
         SimulationMode Mode { get; }
 
         SpawnerSystem SpawnerSystem { get; }
-
-        EffectApplicator EffectMessenger { get; }
 
         Task ChangeMap(Map map);
 

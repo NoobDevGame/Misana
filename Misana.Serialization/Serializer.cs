@@ -1,41 +1,124 @@
 ﻿using System;
+using System.IO;
+using System.Text;
 
 namespace Misana.Serialization
 {
-    public abstract class Serializer
+    public delegate void Serialize<in T> (T item, ref byte[] bytes, ref int index);
+
+    public static unsafe class Serializer
     {
-        public abstract void WriteSingle(float i);
-        public abstract void WriteDouble(double i);
-        public abstract void WriteInt64(long i);
-        public abstract void WriteUInt32(uint i);
-        public abstract void WriteUInt64(ulong i);
-        public abstract void WriteUInt16(ushort i);
-        public abstract void WriteInt32(int i);
-        public abstract void WriteBoolean(bool i);
-        public abstract void WriteInt16(short n);
-        public abstract void WriteByte(byte b);
-        public abstract void WriteString(string s);
+        public static void EnsureSize(ref byte[] buffer, int len)
+        {
+            if (buffer.Length < len)
+            {
+                var tmp = new byte[buffer.Length * 2 < len ? len : buffer.Length * 2];
+                Array.Copy(buffer, tmp, buffer.Length);
+                buffer = tmp;
+            }
+        }
+        public static void WriteSingle(float i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(int*) (numPtr + index) = *(int*) &i;
+
+            index += 4;
+        }
+
+        public static void WriteDouble(double i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(long*) (numPtr + index) = *(long*) &i;
+            index += 8;
+        }
+
+        public static void WriteInt64(long i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(long*) (numPtr + index) = i;
+            index += 8;
+        }
+
+        public static void WriteUInt32(uint i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(uint*) (numPtr + index) = i;
+            index += 4;
+        }
+
+        public static void WriteUInt64(ulong i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(ulong*) (numPtr + index) = i;
+            index += 8;
+        }
+
+        public static void WriteUInt16(ushort i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(ushort*) (numPtr + index) = i;
+            index += 2;
+        }
+
+        public static void WriteInt32(int i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(int*) (numPtr + index) = i;
+
+            index += 4;
+        }
+
+        public static void WriteBoolean(bool i, ref byte[] buffer, ref int index)
+        {
+            buffer[index++] = (byte) (i ? 1 : 0);
+        }
+
+        public static void WriteInt16(short i, ref byte[] buffer, ref int index)
+        {
+            fixed (byte* numPtr = buffer)
+                *(short*) (numPtr + index) = i;
+
+            index += 2;
+        }
+
+        public static void  WriteByte(byte b, ref byte[] buffer, ref int index)
+        {
+            buffer[index++] = b;
+        }
+
+        public static void  WriteString(string s, ref byte[] buffer, ref int index)
+        {
+            var len = Encoding.UTF8.GetByteCount(s);
+
+            EnsureSize(ref buffer, index + 4 + len + 1);
+
+            WriteInt32(len, ref buffer, ref index);
+
+            Encoding.UTF8.GetBytes(s, 0, s.Length, buffer, index);
+            index += len;
+        }
+        
 
         public static void Initialize()
         {
-            Serializes<bool>.Serialize = (i, s) => s.WriteBoolean(i);
+            Serializes<bool>.Serialize = WriteBoolean;
 
-            Serializes<byte>.Serialize = (i, s) => s.WriteByte(i);
-            Serializes<short>.Serialize = (i, s) => s.WriteInt16(i);
-            Serializes<int>.Serialize = (i, s) => s.WriteInt32(i);
-            Serializes<long>.Serialize = (i, s) => s.WriteInt64(i);
+            Serializes<byte>.Serialize = WriteByte;
+            Serializes<short>.Serialize = WriteInt16;
+            Serializes<int>.Serialize = WriteInt32;
+            Serializes<long>.Serialize = WriteInt64;
 
-            Serializes<uint>.Serialize = (i, s) => s.WriteUInt32(i);
-            Serializes<ushort>.Serialize = (i, s) => s.WriteUInt16(i);
-            Serializes<ulong>.Serialize = (i, s) => s.WriteUInt64(i);
+            Serializes<uint>.Serialize = WriteUInt32;
+            Serializes<ushort>.Serialize = WriteUInt16;
+            Serializes<ulong>.Serialize = WriteUInt64;
 
-            Serializes<float>.Serialize = (i, s) => s.WriteSingle(i);
-            Serializes<double>.Serialize = (i, s) => s.WriteDouble(i);
+            Serializes<float>.Serialize = WriteSingle;
+            Serializes<double>.Serialize = WriteDouble;
 
-            Serializes<string>.Serialize = (i, s) => s.WriteString(i);
+            Serializes<string>.Serialize = WriteString;
 
-            Serializes<TimeSpan>.Serialize = (i, s) => s.WriteInt64(i.Ticks);
-            Serializes<DateTime>.Serialize = (i, s) => s.WriteInt64(i.Ticks);
+            Serializes<TimeSpan>.Serialize = (TimeSpan item, ref byte[] bytes, ref int index) => WriteInt64(item.Ticks, ref bytes, ref index);
+            Serializes<DateTime>.Serialize = (DateTime item, ref byte[] bytes, ref int index) => WriteInt64(item.Ticks, ref bytes, ref index);
         }
     }
 }

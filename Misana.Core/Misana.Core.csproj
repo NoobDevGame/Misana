@@ -46,27 +46,29 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Client\ClientGameHost.cs" />
+    <Compile Include="Client\ClientGameHost_Rpc.cs" />
+    <Compile Include="Client\ClientGameHost_MessageApplicator.cs" />
+    <Compile Include="Client\IClientGameMessageApplicator.cs" />
+    <Compile Include="Client\IClientRpcMessageHandler.cs" />
     <Compile Include="Communication\Components\OnLocalSimulationComponent.cs" />
     <Compile Include="Communication\Components\SendComponent.cs" />
-    <Compile Include="Communication\Messages\ChangeMapMessage.cs" />
-    <Compile Include="Communication\Messages\CreateWorldMessageRequest.cs" />
     <Compile Include="Communication\Messages\EntityHealthMessage.cs" />
-    <Compile Include="Communication\Messages\GetOuterPlayersMessageRequest.cs" />
-    <Compile Include="Communication\Messages\JoinWorldMessage.cs" />
-    <Compile Include="Communication\Messages\LoginMessage.cs" />
-    <Compile Include="Communication\Messages\CreateEntityMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
     <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
-    <Compile Include="Communication\Messages\StartSimulationMessage.cs" />
-    <Compile Include="Communication\NetworkEffectMessenger.cs" />
+    <Compile Include="Communication\Messages\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\PlayerInfo.cs" />
-    <Compile Include="Communication\Systems\ReceiveHealthSystem.cs" />
+    <Compile Include="Communication\Rpc\ChangeMapMessage.cs" />
+    <Compile Include="Communication\Rpc\CreateEntityMessage.cs" />
+    <Compile Include="Communication\Rpc\CreateWorldMessage.cs" />
+    <Compile Include="Communication\Rpc\GetOtherPlayers.cs" />
+    <Compile Include="Communication\Rpc\JoinWorldMessage.cs" />
+    <Compile Include="Communication\Rpc\LoginMessage.cs" />
+    <Compile Include="Communication\Rpc\StartSimulationMessage.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
-    <Compile Include="Communication\Systems\ReceiveEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\SendHealthSystem.cs" />
-    <Compile Include="Communication\Systems\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\WorldInformation.cs" />
     <Compile Include="Components\BlockColliderComponent.cs" />
     <Compile Include="Components\CharacterComponent.cs" />
@@ -105,16 +107,12 @@
     <Compile Include="Ecs\EntityManager.cs" />
     <Compile Include="Ecs\Meta\ComponentAttributes.cs" />
     <Compile Include="Ecs\Meta\ComponentInitializer.cs" />
-    <Compile Include="EffectApplicator.cs" />
-    <Compile Include="Effects\BaseEffects\CreateEntityEffect.cs" />
+    <Compile Include="Ecs\Meta\SerializationInitializer.cs" />
     <Compile Include="Effects\BaseEffects\RemoveSelfEffect.cs" />
-    <Compile Include="Effects\BaseEffects\SpawnProjectileEffect.cs" />
     <Compile Include="Effects\EffectCondition.cs" />
     <Compile Include="Effects\EffectDefinition.cs" />
     <Compile Include="Effects\Messages\OnDamageEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnDropWieldedEffectMessage.cs" />
-    <Compile Include="Effects\Messages\OnCreateEntityEffectMessage.cs" />
-    <Compile Include="Effects\Messages\OnCreateProjectileEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnPickupEffectMessage.cs" />
     <Compile Include="Effects\Messages\OnTeleportEffectmessage.cs" />
     <Compile Include="Entities\BaseDefinition\BlockColliderDefinition.cs" />
@@ -157,7 +155,6 @@
     <Compile Include="Index3.cs" />
     <Compile Include="IntMap.cs" />
     <Compile Include="ISimulation.cs" />
-    <Compile Include="ClientGameHost.cs" />
     <Compile Include="Maps\Area.cs" />
     <Compile Include="Maps\Layer.cs" />
     <Compile Include="Maps\Map.cs" />
@@ -171,9 +168,29 @@
     <Compile Include="Maps\TileProperty.cs" />
     <Compile Include="Maps\Tilesheet.cs" />
     <Compile Include="MisanaSerializer.cs" />
+    <Compile Include="Network\BlockAllocator.cs" />
+    <Compile Include="Network\ClientOnServer.cs" />
+    <Compile Include="Network\ClientOnServer_TCP.cs" />
+    <Compile Include="Network\IClientOnServer.cs" />
+    <Compile Include="Network\INetworkIdentifier.cs" />
+    <Compile Include="Network\InternalClientOnServer.cs" />
+    <Compile Include="Network\InternalNetworkClient.cs" />
+    <Compile Include="Network\InternalServerOnClient.cs" />
+    <Compile Include="Network\MessageInfo.cs" />
+    <Compile Include="Network\NetworkManager.cs" />
+    <Compile Include="Network\NetworkMessage.cs" />
+    <Compile Include="Network\SendableMessage.cs" />
+    <Compile Include="Network\ServerOnClient.cs" />
+    <Compile Include="Network\ServerOnClient_TCP.cs" />
+    <Compile Include="Network\ServerOnClient_UDP.cs" />
     <Compile Include="ObjectExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ServerGameHost.cs" />
+    <Compile Include="Server\IServerGameMessageApplicator.cs" />
+    <Compile Include="Server\IServerRpcMessageHandler.cs" />
+    <Compile Include="Server\ServerGameHost.cs" />
+    <Compile Include="Server\ServerGameHost_MessageApplicator.cs" />
+    <Compile Include="Server\ServerGameHost_Rpc.cs" />
+    <Compile Include="Server\ServerGameHost_UDP.cs" />
     <Compile Include="Simulation.cs" />
     <Compile Include="Components\PlayerInputComponent.cs" />
     <Compile Include="Components\TransformComponent.cs" />
@@ -194,10 +211,6 @@
     <Compile Include="Vector2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Misana.Network\Misana.Network.csproj">
-      <Project>{3C60961E-26F1-4769-A090-0297C946ADA2}</Project>
-      <Name>Misana.Network</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Misana.Serialization\Misana.Serialization.csproj">
       <Project>{7B71B5A3-1E6A-4F61-91CA-2A09AFACB109}</Project>
       <Name>Misana.Serialization</Name>

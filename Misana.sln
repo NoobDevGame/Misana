@@ -11,8 +11,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Server", "Misana.Ser
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Editor", "Misana.Editor\Misana.Editor.csproj", "{EF11460C-BF7E-43FE-8BF2-A06202F1F49A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Network", "Misana.Network\Misana.Network.csproj", "{3C60961E-26F1-4769-A090-0297C946ADA2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Misana.Tests", "Misana.Tests\Misana.Tests.csproj", "{FC4AD473-748F-406A-9889-8AF286728556}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGameUi", "monogameui\MonoGameUi\MonoGameUi.csproj", "{9E89B217-8424-4FCB-B365-3A01F61CD44F}"
@@ -43,10 +41,6 @@ Global
 		{EF11460C-BF7E-43FE-8BF2-A06202F1F49A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF11460C-BF7E-43FE-8BF2-A06202F1F49A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EF11460C-BF7E-43FE-8BF2-A06202F1F49A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3C60961E-26F1-4769-A090-0297C946ADA2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3C60961E-26F1-4769-A090-0297C946ADA2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3C60961E-26F1-4769-A090-0297C946ADA2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3C60961E-26F1-4769-A090-0297C946ADA2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FC4AD473-748F-406A-9889-8AF286728556}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FC4AD473-748F-406A-9889-8AF286728556}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC4AD473-748F-406A-9889-8AF286728556}.Release|Any CPU.ActiveCfg = Release|Any CPU
