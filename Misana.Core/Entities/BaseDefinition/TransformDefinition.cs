@@ -47,8 +47,7 @@ namespace Misana.Core.Entities.BaseDefinition
 
         public override void OnApplyDefinition(EntityBuilder entity, Map map, TransformComponent component, ISimulation sim)
         {
-            if(AreaId != -1)
-                component.CurrentArea = map.GetAreaById(AreaId);
+            component.CurrentAreaId = AreaId;
             component.Position = Position;
             component.Radius = Radius;
         }

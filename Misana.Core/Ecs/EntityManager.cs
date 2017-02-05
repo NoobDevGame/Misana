@@ -16,8 +16,13 @@ namespace Misana.Core.Ecs
 
         public static int ComponentCount;
 
+        public List<Entity> GetAllEntitiesSlowly() => _entityMap.Values;
+
         private readonly IntMap<Entity> _entityMap = new IntMap<Entity>(128);
         private readonly EntitiesToRemove _entitiesToRemove = new EntitiesToRemove();
+
+        public List<Entity> PendingEntities => _entitiesToAdd.List.ToList();
+
         private readonly EntitiesToAdd _entitiesToAdd = new EntitiesToAdd();
         private readonly EntitesWithChanges _entitesWithChanges;
         private readonly object _nextTickChangeLock = new object();

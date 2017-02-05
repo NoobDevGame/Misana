@@ -6,15 +6,15 @@ namespace Misana.Core.Components
 {
     public class TransformComponent : Component<TransformComponent>
     {
-        [Copy, Reset]
-        public Area CurrentArea;
+        [Copy, Reset(-1)]
+        public int CurrentAreaId = -1;
         [Copy, Reset]
         public Vector2 Position;
 
         [Copy, Reset(0.5f)]
         public float Radius = 0.5f;
 
-        [Reset]
+        [Reset, Copy]
         public int ParentEntityId;
 
         public Vector2 Size => new Vector2(2 * Radius, 2 * Radius);

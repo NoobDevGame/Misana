@@ -5,12 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Misana.Core.Maps;
 
 namespace Misana.Core.Systems
 {
     public class BlockCollidingMoverSystem : BaseSystemR3<MotionComponent, TransformComponent, BlockColliderComponent>
     {
+
         private readonly float gap = 0.00001f;
+        private Map _map;
+
+        public void ChangeMap(Map map)
+        {
+            _map = map;
+        }
 
         protected override void Update(Entity e, MotionComponent r1, TransformComponent r2, BlockColliderComponent _)
         {
@@ -18,8 +26,7 @@ namespace Misana.Core.Systems
             int loops = 0;
 
             Vector2 size = r2.HalfSize;
-
-            var area = r2.CurrentArea;
+            var area = _map.Areas[r2.CurrentAreaId - 1];
 
             var move = r1.Move;
 

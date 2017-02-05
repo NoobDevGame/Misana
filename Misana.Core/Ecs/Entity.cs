@@ -6,7 +6,7 @@ namespace Misana.Core.Ecs
     {
         public EntityManager Manager;
         public Component[] Components;
-        public readonly int Id;
+        public int Id;
 
         public T Get<T>() where T : Component, new() => (T)Components[ComponentRegistry<T>.Index];
 
@@ -27,8 +27,13 @@ namespace Misana.Core.Ecs
             Manager.Remove<T>(this);
             return this;
         }
+
+        public Entity()
+        {
+            Components = ComponentArrayPool.Take();
+        }
         
-        internal Entity(int id, Component[] components, EntityManager manager)
+        public Entity(int id, Component[] components, EntityManager manager)
         {
             Id = id;
             Components = components;

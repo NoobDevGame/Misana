@@ -19,7 +19,7 @@ namespace Misana.Core.Server
             var spawnerComponent = owner.Get<SpawnerComponent>();
 
             var tf = ComponentRegistry<TransformComponent>.Take();
-            tf.CurrentArea = simulation.BaseSimulation.CurrentMap.GetAreaById(message.AreaId);
+            tf.CurrentAreaId = message.AreaId;
             tf.Position = message.Position;
             tf.Radius = message.Radius;
 
@@ -86,8 +86,14 @@ namespace Misana.Core.Server
 
         public void Apply(OnPickupEffectMessage message, IClientOnServer client)
         {
-            InputSystem.ApplyFromRemote(message, Entities);
-            Enqueue(message, client.NetworkId);
+            var parent = Entities.GetEntityById(message.ParentEntityId);
+            var wielded = Entities.GetEntityById(message.EntityId);
+
+            if (parent != null && wielded != null)
+            {
+                InputSystem.ApplyFromRemote(parent, wielded, Entities);
+                Enqueue(message, client.NetworkId);
+            }
         }
 
         public void Apply(OnDamageEffectMessage message, IClientOnServer client)
@@ -108,9 +114,5 @@ namespace Misana.Core.Server
 //            simulation.Players.Enqueue(message, client.NetworkId);
         }
 
-        public void Apply(OnCreateEntityMessage message, IClientOnServer client)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

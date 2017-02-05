@@ -3,6 +3,8 @@ using System.IO;
 using System.Threading.Tasks;
 using Misana.Core.Ecs;
 using Misana.Core.Effects;
+using Misana.Core.Effects.BaseEffects;
+using Misana.Serialization;
 
 namespace Misana.Core.Events.Entities
 {
@@ -80,6 +82,48 @@ namespace Misana.Core.Events.Entities
         public override OnEvent Copy()
         {
             return new ApplyEffectEvent(Effect, Condition) { ApplyTo = ApplyTo, RunsOn = RunsOn, Condition = Condition, CoolDown = CoolDown };
+        }
+
+        public override void Serialize(ref byte[] target, ref int pos)
+        {
+            Serializer.WriteInt32(1, ref target, ref pos);
+            Serializes<ApplyEffectEvent>.Serialize(this, ref target, ref pos);
+        }
+
+        public static void InitializeSerialization()
+        {
+            Serializes<ApplyEffectEvent>.Serialize = (ApplyEffectEvent item, ref byte[] bytes, ref int index) => {
+                Serializes<RunsOn>.Serialize(item.RunsOn, ref bytes, ref index);
+                Serializes<ApplicableTo>.Serialize(item.ApplyTo, ref bytes, ref index);
+                Serializes<TimeSpan>.Serialize(item.Debounce, ref bytes, ref index);
+                Serializes<TimeSpan>.Serialize(item.CoolDown, ref bytes, ref index);
+                if (item.Condition == null)
+                {
+                    Serializer.WriteBoolean(false, ref bytes, ref index);
+                }
+                else
+                {
+                    Serializer.WriteBoolean(true, ref bytes, ref index);
+                    item.Condition.Serialize(ref bytes, ref index);
+                }
+
+                item.Effect.Serialize(ref bytes, ref index);
+            };
+
+            Serializes<ApplyEffectEvent>.Deserialize = (byte[] bytes, ref int index) => {
+                var item = new ApplyEffectEvent();
+                item.RunsOn = Serializes<RunsOn>.Deserialize(bytes, ref index);
+                item.ApplyTo = Serializes<ApplicableTo>.Deserialize(bytes, ref index);
+                item.Debounce = Serializes<TimeSpan>.Deserialize(bytes, ref index);
+                item.CoolDown = Serializes<TimeSpan>.Deserialize(bytes, ref index);
+                if (Deserializer.ReadBoolean(bytes, ref index))
+                    item.Condition = Serializes<EffectCondition>.Deserialize(bytes, ref index);
+                item.Effect = Serializes<EffectDefinition>.Deserialize(bytes, ref index);
+                return item;
+            };
+
+            Deserializers[1] = (byte[] bytes, ref int index)
+                => (OnEvent) Serializes<ApplyEffectEvent>.Deserialize(bytes, ref index);
         }
     }
 }

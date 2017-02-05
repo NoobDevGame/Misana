@@ -85,7 +85,12 @@ namespace Misana.Controls
                 ControlTexture = new RenderTarget2D(manager.GraphicsDevice, ActualClientArea.Width, ActualClientArea.Height, PixelInternalFormat.Rgb8);
             }
 
-            var area = manager.Game.Player.Transform.CurrentArea;
+            var areaId = manager.Game.Player?.Transform?.CurrentAreaId ?? -1;
+
+            if(areaId == -1)
+                return;
+
+            var area = manager.Game.Simulation?.Simulation?.CurrentMap?.GetAreaById(areaId);
 
             if (area == null)
                 return;
@@ -121,7 +126,7 @@ namespace Misana.Controls
         {
             base.OnDraw(batch, controlArea, gameTime);
 
-            var area = manager.Game.Player.Transform.CurrentArea;
+            var area = manager.Game.Player.Transform.CurrentAreaId;
 
             if (area == null)
                 return;

@@ -39,7 +39,7 @@ namespace TestMapCreator
             playerDefinition.Definitions.Add(new EntityFlagDefintion());
             playerDefinition.Definitions.Add(new EntityInteractableDefinition());
             playerDefinition.Definitions.Add(new TransformDefinition(new Vector2(11, 8), map.StartArea, 0.5f));
-            playerDefinition.Definitions.Add(new WieldingDefinition());
+            playerDefinition.Definitions.Add(new WieldingDefinition() { WieldedDefinitionName = "Bow"});
             playerDefinition.Definitions.Add(new FacingDefinition());
 
             //var createDefinition = new CreateDefinition();

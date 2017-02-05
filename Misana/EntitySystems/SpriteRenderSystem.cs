@@ -40,11 +40,10 @@ namespace Misana.EntitySystems
 
         protected override void Update(Entity e, RenderSpriteComponent r1, SpriteInfoComponent r2, TransformComponent r3)
         {
-            var area = _game.Player.Transform.CurrentArea;
             var camera = _camera;
 
             r1.Render = false;
-            if (r3.CurrentArea.Id != area.Id)
+            if (r3.CurrentAreaId != _game.Player.Transform.CurrentAreaId)
             {
                 r1.Render = false;
                 return;

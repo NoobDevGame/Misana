@@ -1,18 +1,24 @@
 ﻿using System;
+using System.Collections.Generic;
+using Misana.Core.Effects.Messages;
+using Misana.Core.Entities.BaseDefinition;
+using Misana.Core.Systems;
 
 namespace Misana.Core.Ecs
 {
     public class EntityBuilder
     {
-        private Component[] _components;
+        public Component[] Components;
+        public List<AttachedEntity> AttachedEntities = new List<AttachedEntity>();
+
         public EntityBuilder()
         {
-            _components = ComponentArrayPool.Take();
+            Components = ComponentArrayPool.Take();
         }
 
         public EntityBuilder(Component[] components)
         {
-            _components = components;
+            Components = components;
         }
 
         public EntityBuilder Add<T>() where T : Component, new() => Add<T>((Action<T>) null);
@@ -27,44 +33,56 @@ namespace Misana.Core.Ecs
 
         public EntityBuilder Add<T>(T component) where T : Component, new()
         {
-            if (_components == null)
+            if (Components == null)
                 throw new InvalidOperationException();
 
-            _components[ComponentRegistry<T>.Index] = component;
+            Components[ComponentRegistry<T>.Index] = component;
             return this;
         }
 
         public EntityBuilder Remove<T>() where T : Component, new()
         {
-            if (_components == null)
+            if (Components == null)
                 throw new InvalidOperationException();
 
-            _components[ComponentRegistry<T>.Index] = null;
+            Components[ComponentRegistry<T>.Index] = null;
             return this;
         }
 
         public Entity Commit(EntityManager manager)
         {
-            if (_components == null)
+            if (Components == null)
                 throw new InvalidOperationException();
 
-            var e = new Entity(manager.NextId(), _components, manager);
-            manager.AddEntity(e);
-
-            _components = null;
-
-            return e;
+            return Commit(manager, manager.NextId());
         }
 
-        public Entity Commit(EntityManager manager, int entityId)
+        public Entity Commit(EntityManager manager, params int[] entityIds)
         {
-            if (_components == null)
+            if (Components == null)
                 throw new InvalidOperationException();
 
-            var e = new Entity(entityId, _components, manager);
+            var e = new Entity(entityIds[0], Components, manager);
             manager.AddEntity(e);
 
-            _components = null;
+            Components = null;
+
+            for (var i = 0; i < AttachedEntities.Count; i++)
+            {
+                var ae = AttachedEntities[i];
+                var r = ae.Builder.Commit(manager, i + 1 < entityIds.Length ? entityIds[1] : manager.NextId());
+
+                switch (ae.AttachmentType)
+                {
+                    case AttachmentType.None:
+                        break;
+                    case AttachmentType.Wielded:
+                        InputSystem.ApplyFromRemote(e, r, manager);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
 
             return e;
         }
@@ -87,12 +105,12 @@ namespace Misana.Core.Ecs
         {
             var eb = new EntityBuilder();
 
-            for (int i = 0; i < _components.Length; i++)
+            for (int i = 0; i < Components.Length; i++)
             {
-                if (_components[i] != null)
+                if (Components[i] != null)
                 {
-                    eb._components[i] = ComponentRegistry.Take[i]();
-                    ComponentRegistry.Copy[i](_components[i], eb._components[i]);
+                    eb.Components[i] = ComponentRegistry.Take[i]();
+                    ComponentRegistry.Copy[i](Components[i], eb.Components[i]);
                 }
             }
 
@@ -103,7 +121,27 @@ namespace Misana.Core.Ecs
         public T Get<T>()
             where T :Component, new ()
         {
-            return (T) _components[ComponentRegistry<T>.Index];
+            return (T) Components[ComponentRegistry<T>.Index];
         }
+    }
+
+    public enum AttachmentType : byte
+    {
+        None = 0,
+        Wielded = 1
+    }
+
+    public class AttachedEntity
+    {
+        public EntityBuilder Builder;
+        public AttachmentType AttachmentType;
+
+        public AttachedEntity(EntityBuilder builder, AttachmentType at)
+        {
+            Builder = builder;
+            AttachmentType = at;
+        }
+
+        public AttachedEntity(){}
     }
 }

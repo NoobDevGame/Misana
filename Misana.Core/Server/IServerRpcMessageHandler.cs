@@ -17,11 +17,10 @@ namespace Misana.Core.Server
         void Handle(GetOtherPlayersMessageRequest message, byte messageId, IClientOnServer client);
         void Handle(CreateWorldMessageResponse message, byte messageId, IClientOnServer client);
         void Handle(CreateWorldMessageRequest message,  byte messageId,IClientOnServer client);
-        void Handle(CreateEntityMessageRequest message,  byte messageId,IClientOnServer client);
-        void Handle(CreateEntityMessageResponse message, byte messageId, IClientOnServer client);
         void Handle(ChangeMapMessageRequest message,  byte messageId,IClientOnServer client);
         void Handle(ChangeMapMessageResponse message, byte messageId, IClientOnServer client);
         void Handle(ReadWorldsMessageRequest message, byte messageId, IClientOnServer client);
         void Handle(WorldInformationMessage message, byte messageId, IClientOnServer client);
+        void Handle(InitialGameState message, byte messageId, IClientOnServer client);
     }
 }

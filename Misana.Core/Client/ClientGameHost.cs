@@ -51,44 +51,6 @@ namespace Misana.Core.Client
         }
 
 
-
-        public Task<int> CreateEntity(string definitionName, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
-            return CreateEntity(definition, createCallback, createdCallback);
-        }
-
-        public Task<int> CreateEntity(string definitionName, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-            var definition = CurrentMap.GlobalEntityDefinitions[definitionName];
-            return CreateEntity(definition.Id,entityId, createCallback, createdCallback);
-        }
-
-        public Task<int> CreateEntity(EntityDefinition definition, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-            return CreateEntity(definition.Id, createCallback, createdCallback);
-        }
-
-        public async Task<int> CreateEntity(int defintionId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-            if (IsConnected)
-            {
-                CreateEntityMessageRequest request = new CreateEntityMessageRequest(defintionId);
-                var response = await Query<CreateEntityMessageRequest, CreateEntityMessageResponse>(request);
-                if (!response.Result)
-                    throw new InvalidOperationException();
-
-                return await Simulation.CreateEntity(defintionId, response.EntityId, createCallback, createdCallback);
-            }
-
-            return await  Simulation.CreateEntity(defintionId, createCallback, createdCallback);
-        }
-
-        public Task<int> CreateEntity(int defintionId, int entityId, Action<EntityBuilder> createCallback, Action<Entity> createdCallback)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task ChangeMap(Map map)
         {
             if (IsConnected)
@@ -186,17 +148,18 @@ namespace Misana.Core.Client
             await  Simulation.Start();
         }
 
-        public Task<int> CreatePlayer(PlayerInputComponent playerInput, TransformComponent playerTransform)
-        {
-            return CreateEntity("Player", b =>
-            {
-                var transfrom = b.Get<TransformComponent>();
-                ComponentRegistry.Copy[ComponentRegistry<TransformComponent>.Index](transfrom, playerTransform);
-                b.Add(playerTransform);
-                b.Add(playerInput);
-                b.Add<SendComponent>();
-            }, null);
-        }
+//        public Task<int> CreatePlayer(PlayerInputComponent playerInput, TransformComponent playerTransform)
+//        {
+//
+//            return CreateEntity("Player", b =>
+//            {
+//                var transfrom = b.Get<TransformComponent>();
+//                ComponentRegistry.Copy[ComponentRegistry<TransformComponent>.Index](transfrom, playerTransform);
+//                b.Add(playerTransform);
+//                b.Add(playerInput);
+//                b.Add<SendComponent>();
+//            }, null);
+//        }
 
         public async Task JoinWorld(int id)
         {

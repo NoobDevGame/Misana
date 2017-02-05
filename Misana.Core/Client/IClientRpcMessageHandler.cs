@@ -16,11 +16,10 @@ namespace Misana.Core.Client
         void Handle(GetOtherPlayersMessageRequest message);
         void Handle(CreateWorldMessageResponse message);
         void Handle(CreateWorldMessageRequest message);
-        void Handle(CreateEntityMessageRequest message);
-        void Handle(CreateEntityMessageResponse message);
         void Handle(ChangeMapMessageRequest message);
         void Handle(ChangeMapMessageResponse message);
         void Handle(ReadWorldsMessageRequest message);
         void Handle(WorldInformationMessage message);
+        void Handle(InitialGameState message);
     }
 }

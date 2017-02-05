@@ -1,13 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using engenious;
-using Misana.Core;
+﻿using Misana.Core;
 using Misana.Core.Ecs;
-using Misana.Core.Maps;
 using Misana.Serialization;
 using Vector2 = engenious.Vector2;
 
@@ -28,9 +20,8 @@ namespace Misana
             Serializes<engenious.Vector2>.Deserialize  = (byte[] bytes, ref int index)
                 =>  new engenious.Vector2(Deserializer.ReadSingle(bytes, ref index), Deserializer.ReadSingle(bytes, ref index));
 
-
-            EntityManager.Initialize();
             MisanaSerializer.Initialize();
+            EntityManager.Initialize();
 
             using (MisanaGame game = new MisanaGame())
             {

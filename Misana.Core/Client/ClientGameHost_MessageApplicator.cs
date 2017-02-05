@@ -44,10 +44,13 @@ namespace Misana.Core.Client
                 return;
 
             var owner = simulation.Entities.GetEntityById(message.SpawnerOwnerId);
+            if(owner == null)
+                return;
+
             var spawnerComponent = owner.Get<SpawnerComponent>();
 
             var tf = ComponentRegistry<TransformComponent>.Take();
-            tf.CurrentArea = simulation.CurrentMap.GetAreaById(message.AreaId);
+            tf.CurrentAreaId = message.AreaId;
             tf.Position = message.Position;
             tf.Radius = message.Radius;
 
@@ -83,7 +86,13 @@ namespace Misana.Core.Client
 
         public void Apply(OnPickupEffectMessage message)
         {
-            InputSystem.ApplyFromRemote(message, Entities);
+            var parent = Entities.GetEntityById(message.ParentEntityId);
+            var wielded = Entities.GetEntityById(message.EntityId);
+
+            if (parent != null && wielded != null)
+            {
+                InputSystem.ApplyFromRemote(parent, wielded, Entities);
+            }
         }
 
         public void Apply(OnDamageEffectMessage message)

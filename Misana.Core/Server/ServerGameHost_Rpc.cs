@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
+using Misana.Core.Entities;
 using Misana.Core.Maps;
 using Misana.Core.Network;
 
@@ -9,8 +12,6 @@ namespace Misana.Core.Server
 {
     public partial class ServerGameHost : IServerRpcMessageHandler
     {
-
-
         void IServerRpcMessageHandler.Handle(StartSimulationMessageRequest message, byte messageId, IClientOnServer client)
         {
             var response = new StartSimulationMessageResponse(true);
@@ -28,6 +29,27 @@ namespace Misana.Core.Server
                 response.Result = false;
                 client.Respond(response, messageId);
                 return;
+            }
+
+            var entities = simulation.BaseSimulation.Entities.GetAllEntitiesSlowly();
+
+            var playerDef = simulation.BaseSimulation.CurrentMap.GlobalEntityDefinitions["Player"];
+
+
+            var playerEntities = new List<Entity>();
+            var vPlayers = players.Values;
+            foreach (var p in vPlayers)
+            {
+                playerEntities.Add(EntityCreator.CreateEntity(playerDef, simulation.BaseSimulation.CurrentMap, new EntityBuilder(), simulation.BaseSimulation)
+                    .Commit(simulation.BaseSimulation.Entities));
+            }
+
+            entities.AddRange(simulation.BaseSimulation.Entities.PendingEntities);
+
+
+            for (int i = 0; i < vPlayers.Count; i++)
+            {
+                vPlayers[i].Client.Send(new InitialGameState { Entities = entities, PlayerId = playerEntities[i].Id});
             }
 
             simulation.BaseSimulation.Start();
@@ -94,17 +116,6 @@ namespace Misana.Core.Server
             client.Respond(messageResponse, messageId);
         }
 
-        void IServerRpcMessageHandler.Handle(CreateEntityMessageRequest message, byte messageId, IClientOnServer client)
-        {
-            var simulation = players[client.NetworkId].Simulation;
-            var id = simulation.BaseSimulation.CreateEntity(message.DefinitionId,null, null).Result;
-
-            var responseMessage = new CreateEntityMessageResponse(true,id);
-            client.Respond(responseMessage, messageId);
-
-            var callbackmessage = new OnCreateEntityMessage(id,message.DefinitionId);
-            Enqueue(callbackmessage,client.NetworkId);
-        }
 
         void IServerRpcMessageHandler.Handle(ChangeMapMessageRequest message, byte messageId, IClientOnServer client)
         {
@@ -143,9 +154,9 @@ namespace Misana.Core.Server
         void IServerRpcMessageHandler.Handle(OnJoinWorldMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(PlayerInfoMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(CreateWorldMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
-        void IServerRpcMessageHandler.Handle(CreateEntityMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(ChangeMapMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(WorldInformationMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
+        void IServerRpcMessageHandler.Handle(InitialGameState message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(StartSimulationMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(OnStartSimulationMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
     }

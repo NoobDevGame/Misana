@@ -68,9 +68,10 @@ namespace Misana.Core.Systems
                 var transformComponent = R1S[i];
                 var interactableComponent = R2S[i];
 
-                if (transformComponent.CurrentArea == null)
+                if (transformComponent.CurrentAreaId == -1)
                     continue;
 
+                var a = _simulation.CurrentMap.Areas[transformComponent.CurrentAreaId - 1];
                 Vector2 size = new Vector2(interactableComponent.InteractionRadius,interactableComponent.InteractionRadius);
                 var position = transformComponent.Position;
 
@@ -93,12 +94,12 @@ namespace Misana.Core.Systems
                             position.Y + size.Y < y)
                             continue;
 
-                        var tileIndex = transformComponent.CurrentArea.GetTileIndex(x, y);
-                        var area = _areas[transformComponent.CurrentArea.Id - 1];
+                        var tileIndex = a.GetTileIndex(x, y);
+                        var area = _areas[transformComponent.CurrentAreaId - 1];
                         if (tileIndex >= 0 && tileIndex < area.Length)
                         {
                             area[tileIndex].Add(i);
-                            _occupiedTilesPerArea[transformComponent.CurrentArea.Id - 1].Add(tileIndex);
+                            _occupiedTilesPerArea[transformComponent.CurrentAreaId - 1].Add(tileIndex);
                         }
                     }
                 }

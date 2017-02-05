@@ -19,7 +19,7 @@ namespace Misana.Core.Communication.Messages
             SpawnedEntityId = spawnedEntityId;
             Position = spawnedTransform.Position;
             Radius = spawnedTransform.Radius;
-            AreaId = spawnedTransform.CurrentArea.Id;
+            AreaId = spawnedTransform.CurrentAreaId;
 
             // ReSharper disable once AssignmentInConditionalExpression
             if (Projectile = spawnedProjectile != null)

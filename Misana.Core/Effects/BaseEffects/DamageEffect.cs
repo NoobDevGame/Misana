@@ -4,6 +4,7 @@ using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
+using Misana.Serialization;
 
 namespace Misana.Core.Effects.BaseEffects
 {
@@ -50,6 +51,27 @@ namespace Misana.Core.Effects.BaseEffects
         public override void Deserialize(Version version, BinaryReader br)
         {
             Damage = br.ReadSingle();
+        }
+
+        public override void Serialize(ref byte[] target, ref int pos)
+        {
+            Serializer.WriteInt32(0, ref target, ref pos);
+            Serializes<DamageEffect>.Serialize(this, ref target, ref pos);
+        }
+
+        public static void InitializeSerialization()
+        {
+            Serializes<DamageEffect>.Serialize = (DamageEffect item, ref byte[] bytes, ref int index) => {
+                Serializer.WriteSingle(item.Damage, ref bytes, ref index);
+            };
+
+            Serializes<DamageEffect>.Deserialize =(byte[] bytes, ref int index) =>
+                new DamageEffect(
+                    Deserializer.ReadSingle(bytes, ref index)
+                );
+
+            Deserializers[0] = (byte[] bytes, ref int index)
+                => (EffectDefinition) Serializes<DamageEffect>.Deserialize(bytes, ref index);
         }
     }
 }

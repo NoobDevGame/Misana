@@ -5,13 +5,13 @@ namespace Misana.Core.Ecs.Changes
 {
     internal class EntitiesToAdd
     {
-        private readonly List<Entity> _list = new List<Entity>(16);
+        public readonly List<Entity> List = new List<Entity>(16);
 
         public void Add(Entity e)
         {
             lock (lockObject)
             {
-                _list.Add(e);
+                List.Add(e);
                 HasChanges = true;
             }
 
@@ -24,7 +24,7 @@ namespace Misana.Core.Ecs.Changes
         {
             lock (lockObject)
             {
-                foreach (var e in _list)
+                foreach (var e in List)
                 {
                     for (int i = 0; i < e.Components.Length; i++)
                     {
@@ -38,7 +38,7 @@ namespace Misana.Core.Ecs.Changes
                         s.EntityAdded(e);
                 }
 
-                _list.Clear();
+                List.Clear();
                 HasChanges = false;
             }
         }

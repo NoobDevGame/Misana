@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Net.Mail;
 using System.Threading.Tasks;
 using engenious;
 using Misana.Core;
 using Misana.Core.Client;
 using Misana.Core.Communication;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Components;
 using Misana.Core.Ecs;
@@ -98,9 +101,16 @@ namespace Misana.Components
             host.Server = this.networkClient;
             networkClient.ClientRpcHandler = host;
 
+            host.SimulationStarted += OnSimulationStarted;
+            host.WorldInfoReceived += OnWorldInfoReceived;
+            host.PlayerInfoReceived += OnPlayerInfoReceived;
+            host.InitialGameStateReceived += OnInitialGameState;
+
             var id = await host.Connect("Test",IPAddress.Loopback);
             LocalPlayerInfo = new PlayerInfo("Test",id);
         }
+
+
 
         public async Task ConnectToServer(string name, IPAddress address)
         {
@@ -183,11 +193,31 @@ namespace Misana.Components
 
         public async Task StartWorld()
         {
-            Game.Player.PlayerId = await host.CreatePlayer(Game.Player.Input, Game.Player.Transform);
+           // Game.Player.PlayerId = await host.CreatePlayer(Game.Player.Input, Game.Player.Transform);
             await Simulation.Start();
         }
 
+        private void OnInitialGameState(InitialGameState obj)
+        {
+            host.Entities.Clear();
 
+            var playerEntity = obj.Entities.First(x => x.Id == obj.PlayerId);
+
+            ComponentRegistry.Copy[ComponentRegistry<TransformComponent>.Index](playerEntity.Get<TransformComponent>(), Game.Player.Transform);
+            ComponentRegistry<TransformComponent>.Release(playerEntity.Get<TransformComponent>());
+            playerEntity.Components[ComponentRegistry<TransformComponent>.Index] = Game.Player.Transform;
+            playerEntity.Components[ComponentRegistry<PlayerInputComponent>.Index] = Game.Player.Input;
+            playerEntity.Components[ComponentRegistry<SendComponent>.Index] = ComponentRegistry<SendComponent>.Take();
+
+            foreach (var e in obj.Entities)
+            {
+                e.Manager = host.Entities;
+                host.Entities.AddEntity(e);
+            }
+
+            Game.Player.PlayerId = obj.PlayerId;
+
+        }
 
         public override void Update(GameTime gameTime)
         {

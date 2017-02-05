@@ -5,6 +5,8 @@ using Misana.Core.Components;
 using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
 using Misana.Core.Events;
+using Misana.Core.Events.Entities;
+using Misana.Serialization;
 
 namespace Misana.Core.Effects.BaseEffects
 {
@@ -27,6 +29,15 @@ namespace Misana.Core.Effects.BaseEffects
             Y = y;
             AreaId = areaID;
         }
+
+        public TeleportEffect(int x, int y , int areaID, bool center)
+        {
+            X = x;
+            Y = y;
+            AreaId = areaID;
+            CenterOfBlock = center;
+        }
+
 
         public override void Apply(Entity entity, ISimulation simulation)
         {
@@ -61,8 +72,7 @@ namespace Misana.Core.Effects.BaseEffects
 
         public static void ApplyFromRemote(OnTeleportEffectMessage message, Entity e, TransformComponent transform, ISimulation simulation)
         {
-            var area = simulation.CurrentMap.GetAreaById( message.AreaId);
-            transform.CurrentArea = area;
+            transform.CurrentAreaId = message.AreaId;
             transform.Position = message.Position;
         }
 
@@ -80,6 +90,33 @@ namespace Misana.Core.Effects.BaseEffects
             Y = br.ReadInt32();
             AreaId = br.ReadInt32();
             CenterOfBlock = br.ReadBoolean();
+        }
+
+        public override void Serialize(ref byte[] target, ref int pos)
+        {
+            Serializer.WriteInt32(3, ref target, ref pos);
+            Serializes<TeleportEffect>.Serialize(this, ref target, ref pos);
+        }
+
+        public static void InitializeSerialization()
+        {
+            Serializes<TeleportEffect>.Serialize = (TeleportEffect item, ref byte[] bytes, ref int index) => {
+                Serializer.WriteInt32(item.X, ref bytes, ref index);
+                Serializer.WriteInt32(item.Y, ref bytes, ref index);
+                Serializer.WriteInt32(item.AreaId, ref bytes, ref index);
+                Serializer.WriteBoolean(item.CenterOfBlock, ref bytes, ref index);
+            };
+
+            Serializes<TeleportEffect>.Deserialize =(byte[] bytes, ref int index) =>
+                 new TeleportEffect(
+                    Deserializer.ReadInt32(bytes, ref index),
+                    Deserializer.ReadInt32(bytes, ref index),
+                    Deserializer.ReadInt32(bytes, ref index),
+                    Deserializer.ReadBoolean(bytes, ref index)
+                );
+
+            Deserializers[3] = (byte[] bytes, ref int index)
+                => (EffectDefinition) Serializes<TeleportEffect>.Deserialize(bytes, ref index);
         }
     }
 }

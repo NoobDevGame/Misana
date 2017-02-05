@@ -13,6 +13,7 @@ namespace Misana.Core.Client
         public event Action<WorldInformation> WorldInfoReceived;
         public event Action<PlayerInfo> PlayerInfoReceived;
         public event Action SimulationStarted;
+        public event Action<InitialGameState> InitialGameStateReceived;
 
         void IClientRpcMessageHandler.Handle(StartSimulationMessageResponse message)
         {
@@ -53,26 +54,24 @@ namespace Misana.Core.Client
             ClientMessageHelper<CreateWorldMessageResponse>.Semaphore?.Release();
         }
 
-        void IClientRpcMessageHandler.Handle(CreateEntityMessageResponse message)
-        {
-            ClientMessageHelper<CreateEntityMessageResponse>.LastResult = message;
-            ClientMessageHelper<CreateEntityMessageResponse>.Semaphore?.Release();
-        }
-
         void IClientRpcMessageHandler.Handle(ChangeMapMessageResponse message)
         {
             ClientMessageHelper<ChangeMapMessageResponse>.LastResult = message;
             ClientMessageHelper<ChangeMapMessageResponse>.Semaphore?.Release();
         }
 
-        public void Apply(OnCreateEntityMessage message)
-        {
-            throw new NotImplementedException();
-        }
 
         public void Handle(WorldInformationMessage message)
         {
             WorldInfoReceived?.Invoke(new WorldInformation(message));
+        }
+
+        public void Handle(InitialGameState message)
+        {
+
+
+
+            InitialGameStateReceived?.Invoke(message);
         }
 
         // Server Only
@@ -80,7 +79,6 @@ namespace Misana.Core.Client
         void IClientRpcMessageHandler.Handle(StartSimulationMessageRequest message) { throw new NotSupportedException(); }
         void IClientRpcMessageHandler.Handle(CreateWorldMessageRequest message) { throw new NotSupportedException(); }
         void IClientRpcMessageHandler.Handle(GetOtherPlayersMessageRequest message) { throw new NotSupportedException(); }
-        void IClientRpcMessageHandler.Handle(CreateEntityMessageRequest message) { throw new NotSupportedException(); }
         void IClientRpcMessageHandler.Handle(ChangeMapMessageRequest message) { throw new NotSupportedException(); }
         void IClientRpcMessageHandler.Handle(JoinWorldMessageRequest message) { throw new NotSupportedException(); }
         void IClientRpcMessageHandler.Handle(LoginMessageRequest message) { throw new NotSupportedException(); }

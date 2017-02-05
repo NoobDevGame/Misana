@@ -10,6 +10,5 @@ namespace Misana.Core.Network {
         void Apply(OnDropWieldedEffectMessage message);
         void Apply(OnPickupEffectMessage message);
         void Apply(OnDamageEffectMessage message);
-        void Apply(OnCreateEntityMessage message);
     }
 }

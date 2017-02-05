@@ -55,13 +55,13 @@
     <Compile Include="Communication\Components\SendComponent.cs" />
     <Compile Include="Communication\Messages\EntityHealthMessage.cs" />
     <Compile Include="Communication\Messages\EntityPositionMessage.cs" />
+    <Compile Include="Communication\Messages\InitialGameState.cs" />
     <Compile Include="Communication\Messages\ReadWorldsMessage.cs" />
     <Compile Include="Communication\Messages\SpawnerTriggeredMessage.cs" />
     <Compile Include="Communication\NetworkPlayer.cs" />
     <Compile Include="Communication\NetworkSimulation.cs" />
     <Compile Include="Communication\PlayerInfo.cs" />
     <Compile Include="Communication\Rpc\ChangeMapMessage.cs" />
-    <Compile Include="Communication\Rpc\CreateEntityMessage.cs" />
     <Compile Include="Communication\Rpc\CreateWorldMessage.cs" />
     <Compile Include="Communication\Rpc\GetOtherPlayers.cs" />
     <Compile Include="Communication\Rpc\JoinWorldMessage.cs" />
@@ -133,7 +133,6 @@
     <Compile Include="Events\Entities\AddComponentEvent.cs" />
     <Compile Include="Events\Entities\ApplicableTo.cs" />
     <Compile Include="Events\Entities\ApplyEffectEvent.cs" />
-    <Compile Include="Events\Entities\CustomCodeEvent.cs" />
     <Compile Include="Events\Entities\MultiEvent.cs" />
     <Compile Include="Events\Entities\OnEvent.cs" />
     <Compile Include="Entities\EntityCreator.cs" />
@@ -145,7 +144,7 @@
     <Compile Include="Effects\BaseEffects\TimeDamageEvent.cs" />
     <Compile Include="Effects\Conditions\FlagCondition.cs" />
     <Compile Include="Events\Conditions\FlagCondition.cs" />
-    <Compile Include="Events\EffectCondition.cs" />
+    <Compile Include="Events\EventCondition.cs" />
     <Compile Include="Events\EventDefinition.cs" />
     <Compile Include="Events\EventIdentifier.cs" />
     <Compile Include="Events\OnUse\ApplyEffectOnUseEvent.cs" />

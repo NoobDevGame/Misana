@@ -107,18 +107,20 @@ namespace Misana.Core.Systems
             {
                 var transformComponent = R1S[i];
 
-                if (transformComponent.CurrentArea == null)
+                if (transformComponent.CurrentAreaId < 0)
                     continue;
                 var position = transformComponent.Position;
-                int minCellX, maxCellX, minCellY, maxCellY;
-
+                int minCellX,maxCellX, minCellY, maxCellY;
+                var a = _map.Areas[transformComponent.CurrentAreaId - 1];
                 CheckedBoundsFor(
                     position, transformComponent.Radius, 
-                    transformComponent.CurrentArea.Width, transformComponent.CurrentArea.Height, 
+                    a.Width, a.Height,
                     out minCellX, out maxCellX, 
                     out minCellY, out maxCellY
                 );
-                
+
+                var area = Areas[transformComponent.CurrentAreaId - 1];
+
                 for (int x = minCellX; x <= maxCellX; x++)
                 {
                     for (int y = minCellY; y <= maxCellY; y++)
@@ -129,11 +131,11 @@ namespace Misana.Core.Systems
                             position.Y + transformComponent.Radius < y)
                             continue;
 
-                        var tileIndex = transformComponent.CurrentArea.GetTileIndex(x, y);
-                        var area = Areas[transformComponent.CurrentArea.Id - 1];
+                        var tileIndex = a.GetTileIndex(x, y);
+
 
                         area[tileIndex].Add(i);
-                        OccupiedTilesPerArea[transformComponent.CurrentArea.Id - 1].Add(tileIndex);
+                        OccupiedTilesPerArea[transformComponent.CurrentAreaId - 1].Add(tileIndex);
                     }
                 }
             }

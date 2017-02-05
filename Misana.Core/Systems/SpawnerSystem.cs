@@ -29,7 +29,7 @@ namespace Misana.Core.Systems
             var radius = r1.Template.Get<TransformComponent>()?.Radius ?? 0.5f;
 
             tf.Position = r2.AbsolutePosition(Manager) + r1.SpawnDirection * (radius + r2.Radius);
-            tf.CurrentArea = r2.CurrentArea;
+            tf.CurrentAreaId = r2.CurrentAreaId;
 
             if (r1.Projectile)
             {

@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Misana.Core.Ecs;
+using Misana.Core.Events.OnUse;
+using Misana.Serialization;
 
 namespace Misana.Core.Events.Entities
 {
     public abstract class OnEvent : EventDefinition
     {
+        public static Deserialize<OnEvent>[] Deserializers;
+
         public ApplicableTo ApplyTo;
         public TimeSpan Debounce;
         public TimeSpan CoolDown;
@@ -102,5 +106,24 @@ namespace Misana.Core.Events.Entities
         }
 
         public abstract OnEvent Copy();
+
+        public abstract void Serialize(ref byte[] bytes, ref int index);
+
+        public static void Initialize() {
+            Deserializers = new Deserialize<OnEvent>[2];
+
+            MultiEvent.InitializeSerialization();
+            ApplyEffectEvent.InitializeSerialization();
+
+            Serializes<OnEvent>.Deserialize = (byte[] bytes, ref int index) => {
+                var idx = Deserializer.ReadInt32(bytes, ref index);
+                return Deserializers[idx](bytes, ref index);
+            };
+
+            Serializes<OnEvent>.Serialize = (OnEvent item, ref byte[] bytes, ref int index) => {
+                item.Serialize(ref bytes, ref index);
+            };
+        }
     }
+
 }

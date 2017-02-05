@@ -20,7 +20,7 @@ namespace Misana.Core.Systems
 
             if (parentTransform != null)
             {
-                r2.CurrentArea = parentTransform.CurrentArea;
+                r2.CurrentAreaId = parentTransform.CurrentAreaId;
 
                 if (parentTransform.ParentEntityId != 0)
                 {

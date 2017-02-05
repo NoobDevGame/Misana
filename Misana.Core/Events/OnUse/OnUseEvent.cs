@@ -1,5 +1,6 @@
 ﻿using System;
 using Misana.Core.Ecs;
+using Misana.Serialization;
 
 namespace Misana.Core.Events.OnUse
 {
@@ -36,5 +37,24 @@ namespace Misana.Core.Events.OnUse
         public abstract OnUseEvent Copy();
 
         protected abstract bool ApplyToTarget(EntityManager manager, Entity self, Vector2 target, ISimulation simulation);
+
+        public abstract void Serialize(ref byte[] bytes, ref int index);
+
+        public static Deserialize<OnUseEvent>[] Deserializers;
+
+        public static void Initialize() {
+            Deserializers = new Deserialize<OnUseEvent>[1];
+
+            ApplyEffectOnUseEvent.InitializeSerialization();
+
+            Serializes<OnUseEvent>.Deserialize = (byte[] bytes, ref int index) => {
+                var idx = Deserializer.ReadInt32(bytes, ref index);
+                return Deserializers[idx](bytes, ref index);
+            };
+
+            Serializes<OnUseEvent>.Serialize = (OnUseEvent item, ref byte[] bytes, ref int index) => {
+                item.Serialize(ref bytes, ref index);
+            };
+        }
     }
 }

@@ -55,7 +55,7 @@ namespace Misana.Core.Systems
 
                 if (r1.PickUp)
                 {
-                    var ids = _positionTrackingSystem.SlowCoarseQuery(r3.CurrentArea.Id - 1, r3.Position, 1).ToList();
+                    var ids = _positionTrackingSystem.SlowCoarseQuery(r3.CurrentAreaId - 1, r3.Position, 1).ToList();
                     foreach(var id in ids)
                     {
                         if(id == e.Id)
@@ -67,7 +67,7 @@ namespace Misana.Core.Systems
 
                         if (wielding.RightHandEntityId == 0)
                         {
-                            ApplyLocally(new OnPickupEffectMessage(e.Id, id), Manager);
+                            ApplyLocally(e, entity, Manager);
                         }
                     }
                 }
@@ -79,29 +79,33 @@ namespace Misana.Core.Systems
                 interacting.Interacting = r1.Interact;
         }
 
-        private void ApplyLocally(OnPickupEffectMessage message, EntityManager manager)
+        private void ApplyLocally(Entity wieldingEntity, Entity wieldedEntity, EntityManager manager)
         {
-            ApplyFromRemote(message, manager);
-            manager.NoteForSend(message);
+            ApplyFromRemote(wieldingEntity, wieldedEntity, manager);
+            manager.NoteForSend(new OnPickupEffectMessage(wieldingEntity.Id, wieldedEntity.Id));
         }
 
-        public static void ApplyFromRemote(OnPickupEffectMessage message, EntityManager manager)
+        public static void ApplyFromRemote(Entity wieldingEntity, Entity wieldedEntity,  EntityManager manager)
         {
-            var parentEntity = manager.GetEntityById(message.ParentEntityId);
-            var entity = manager.GetEntityById(message.EntityId);
 
-            var wieldedTransform = entity.Get<TransformComponent>();
-            wieldedTransform.ParentEntityId = parentEntity.Id;
+
+            var wieldedTransform = wieldedEntity.Get<TransformComponent>();
+            wieldedTransform.ParentEntityId = wieldingEntity.Id;
             wieldedTransform.Position = Vector2.Zero;
-            entity.Remove<DroppedItemComponent>();
-            wieldedTransform.Radius *= 2;
+
+
+            if (wieldedEntity.Get<DroppedItemComponent>() != null)
+            {
+                wieldedEntity.Remove<DroppedItemComponent>();
+                wieldedTransform.Radius *= 2;
+            }
 
             var w = ComponentRegistry<WieldedComponent>.Take();
-            manager.Add(entity, w, false);
+            manager.Add(wieldedEntity, w, false);
 
-            var wielding = parentEntity.Get<WieldingComponent>();
+            var wielding = wieldingEntity.Get<WieldingComponent>();
 
-            wielding.RightHandEntityId = entity.Id;
+            wielding.RightHandEntityId = wieldedEntity.Id;
             wielding.TwoHanded = true;
         }
 
