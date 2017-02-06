@@ -61,12 +61,13 @@ namespace TestMapCreator
                 });
             arrow.Definitions.Add(new TransformDefinition { Radius = 0.2f, AreaId = -1});
             arrow.Definitions.Add(new MotionComponentDefinition());
+            arrow.Definitions.Add(new ExpiringComponentDefinition(1500));
             arrow.Definitions.Add(new CharacterRenderDefinition(new Index2(37,0) ) { RunsOn = RunsOn.Client });
             map.GlobalEntityDefinitions.Add("Arrow", arrow);
             {
                 //Bogen
                 EntityDefinition bowDefinition = new EntityDefinition("Bow", map.GetNextDefinitionId());
-                var wieldable = new WieldableDefinition();
+                var wieldable = new WieldableDefinition(0.5f, 0.5f);
                 //wieldable.OnUseEvents.Add(new ApplyEffectOnUseEvent(new SpawnProjectileEffect()) {CoolDown = TimeSpan.FromSeconds(1)});
                 bowDefinition.Definitions.Add(wieldable);
                 bowDefinition.Definitions.Add(new SpawnerDefinition
@@ -80,7 +81,6 @@ namespace TestMapCreator
                 bowDefinition.Definitions.Add(new CharacterRenderDefinition(new Index2(52, 0)) {
                     RunsOn = RunsOn.Client
                 });
-                bowDefinition.Definitions.Add(new WieldedDefinition(0.5f, 0.5f));
                 bowDefinition.Definitions.Add(new FacingDefinition());
                 bowDefinition.Definitions.Add(new TransformDefinition(new Vector2(0.3f, 0.3f), map.StartArea));
 

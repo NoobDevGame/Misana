@@ -101,7 +101,9 @@ namespace Misana.Core.Systems
             }
 
             var w = ComponentRegistry<WieldedComponent>.Take();
+            w.Offset = wieldedEntity.Get<WieldableComponent>().Offset;
             manager.Add(wieldedEntity, w, false);
+
 
             var wielding = wieldingEntity.Get<WieldingComponent>();
 

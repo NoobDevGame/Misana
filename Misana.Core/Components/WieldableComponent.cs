@@ -10,5 +10,8 @@ namespace Misana.Core.Components
     {
         [Copy, Reset]
         public List<OnUseEvent> OnUseEvents = new List<OnUseEvent>();
+
+        [Copy, Reset]
+        public Vector2 Offset;
     }
 }

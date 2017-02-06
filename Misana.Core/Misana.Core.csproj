@@ -121,6 +121,7 @@
     <Compile Include="Entities\BaseDefinition\CreateDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityColliderDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\EntityInteractableDefinition.cs" />
+    <Compile Include="Entities\BaseDefinition\ExpiringComponentDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\FacingDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\HealthDefinition.cs" />
     <Compile Include="Entities\BaseDefinition\MotionComponentDefinition.cs" />
