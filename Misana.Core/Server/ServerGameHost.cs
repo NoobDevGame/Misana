@@ -25,18 +25,18 @@ namespace Misana.Core.Server
 
         public ServerGameHost()
         {
-            var ep = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
             _listener = new TcpListener(new IPEndPoint(IPAddress.Any, NetworkManager.TcpPort));
-            _udpClient = new UdpClient(ep);
-            _udpEndPoint = ep;
+
+            _udpEndPoint = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
         }
 
         public void StartListening()
         {
+            _udpSendBuffer = new byte[1536];
             _tokenSource = new CancellationTokenSource();
             _listener.Start();
             _listener.BeginAcceptTcpClient(TcpClientConnected, _tokenSource.Token);
-
+            _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort));
             _udpWorker = new Thread(UdpWorkerLoop);
             _udpWorker.Start();
             _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);

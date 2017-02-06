@@ -20,6 +20,7 @@ namespace Misana.Screens
             Textbox ipInput = new Textbox(manager);
             ipInput.HorizontalAlignment = HorizontalAlignment.Stretch;
             ipInput.Margin = new Border(0, 0, 0, 10);
+            //ipInput.Text = "93.218.154.206";
             stack.Controls.Add(ipInput);
 
             stack.Controls.Add(new Panel(manager) { Height = 10, Width = 10 });

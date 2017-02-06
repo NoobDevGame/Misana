@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
@@ -64,7 +65,7 @@ namespace Misana.Core.Server
                             _batchingUdpQueueIndex = 0;
                     }
 
-                    const int cutOff = 500;
+                    const int cutOff = 1024;
 
                     var lastPosition = -1;
 
@@ -85,10 +86,12 @@ namespace Misana.Core.Server
                         }
 
                         Serializer.EnsureSize(ref _udpSendBuffer, _udpSendIndex + 128 + 1);
+                        var writeLengthTo = _udpSendIndex;
+                        _udpSendIndex += 4;
                         Serializer.WriteByte(msg.MessageId, ref _udpSendBuffer, ref _udpSendIndex);
                         Serializer.WriteInt32(msg.MessageType, ref _udpSendBuffer, ref _udpSendIndex);
-
                         msg.Serialize(msg.Message, ref _udpSendBuffer, ref _udpSendIndex);
+                        Serializer.WriteInt32(_udpSendIndex - writeLengthTo + 1 - 4, ref _udpSendBuffer, ref writeLengthTo);
 
                         if (_udpSendIndex >= cutOff)
                         {
@@ -100,7 +103,7 @@ namespace Misana.Core.Server
                             else
                             {
                                 _udpClient.Client.SendTo(_udpSendBuffer, 0, lastPosition + 1, SocketFlags.None, endPoint);
-                                _udpClient.Client.SendTo(_udpSendBuffer, lastPosition + 1, _udpSendIndex + 1, SocketFlags.None, endPoint);
+                                _udpClient.Client.SendTo(_udpSendBuffer, lastPosition + 1, _udpSendIndex + 1  - lastPosition, SocketFlags.None, endPoint);
 
                                 _udpSendIndex = 0;
                             }
@@ -123,9 +126,9 @@ namespace Misana.Core.Server
 
         private void OnUdpRead(IAsyncResult ar)
         {
-            try
+//            try
             {
-                EndPoint e = null;
+                EndPoint e = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
                 var read = _udpClient.Client.EndReceiveFrom(ar, ref e);
 
                 IClientOnServer client;
@@ -140,7 +143,7 @@ namespace Misana.Core.Server
                 {
 
                     var len = Deserializer.ReadInt32(udpBuffer, ref processed);
-
+                    //Debug.WriteLine($"Server - UDP - Read - Payload Size {len}");
                     if (read - processed < len)
                     {
                         throw new NotImplementedException("Nope");
@@ -163,11 +166,11 @@ namespace Misana.Core.Server
 
 
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+//            catch (Exception e)
+//            {
+//                Console.WriteLine(e);
+//                throw;
+//            }
         }
     }
 

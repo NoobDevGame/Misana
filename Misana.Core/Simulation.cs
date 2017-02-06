@@ -114,9 +114,10 @@ namespace Misana.Core
 
         }
 
-        public async Task Start()
+        public Task Start()
         {
             State = SimulationState.Running;
+            return Task.CompletedTask;
         }
 
         public void Update(GameTime gameTime)

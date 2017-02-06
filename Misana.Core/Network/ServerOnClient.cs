@@ -49,7 +49,7 @@ namespace Misana.Core.Network
             _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any,NetworkManager.LocalUdpPort));
             _tcpClient = new TcpClient();
             _udpClient.DontFragment = true;
-            _tcpSendBuffer = new byte[1024];
+            _tcpSendBuffer = new byte[4096];
             _udpSendBuffer = new byte[1536];
 
             CanConnect = true;
@@ -64,7 +64,7 @@ namespace Misana.Core.Network
 
             stream = tcpClient.GetStream();
 
-            _tcpSendBuffer = new byte[1024];
+            _tcpSendBuffer = new byte[4096];
             _udpSendBuffer = new byte[1536];
             _udpClient = udpClient;
 
@@ -79,12 +79,13 @@ namespace Misana.Core.Network
         private bool _flushing;
 
 
-        private Queue<IGameMessage> _gameMessageQueue;
+        private Queue<IGameMessage> _gameMessageQueue = new Queue<IGameMessage>();
         private readonly object _gameMessageLock = new object();
 
 
         public void Start()
         {
+            _keepRunning = true;
             stream.BeginRead(tcpBuffer, 0, tcpBuffer.Length, OnTcpRead, null);
             _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref RemoteAddress2, OnUdpRead, null);
 

@@ -27,7 +27,7 @@ namespace Misana.Core.Network
 
         private void OnTcpRead(IAsyncResult ar)
         {
-            try
+//            try
             {
                 var read = stream.EndRead(ar);
 
@@ -54,11 +54,11 @@ namespace Misana.Core.Network
                 stream.BeginRead(tcpBuffer, 0, tcpBuffer.Length, OnTcpRead, null);
 
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+//            catch (Exception e)
+//            {
+//                Console.WriteLine(e);
+//                throw;
+//            }
         }
 
         private void TcpWorkerLoop()
@@ -76,9 +76,16 @@ namespace Misana.Core.Network
                         {
                             var msg = _immediateTcpQueue.Dequeue();
                             Serializer.EnsureSize(ref _tcpSendBuffer, _tcpSendIndex + 128);
+
+                            var writeLengthTo = _tcpSendIndex;
+
+                            _tcpSendIndex += 4;
+
                             Serializer.WriteByte(msg.MessageId, ref _tcpSendBuffer, ref _tcpSendIndex);
                             Serializer.WriteInt32(msg.MessageType, ref _tcpSendBuffer, ref _tcpSendIndex);
                             msg.Serialize(msg.Message, ref _tcpSendBuffer, ref _tcpSendIndex);
+
+                            Serializer.WriteInt32(_tcpSendIndex - writeLengthTo + 1 - 4, ref _tcpSendBuffer, ref writeLengthTo);
                             found = true;
                         }
                     }
@@ -94,9 +101,14 @@ namespace Misana.Core.Network
                             {
                                 var msg = _batchingTcpQueue.Dequeue();
                                 Serializer.EnsureSize(ref _tcpSendBuffer, _tcpSendIndex + 128);
+                                var writeLengthTo = _tcpSendIndex;
+
+                                _tcpSendIndex += 4;
+
                                 Serializer.WriteByte(msg.MessageId, ref _tcpSendBuffer, ref _tcpSendIndex);
                                 Serializer.WriteInt32(msg.MessageType, ref _tcpSendBuffer, ref _tcpSendIndex);
                                 msg.Serialize(msg.Message, ref _tcpSendBuffer, ref _tcpSendIndex);
+                                Serializer.WriteInt32(_tcpSendIndex - writeLengthTo + 1 - 4, ref _tcpSendBuffer, ref writeLengthTo);
                                 found = true;
                             }
                         }

@@ -72,7 +72,7 @@ namespace TestMapCreator
                 bowDefinition.Definitions.Add(wieldable);
                 bowDefinition.Definitions.Add(new SpawnerDefinition
                 {
-                    Active = true,
+                    Active = false,
                     CoolDown = 0.2f,
                     SpawnedDefinitionName = "Arrow",
                     //MaxAlive = 2,

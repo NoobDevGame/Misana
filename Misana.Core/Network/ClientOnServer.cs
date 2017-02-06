@@ -46,7 +46,7 @@ namespace Misana.Core.Network
             stream = tcpClient.GetStream();
             UdpEndpoint = new IPEndPoint(address, NetworkManager.LocalUdpPort);
 
-            _tcpSendBuffer = new byte[1024];
+            _tcpSendBuffer = new byte[4096];
         }
 
         private bool _keepRunning;
@@ -66,10 +66,10 @@ namespace Misana.Core.Network
 
         public void HandleData(byte[] data, ref int processed)
         {
-            var msgId = Deserializer.ReadByte(tcpBuffer, ref processed);
-            var msgType = Deserializer.ReadInt32(tcpBuffer, ref processed);
+            var msgId = Deserializer.ReadByte(data, ref processed);
+            var msgType = Deserializer.ReadInt32(data, ref processed);
 
-            var msg = MessageInfo.Deserializers[msgType](tcpBuffer, ref processed);
+            var msg = MessageInfo.Deserializers[msgType](data, ref processed);
 
             if (MessageInfo.IsRpcMessage[msgType])
                 ((IRpcMessage) msg).HandleOnServer(_server, msgId, this);

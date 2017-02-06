@@ -23,7 +23,7 @@ namespace Misana.Core.Client
 
         void IClientRpcMessageHandler.Handle(OnStartSimulationMessage message)
         {
-            throw new System.NotImplementedException();
+            SimulationStarted?.Invoke();
         }
 
         void IClientRpcMessageHandler.Handle(LoginMessageResponse message)

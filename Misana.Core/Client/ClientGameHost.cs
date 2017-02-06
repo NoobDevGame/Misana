@@ -189,6 +189,7 @@ namespace Misana.Core.Client
 
             await ClientMessageHelper<TResponse>.Semaphore.WaitAsync();
             ClientMessageHelper<TResponse>.Semaphore.Dispose();
+            ClientMessageHelper<TResponse>.Semaphore = null;
             return ClientMessageHelper<TResponse>.LastResult;
         }
 

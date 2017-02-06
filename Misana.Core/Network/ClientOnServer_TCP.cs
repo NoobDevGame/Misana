@@ -75,9 +75,12 @@ namespace Misana.Core.Network
                         {
                             var msg = _immediateTcpQueue.Dequeue();
                             Serializer.EnsureSize(ref _tcpSendBuffer, _tcpSendIndex + 128);
+                            var writeLengthTo = _tcpSendIndex;
+                            _tcpSendIndex += 4;
                             Serializer.WriteByte(msg.MessageId, ref _tcpSendBuffer, ref _tcpSendIndex);
                             Serializer.WriteInt32(msg.MessageType, ref _tcpSendBuffer, ref _tcpSendIndex);
                             msg.Serialize(msg.Message, ref _tcpSendBuffer, ref _tcpSendIndex);
+                            Serializer.WriteInt32(_tcpSendIndex - writeLengthTo + 1 - 4, ref _tcpSendBuffer, ref writeLengthTo);
                             found = true;
                         }
                     }
@@ -93,9 +96,12 @@ namespace Misana.Core.Network
                             {
                                 var msg = _batchingTcpQueue.Dequeue();
                                 Serializer.EnsureSize(ref _tcpSendBuffer, _tcpSendIndex + 128);
+                                var writeLengthTo = _tcpSendIndex;
+                                _tcpSendIndex += 4;
                                 Serializer.WriteByte(msg.MessageId, ref _tcpSendBuffer, ref _tcpSendIndex);
                                 Serializer.WriteInt32(msg.MessageType, ref _tcpSendBuffer, ref _tcpSendIndex);
                                 msg.Serialize(msg.Message, ref _tcpSendBuffer, ref _tcpSendIndex);
+                                Serializer.WriteInt32(_tcpSendIndex - writeLengthTo + 1 - 4, ref _tcpSendBuffer, ref writeLengthTo);
                                 found = true;
                             }
                         }

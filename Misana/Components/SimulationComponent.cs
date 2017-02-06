@@ -122,6 +122,7 @@ namespace Misana.Components
             host.SimulationStarted += OnSimulationStarted;
             host.WorldInfoReceived += OnWorldInfoReceived;
             host.PlayerInfoReceived += OnPlayerInfoReceived;
+            host.InitialGameStateReceived += OnInitialGameState;
 
             var id = await host.Connect(name,address);
             LocalPlayerInfo = new PlayerInfo(name,id);
@@ -139,11 +140,13 @@ namespace Misana.Components
 
         private void OnSimulationStarted()
         {
-            Simulation.Start();
+
         }
+        public bool Joined = true;
 
         public async Task CreateWorld(string name, Map map)
         {
+            Joined = false;
             await host.CreateWorld(name);
 
             AddHooks();
@@ -212,10 +215,23 @@ namespace Misana.Components
             foreach (var e in obj.Entities)
             {
                 e.Manager = host.Entities;
+
+                var eSend = e.Get<SendComponent>();
+                if (e != playerEntity && eSend != null)
+                {
+                    ComponentRegistry<SendComponent>.Release(eSend);
+                    e.Components[ComponentRegistry<SendComponent>.Index] = null;
+                }
+
                 host.Entities.AddEntity(e);
             }
 
             Game.Player.PlayerId = obj.PlayerId;
+
+
+            if(Joined)
+                Simulation.Start();
+
 
         }
 
@@ -240,6 +256,7 @@ namespace Misana.Components
             await host.JoinWorld(worldListSelectedItem.Id);
             AddHooks();
             Players.Add(LocalPlayerInfo);
+
         }
     }
 }

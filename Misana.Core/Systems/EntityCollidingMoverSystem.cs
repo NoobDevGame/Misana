@@ -89,6 +89,8 @@ namespace Misana.Core.Systems
                             var entity2Collider = R1S[j];
                             var motion2Component = O1S[j];
 
+                            if(position2Component == null)
+                                continue;
                             var vecDistance = positionComponent.Position - position2Component.Position;
 
                             var distance = vecDistance.Length() - positionComponent.Radius - position2Component.Radius;
