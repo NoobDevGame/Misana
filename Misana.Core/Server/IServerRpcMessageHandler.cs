@@ -22,5 +22,7 @@ namespace Misana.Core.Server
         void Handle(ReadWorldsMessageRequest message, byte messageId, IClientOnServer client);
         void Handle(WorldInformationMessage message, byte messageId, IClientOnServer client);
         void Handle(InitialGameState message, byte messageId, IClientOnServer client);
+        void Handle(HotJoinedMessage message, byte messageId, IClientOnServer client);
+        void Handle(PlayerLeftMessage message, byte messageId, IClientOnServer client);
     }
 }

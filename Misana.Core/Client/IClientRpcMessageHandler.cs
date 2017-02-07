@@ -21,5 +21,7 @@ namespace Misana.Core.Client
         void Handle(ReadWorldsMessageRequest message);
         void Handle(WorldInformationMessage message);
         void Handle(InitialGameState message);
+        void Handle(HotJoinedMessage message);
+        void Handle(PlayerLeftMessage message);
     }
 }

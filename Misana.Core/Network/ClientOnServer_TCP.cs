@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Sockets;
 using System.Threading;
 using Misana.Serialization;
@@ -53,9 +54,18 @@ namespace Misana.Core.Network
                 stream.BeginRead(tcpBuffer, 0, tcpBuffer.Length, OnTcpRead, null);
 
             }
-            catch (Exception e)
+            catch (IOException e)
             {
-                Console.WriteLine(e);
+                if (e.InnerException != null && e.InnerException is SocketException)
+                {
+                    var sockE = (SocketException) e.InnerException;
+                    if (sockE.ErrorCode == (int) SocketError.ConnectionReset)
+                    {
+                        _server.OnDisconnectClient(this);
+                        return;
+                    }
+                }
+
                 throw;
             }
         }

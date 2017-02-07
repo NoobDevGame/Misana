@@ -122,13 +122,17 @@ namespace Misana.Core.Client
 //            }
 
 
-            IGameMessage msg;
-            while (Server.TryDequeue(out msg))
+            if (Simulation != null && Simulation.State == SimulationState.Running)
             {
-                msg.ApplyOnClient(this);
+                IGameMessage msg;
+                while (Server.TryDequeue(out msg))
+                {
+                    msg.ApplyOnClient(this);
+                }
+
+                Simulation?.Update(gameTime);
             }
 
-            Simulation?.Update(gameTime);
             Server.FlushQueue();
         }
 

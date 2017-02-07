@@ -42,7 +42,7 @@ namespace Misana.Core.Server
                 });
             }
         }
-
+        public const int SIO_UDP_CONNRESET = -1744830452;
         private void UdpWorkerLoop()
         {
             while (!_tokenSource.IsCancellationRequested)
@@ -126,9 +126,10 @@ namespace Misana.Core.Server
 
         private void OnUdpRead(IAsyncResult ar)
         {
-//            try
+            EndPoint e = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
+            try
             {
-                EndPoint e = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
+
                 var read = _udpClient.Client.EndReceiveFrom(ar, ref e);
 
                 IClientOnServer client;
@@ -166,11 +167,21 @@ namespace Misana.Core.Server
 
 
             }
-//            catch (Exception e)
-//            {
-//                Console.WriteLine(e);
-//                throw;
-//            }
+            catch (SocketException se)
+            {
+                if (se.ErrorCode == (int) SocketError.ConnectionReset)
+                {
+                    //_udpClient.Client.
+                    _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
+                    var ip = (IPEndPoint) e;
+                    var cli = GetClientByIp(ip.Address);
+                    OnDisconnectClient(cli);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
     }
 

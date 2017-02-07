@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using Misana.Core.Communication;
 using Misana.Core.Communication.Messages;
 using Misana.Core.Ecs;
@@ -83,14 +84,53 @@ namespace Misana.Core.Server
                 simulation.Players.Add(player);
                 player.SetSimulation(simulation);
 
-                OnJoinWorldMessage joinMessage = new OnJoinWorldMessage(player.NetworkId,player.Name);
-                Broadcast(joinMessage,client.NetworkId);
 
                 ((IServerRpcMessageHandler)this).Handle((GetOtherPlayersMessageRequest)null, 0, client);
+                client.Respond(response,messageId);
 
+
+                if (simulation.BaseSimulation.State == SimulationState.Running)
+                {
+                    Thread.Sleep(250);
+                    var entities = simulation.BaseSimulation.Entities.GetAllEntitiesSlowly();
+
+                    var playerDef = simulation.BaseSimulation.CurrentMap.GlobalEntityDefinitions["Player"];
+
+
+                    var playerEntities = new List<Entity>();
+                    playerEntities.Add(EntityCreator.CreateEntity(playerDef, simulation.BaseSimulation.CurrentMap, new EntityBuilder(), simulation.BaseSimulation)
+                        .Commit(simulation.BaseSimulation.Entities));
+
+
+                    entities.AddRange(simulation.BaseSimulation.Entities.PendingEntities);
+
+                    var newEntities = simulation.BaseSimulation.Entities.PendingEntities;
+
+
+                    client.Send(new InitialGameState { Entities = entities, PlayerId = playerEntities[0].Id});
+
+                    //simulation.BaseSimulation.Start();
+
+                   // client.Respond(response, messageId);
+
+                    Broadcast(new HotJoinedMessage {
+                        Entities = newEntities,
+                        Name = player.Name,
+                        PlayerId = player.NetworkId
+                    }, client.NetworkId);
+                }
+                else
+                {
+                    OnJoinWorldMessage joinMessage = new OnJoinWorldMessage(player.NetworkId,player.Name);
+                    Broadcast(joinMessage,client.NetworkId);
+                }
+            }
+            else
+            {
+                client.Respond(response,messageId);
             }
 
-            client.Respond(response,messageId);
+
         }
 
         void IServerRpcMessageHandler.Handle(GetOtherPlayersMessageRequest message, byte messageId, IClientOnServer client)
@@ -157,6 +197,8 @@ namespace Misana.Core.Server
         void IServerRpcMessageHandler.Handle(ChangeMapMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(WorldInformationMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(InitialGameState message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
+        void IServerRpcMessageHandler.Handle(HotJoinedMessage message, byte messageId, IClientOnServer client)  { throw new NotSupportedException(); }
+        void IServerRpcMessageHandler.Handle(PlayerLeftMessage message, byte messageId, IClientOnServer client)  { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(StartSimulationMessageResponse message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
         void IServerRpcMessageHandler.Handle(OnStartSimulationMessage message, byte messageId, IClientOnServer client) { throw new NotSupportedException(); }
     }

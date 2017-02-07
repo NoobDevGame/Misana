@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Misana.Core.Communication;
+using Misana.Core.Communication.Components;
 using Misana.Core.Communication.Messages;
+using Misana.Core.Ecs;
 using Misana.Core.Effects.Messages;
 using Misana.Core.Maps;
 using Misana.Core.Network;
@@ -12,6 +14,7 @@ namespace Misana.Core.Client
     {
         public event Action<WorldInformation> WorldInfoReceived;
         public event Action<PlayerInfo> PlayerInfoReceived;
+        public event Action<int> PlayerLeft;
         public event Action SimulationStarted;
         public event Action<InitialGameState> InitialGameStateReceived;
 
@@ -60,7 +63,6 @@ namespace Misana.Core.Client
             ClientMessageHelper<ChangeMapMessageResponse>.Semaphore?.Release();
         }
 
-
         public void Handle(WorldInformationMessage message)
         {
             WorldInfoReceived?.Invoke(new WorldInformation(message));
@@ -68,10 +70,32 @@ namespace Misana.Core.Client
 
         public void Handle(InitialGameState message)
         {
-
-
-
             InitialGameStateReceived?.Invoke(message);
+        }
+
+        public void Handle(HotJoinedMessage message)
+        {
+            PlayerInfoReceived?.Invoke(new PlayerInfo(message.Name, message.PlayerId));
+            foreach (var e in message.Entities)
+            {
+                e.Manager = Entities;
+
+                var eSend = e.Get<SendComponent>();
+                if (eSend != null)
+                {
+                    ComponentRegistry<SendComponent>.Release(eSend);
+                    e.Components[ComponentRegistry<SendComponent>.Index] = null;
+                }
+
+                Entities.AddEntity(e);
+            }
+        }
+
+        public void Handle(PlayerLeftMessage message)
+        {
+            PlayerLeft?.Invoke(message.PlayerId);
+            foreach (var id in message.EntityIds)
+                Simulation.Entities.RemoveEntity(id);
         }
 
         // Server Only

@@ -64,8 +64,10 @@
     <Compile Include="Communication\Rpc\ChangeMapMessage.cs" />
     <Compile Include="Communication\Rpc\CreateWorldMessage.cs" />
     <Compile Include="Communication\Rpc\GetOtherPlayers.cs" />
+    <Compile Include="Communication\Rpc\HotJoinedMessage.cs" />
     <Compile Include="Communication\Rpc\JoinWorldMessage.cs" />
     <Compile Include="Communication\Rpc\LoginMessage.cs" />
+    <Compile Include="Communication\Rpc\PlayerLeftMessage.cs" />
     <Compile Include="Communication\Rpc\StartSimulationMessage.cs" />
     <Compile Include="Communication\Systems\SendEntityPositionSystem.cs" />
     <Compile Include="Communication\Systems\SendHealthSystem.cs" />

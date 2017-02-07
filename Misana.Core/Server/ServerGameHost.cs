@@ -37,6 +37,11 @@ namespace Misana.Core.Server
             _listener.Start();
             _listener.BeginAcceptTcpClient(TcpClientConnected, _tokenSource.Token);
             _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort));
+            _udpClient.Client.IOControl(
+                (IOControlCode)SIO_UDP_CONNRESET,
+                new byte[] { 0, 0, 0, 0 },
+                null
+            );
             _udpWorker = new Thread(UdpWorkerLoop);
             _udpWorker.Start();
             _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
@@ -105,8 +110,20 @@ namespace Misana.Core.Server
         private bool _flushing;
 
 
-        protected void OnDisconnectClient(IClientOnServer oldClient)
+        public void OnDisconnectClient(IClientOnServer oldClient)
         {
+            _clients.Remove(oldClient);
+            foreach(var kvp in _ipClients)
+                if (kvp.Value == oldClient)
+                {
+                    _ipClients.Remove(kvp.Key);
+                    break;
+                }
+
+            Broadcast(new PlayerLeftMessage {
+                EntityIds = new List<int>(),
+                PlayerId = oldClient.NetworkId
+            },  oldClient.NetworkId);
         }
 
 

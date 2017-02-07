@@ -14,8 +14,9 @@ namespace Misana.Core.Systems
 
         protected override void Add(Entity e, int index)
         {
-            e.Get<WieldedComponent>().Spawner = e.Get<SpawnerComponent>();
             base.Add(e, index);
+            e.Get<WieldedComponent>().Spawner = e.Get<SpawnerComponent>();
+
         }
 
         protected override void Remove(int index, int? swapWith)
