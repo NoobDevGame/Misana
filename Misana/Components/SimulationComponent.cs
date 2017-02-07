@@ -130,7 +130,8 @@ namespace Misana.Components
 
         private void OnWorldInfoReceived(WorldInformation obj)
         {
-            WorldInformations.Add(obj);
+            lock(WorldInformations)
+                WorldInformations.Add(obj);
         }
 
         private void OnPlayerInfoReceived(PlayerInfo obj)

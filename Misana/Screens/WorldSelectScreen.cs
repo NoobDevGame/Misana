@@ -72,10 +72,13 @@ namespace Misana.Screens
 
         protected override void OnUpdate(GameTime gameTime)
         {
-            foreach (var worldinformation in Manager.Game.Simulation.WorldInformations )
+            lock (Manager.Game.Simulation.WorldInformations)
             {
-                if (!worldList.Items.Contains(worldinformation) && IsActiveScreen)
-                    worldList.Items.Add(worldinformation);
+                foreach (var worldinformation in Manager.Game.Simulation.WorldInformations)
+                {
+                    if (!worldList.Items.Contains(worldinformation) && IsActiveScreen)
+                        worldList.Items.Add(worldinformation);
+                }
             }
         }
     }
