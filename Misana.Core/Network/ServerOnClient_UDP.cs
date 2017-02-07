@@ -10,7 +10,7 @@ namespace Misana.Core.Network
 {
     public partial class ServerOnClient
     {
-        private Queue<SendableMessage>[] _udpQueues = {
+        private readonly Queue<SendableMessage>[] _udpQueues = {
             new Queue<SendableMessage>(16),
             new Queue<SendableMessage>(16)
         };
@@ -18,14 +18,14 @@ namespace Misana.Core.Network
         private int _batchingUdpQueueIndex;
         private Thread _udpWorker;
 
-        private AutoResetEvent _udpWorkerResetEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _udpWorkerResetEvent = new AutoResetEvent(false);
 
         private readonly object _batchedUdpLock = new object();
 
         private int _udpSendIndex;
         private byte[] _udpSendBuffer;
 
-        readonly byte[] udpBuffer = new byte[1500];
+        readonly byte[] _udpReadBuffer = new byte[NetworkHelper.InitialUdpBufferSize];
 
         private void UdpWorkerLoop()
         {
@@ -49,43 +49,14 @@ namespace Misana.Core.Network
                             _batchingUdpQueueIndex = 0;
                     }
 
-                    const int cutOff = 1024;
-
                     var lastPosition = -1;
 
                     while (queue.Count > 0)
                     {
                         var msg = queue.Dequeue();
-                        Serializer.EnsureSize(ref _udpSendBuffer, _udpSendIndex + 128 + 1);
-                        var writeLengthTo = _udpSendIndex;
-                        _udpSendIndex += 4;
-                        Serializer.WriteByte(msg.MessageId, ref _udpSendBuffer, ref _udpSendIndex);
-                        Serializer.WriteInt32(msg.MessageType, ref _udpSendBuffer, ref _udpSendIndex);
-                        msg.Serialize(msg.Message, ref _udpSendBuffer, ref _udpSendIndex);
-                       // Debug.WriteLine($"Client - UDP - Write - {msg.MessageType} - {_udpSendIndex - writeLengthTo + 1 - 4}b ");
-                        Serializer.WriteInt32(_udpSendIndex - writeLengthTo + 1 - 4, ref _udpSendBuffer, ref writeLengthTo);
 
-
-                        if (_udpSendIndex >= cutOff)
-                        {
-                            if (lastPosition == -1)
-                            {
-                                _udpClient.Client.SendTo(_udpSendBuffer, 0, _udpSendIndex + 1, SocketFlags.None, RemoteAddress2);
-                                _udpSendIndex = 0;
-                            }
-                            else
-                            {
-                                _udpClient.Client.SendTo(_udpSendBuffer, 0, lastPosition + 1, SocketFlags.None, RemoteAddress2);
-                                _udpClient.Client.SendTo(_udpSendBuffer, lastPosition, _udpSendIndex + 1 - lastPosition, SocketFlags.None, RemoteAddress2);
-
-                                _udpSendIndex = 0;
-                            }
-                            lastPosition = -1;
-                        }
-                        else
-                        {
-                            lastPosition = _udpSendIndex;
-                        }
+                        NetworkHelper.Serialize(msg, ref _udpSendBuffer, ref _udpSendIndex);
+                        NetworkHelper.MaybeSendUdp(_udpClient.Client, ref _udpSendBuffer, ref _udpSendIndex, ref lastPosition, RemoteAddress2);
                     }
 
                     if (lastPosition > -1)
@@ -99,41 +70,9 @@ namespace Misana.Core.Network
 
         private void OnUdpRead(IAsyncResult ar)
         {
-//            try
-            {
-                //EndPoint e = null;
-                var read = _udpClient.Client.EndReceiveFrom(ar, ref RemoteAddress2);
-
-                var processed = 0;
-                while (true)
-                {
-
-                    var len = Deserializer.ReadInt32(udpBuffer, ref processed);
-
-                    if (read - processed < len)
-                    {
-                        throw new NotImplementedException("Nope");
-                    }
-                    else
-                    {
-                        HandleData(udpBuffer, ref processed);
-                    }
-
-                    if (processed >= len)
-                    {
-                        break;
-                    }
-                }
-
-                _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref RemoteAddress2, OnUdpRead, null);
-
-
-            }
-//            catch (Exception e)
-//            {
-//                Console.WriteLine(e);
-//                throw;
-//            }
+            var read = _udpClient.Client.EndReceiveFrom(ar, ref RemoteAddress2);
+            NetworkHelper.ProcessData(HandleData, _udpReadBuffer, read);
+            _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref RemoteAddress2, OnUdpRead, null);
         }
     }
 }

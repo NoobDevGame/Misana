@@ -11,15 +11,15 @@ namespace Misana.Core.Server
 {
     public partial class ServerGameHost
     {
-        private Queue<SendableServerMessage>[] _udpQueues = {
+        private readonly Queue<SendableServerMessage>[] _udpQueues = {
             new Queue<SendableServerMessage>(16),
             new Queue<SendableServerMessage>(16)
         };
-        readonly byte[] udpBuffer = new byte[1500];
+        readonly byte[] _udpReadBuffer = new byte[NetworkHelper.InitialUdpBufferSize];
         private int _batchingUdpQueueIndex;
         private Thread _udpWorker;
         private EndPoint _udpEndPoint;
-        private AutoResetEvent _udpWorkerResetEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent _udpWorkerResetEvent = new AutoResetEvent(false);
 
         private readonly object _batchedUdpLock = new object();
 
@@ -42,7 +42,7 @@ namespace Misana.Core.Server
                 });
             }
         }
-        public const int SIO_UDP_CONNRESET = -1744830452;
+
         private void UdpWorkerLoop()
         {
             while (!_tokenSource.IsCancellationRequested)
@@ -85,34 +85,10 @@ namespace Misana.Core.Server
                             endPoint = msg.Client.UdpEndpoint;
                         }
 
-                        Serializer.EnsureSize(ref _udpSendBuffer, _udpSendIndex + 128 + 1);
-                        var writeLengthTo = _udpSendIndex;
-                        _udpSendIndex += 4;
-                        Serializer.WriteByte(msg.MessageId, ref _udpSendBuffer, ref _udpSendIndex);
-                        Serializer.WriteInt32(msg.MessageType, ref _udpSendBuffer, ref _udpSendIndex);
-                        msg.Serialize(msg.Message, ref _udpSendBuffer, ref _udpSendIndex);
-                        Serializer.WriteInt32(_udpSendIndex - writeLengthTo + 1 - 4, ref _udpSendBuffer, ref writeLengthTo);
+                        NetworkHelper.Serialize(msg, ref _udpSendBuffer, ref _udpSendIndex);
+                        NetworkHelper.MaybeSendUdp(_udpClient.Client, ref _udpSendBuffer, ref _udpSendIndex, ref lastPosition, endPoint);
 
-                        if (_udpSendIndex >= cutOff)
-                        {
-                            if (lastPosition == -1)
-                            {
-                                _udpClient.Client.SendTo(_udpSendBuffer, 0, _udpSendIndex + 1, SocketFlags.None, endPoint);
-                                _udpSendIndex = 0;
-                            }
-                            else
-                            {
-                                _udpClient.Client.SendTo(_udpSendBuffer, 0, lastPosition + 1, SocketFlags.None, endPoint);
-                                _udpClient.Client.SendTo(_udpSendBuffer, lastPosition + 1, _udpSendIndex + 1  - lastPosition, SocketFlags.None, endPoint);
 
-                                _udpSendIndex = 0;
-                            }
-                            lastPosition = -1;
-                        }
-                        else
-                        {
-                            lastPosition = _udpSendIndex;
-                        }
                     }
 
                     if (lastPosition > -1)
@@ -135,44 +111,20 @@ namespace Misana.Core.Server
                 IClientOnServer client;
                 if (!_ipClients.TryGetValue(((IPEndPoint) e).Address, out client))
                 {
-                    _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
+                    _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
                     return;
                 }
 
-                var processed = 0;
-                while (true)
-                {
+                NetworkHelper.ProcessData(client.HandleData, _udpReadBuffer, read);
 
-                    var len = Deserializer.ReadInt32(udpBuffer, ref processed);
-                    //Debug.WriteLine($"Server - UDP - Read - Payload Size {len}");
-                    if (read - processed < len)
-                    {
-                        throw new NotImplementedException("Nope");
-                    }
-                    else
-                    {
-
-                        client.HandleData(udpBuffer, ref processed);
-
-
-                    }
-
-                    if (processed >= len)
-                    {
-                        break;
-                    }
-                }
-
-                _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
-
-
+                _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
             }
             catch (SocketException se)
             {
                 if (se.ErrorCode == (int) SocketError.ConnectionReset)
                 {
                     //_udpClient.Client.
-                    _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
+                    _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
                     var ip = (IPEndPoint) e;
                     var cli = GetClientByIp(ip.Address);
                     OnDisconnectClient(cli);

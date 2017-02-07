@@ -14,9 +14,9 @@ namespace Misana.Core.Network
         private readonly ServerGameHost _server;
         public int NetworkId { get; } = NetworkManager.GetNextId();
         public EndPoint UdpEndpoint { get; }
-
-
         public IClientRpcMessageHandler ClientRpcHandler { get; set; }
+
+        private TcpHandler _tcpHandler;
 
         public bool TryDequeue(out IGameMessage msg)
         {
@@ -40,28 +40,19 @@ namespace Misana.Core.Network
         internal ClientOnServer(ServerGameHost server, TcpClient tcpClient, IPAddress address)
         {
             _server = server;
-            _tcpClient = tcpClient;
-
             RemoteAddress = address;
-            stream = tcpClient.GetStream();
+            _tcpHandler = new TcpHandler(tcpClient, HandleData, OnDisconnect);
             UdpEndpoint = new IPEndPoint(address, NetworkManager.LocalUdpPort);
 
-            _tcpSendBuffer = new byte[4096];
+
         }
-
-        private bool _keepRunning;
-
-        private bool _flushing;
 
         private readonly Queue<IGameMessage> _gameMessageQueue = new Queue<IGameMessage>();
         private readonly object _gameMessageLock = new object();
 
         public void Start()
         {
-            stream.BeginRead(tcpBuffer, 0, tcpBuffer.Length, OnTcpRead, null);
-            _keepRunning = true;
-            _tcpWorker = new Thread(TcpWorkerLoop);
-            _tcpWorker.Start();
+            _tcpHandler.Start();
         }
 
         public void HandleData(byte[] data, ref int processed)
@@ -87,24 +78,17 @@ namespace Misana.Core.Network
             if (MessageInfo<T>.IsUdp)
                 throw new InvalidOperationException();
 
-            lock (_immediateLock)
-            {
-                _immediateTcpQueue.Enqueue(
-                    new SendableMessage {
-                        Message = msg,
-                        MessageId = MessageInfo<T>.NextMessageId(),
-                        MessageType = MessageInfo<T>.Index,
-                        Serialize = MessageInfo<T>.SerializeBase
-                    });
-            }
-
-            _tcpWorkerResetEvent.Set();
+            _tcpHandler.Send(new SendableMessage {
+                Message = msg,
+                MessageId = MessageInfo<T>.NextMessageId(),
+                MessageType = MessageInfo<T>.Index,
+                Serialize = MessageInfo<T>.SerializeBase
+            });
         }
 
         public void FlushQueue()
         {
-            _flushing = true;
-            _tcpWorkerResetEvent.Set();
+            _tcpHandler.Flush();
         }
 
         public void Enqueue<T>(T message) where T : NetworkMessage, IGameMessage
@@ -115,17 +99,18 @@ namespace Misana.Core.Network
             }
             else
             {
-                lock (_batchedTcpLock)
-                {
-                    _batchingTcpQueue.Enqueue(
-                        new SendableMessage {
-                            Message = message,
-                            MessageId = MessageInfo<T>.NextMessageId(),
-                            MessageType = MessageInfo<T>.Index,
-                            Serialize = MessageInfo<T>.SerializeBase
-                        });
-                }
+                _tcpHandler.Enqueue(new SendableMessage {
+                    Message = message,
+                    MessageId = MessageInfo<T>.NextMessageId(),
+                    MessageType = MessageInfo<T>.Index,
+                    Serialize = MessageInfo<T>.SerializeBase
+                });
             }
+        }
+
+        private void OnDisconnect()
+        {
+            _server.OnDisconnectClient(this);
         }
 
         public void Respond<TResponse>(TResponse request, byte messageId) where TResponse : NetworkResponse
@@ -133,18 +118,12 @@ namespace Misana.Core.Network
             if (MessageInfo<TResponse>.IsUdp)
                 throw new InvalidOperationException();
 
-            lock (_immediateLock)
-            {
-                _immediateTcpQueue.Enqueue(
-                    new SendableMessage {
-                        Message = request,
-                        MessageId = messageId,
-                        MessageType = MessageInfo<TResponse>.Index,
-                        Serialize = MessageInfo<TResponse>.SerializeBase
-                    });
-            }
-
-            _tcpWorkerResetEvent.Set();
+            _tcpHandler.Send(new SendableMessage {
+                Message = request,
+                MessageId = messageId,
+                MessageType = MessageInfo<TResponse>.Index,
+                Serialize = MessageInfo<TResponse>.SerializeBase
+            });
         }
     }
 }

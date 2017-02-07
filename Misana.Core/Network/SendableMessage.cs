@@ -10,13 +10,8 @@ namespace Misana.Core.Network {
         public Serialize<NetworkMessage> Serialize;
     }
 
-    public class SendableServerMessage
+    public class SendableServerMessage : SendableMessage
     {
-        public NetworkMessage Message;
-        public bool Tcp;
-        public byte MessageId;
-        public int MessageType;
-        public Serialize<NetworkMessage> Serialize;
         public IClientOnServer Client;
     }
 }

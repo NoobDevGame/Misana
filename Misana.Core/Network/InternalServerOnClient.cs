@@ -26,7 +26,7 @@ namespace Misana.Core.Network
         private readonly object _msgsLock = new object();
         private readonly object _receiveLock = new object();
         private int _receiveIndex;
-        private byte[] _receiveBuffer = new byte[8192];
+        private byte[] _receiveBuffer = new byte[NetworkHelper.InitialTcpBufferSize];
         private bool _flushing;
 
         private Thread _senderWorker;

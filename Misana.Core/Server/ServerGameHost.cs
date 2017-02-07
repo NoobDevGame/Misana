@@ -30,6 +30,7 @@ namespace Misana.Core.Server
             _udpEndPoint = new IPEndPoint(IPAddress.Any, NetworkManager.ServerUdpPort);
         }
 
+        public const int SIO_UDP_CONNRESET = -1744830452; // Ignore Udp Connection Reset
         public void StartListening()
         {
             _udpSendBuffer = new byte[1536];
@@ -44,7 +45,7 @@ namespace Misana.Core.Server
             );
             _udpWorker = new Thread(UdpWorkerLoop);
             _udpWorker.Start();
-            _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
+            _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref _udpEndPoint, OnUdpRead, null);
             //simulation = new NetworkSimulation()
         }
 

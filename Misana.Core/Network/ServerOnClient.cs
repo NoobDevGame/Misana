@@ -33,13 +33,10 @@ namespace Misana.Core.Network
             }
         }
 
-
-
         public bool CanSend { get; } = true;
 
         public IPAddress RemoteAddress { get; private set; }
         public EndPoint RemoteAddress2;
-        public bool IsServer { get; private set; }
 
         private readonly int sendPort;
 
@@ -47,30 +44,9 @@ namespace Misana.Core.Network
         {
             sendPort = NetworkManager.ServerUdpPort;
             _udpClient = new UdpClient(new IPEndPoint(IPAddress.Any,NetworkManager.LocalUdpPort));
-            _tcpClient = new TcpClient();
             _udpClient.DontFragment = true;
-            _tcpSendBuffer = new byte[4096];
-            _udpSendBuffer = new byte[1536];
-
+            _udpSendBuffer = new byte[NetworkHelper.InitialUdpBufferSize];
             CanConnect = true;
-        }
-
-        internal ServerOnClient(TcpClient tcpClient,UdpClient udpClient,IPAddress address)
-        {
-            RemoteAddress = address;
-
-            sendPort = NetworkManager.LocalUdpPort;
-            _tcpClient = tcpClient;
-
-            stream = tcpClient.GetStream();
-
-            _tcpSendBuffer = new byte[4096];
-            _udpSendBuffer = new byte[1536];
-            _udpClient = udpClient;
-
-            CanConnect = false;
-            IsConnected = true;
-            IsServer = true;
         }
 
 
@@ -86,12 +62,9 @@ namespace Misana.Core.Network
         public void Start()
         {
             _keepRunning = true;
-            stream.BeginRead(tcpBuffer, 0, tcpBuffer.Length, OnTcpRead, null);
-            _udpClient.Client.BeginReceiveFrom(udpBuffer, 0, udpBuffer.Length, SocketFlags.None, ref RemoteAddress2, OnUdpRead, null);
+            _tcpHandler.Start();
 
-            _tcpWorker = new Thread(TcpWorkerLoop) { IsBackground = true };
-            _tcpWorker.Start();
-
+            _udpClient.Client.BeginReceiveFrom(_udpReadBuffer, 0, _udpReadBuffer.Length, SocketFlags.None, ref RemoteAddress2, OnUdpRead, null);
             _udpWorker = new Thread(UdpWorkerLoop){ IsBackground = true };
             _udpWorker.Start();
         }
@@ -114,15 +87,14 @@ namespace Misana.Core.Network
             }
         }
 
+        private TcpHandler _tcpHandler;
 
         public void FlushQueue()
         {
             _flushing = true;
-            _tcpWorkerResetEvent.Set();
+            _tcpHandler?.Flush();
             _udpWorkerResetEvent.Set();
         }
-
-
 
         public void Enqueue<T>(T message) where T : NetworkMessage
         {
@@ -143,16 +115,12 @@ namespace Misana.Core.Network
             }
             else
             {
-                lock (_batchedTcpLock)
-                {
-                    _batchingTcpQueue.Enqueue(
-                        new SendableMessage {
-                            Message = message,
-                            MessageId = MessageInfo<T>.NextMessageId(),
-                            MessageType = MessageInfo<T>.Index,
-                            Serialize = MessageInfo<T>.SerializeBase
-                        });
-                }
+                _tcpHandler.Enqueue(new SendableMessage {
+                    Message = message,
+                    MessageId = MessageInfo<T>.NextMessageId(),
+                    MessageType = MessageInfo<T>.Index,
+                    Serialize = MessageInfo<T>.SerializeBase
+                });
             }
         }
 
@@ -166,17 +134,12 @@ namespace Misana.Core.Network
             if(MessageInfo<TRequest>.IsUdp)
                 throw new InvalidOperationException();
 
-            lock (_immediateLock)
-            {
-                _immediateTcpQueue.Enqueue(new SendableMessage {
-                    Message = request,
-                    MessageId = MessageInfo<TRequest>.NextMessageId(),
-                    MessageType = MessageInfo<TRequest>.Index,
-                    Serialize = MessageInfo<TRequest>.SerializeBase
-                });
-            }
-
-            _tcpWorkerResetEvent.Set();
+            _tcpHandler.Enqueue(new SendableMessage {
+                Message = request,
+                MessageId = MessageInfo<TRequest>.NextMessageId(),
+                MessageType = MessageInfo<TRequest>.Index,
+                Serialize = MessageInfo<TRequest>.SerializeBase
+            });
         }
 
         private async Task Connect(IPEndPoint endPoint)
@@ -187,8 +150,9 @@ namespace Misana.Core.Network
             RemoteAddress = endPoint.Address;
             RemoteAddress2 = new IPEndPoint(endPoint.Address, sendPort);
 
-            await _tcpClient.ConnectAsync(endPoint.Address, endPoint.Port);
-            stream = _tcpClient.GetStream();
+            var client = new TcpClient();
+            await client.ConnectAsync(endPoint.Address, endPoint.Port);
+            _tcpHandler = new TcpHandler(client, HandleData, () => {});
 
             Start();
 
@@ -205,7 +169,7 @@ namespace Misana.Core.Network
             if (!IsConnected)
                 return;
 
-            _tcpClient.Close();
+            //_tcpClient.Close();
         }
 
         void IOutgoingMessageQueue.Enqueue<T>(T msg)
