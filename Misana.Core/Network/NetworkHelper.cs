@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using Misana.Serialization;
@@ -50,6 +51,9 @@ namespace Misana.Core.Network
 
         public static void ProcessData(DataHandler handler, byte[] buffer, int read, ref bool overflown, ref int expectedLength, byte[] overflow, ref int overflowIndex)
         {
+            if (read == 0)
+                throw new IOException("Handle Unix disconnect",new SocketException((int)SocketError.ConnectionReset));
+
             if (overflown)
             {
                 Buffer.BlockCopy(buffer, 0, overflow, overflowIndex, read);
