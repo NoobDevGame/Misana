@@ -39,7 +39,7 @@ namespace Misana.Core.Ecs
         public static void Initialize()
         {
             var assemblies = AppDomain.CurrentDomain.GetAssemblies().ToList();
-            var concreteTypes = assemblies.SelectMany(a => a.GetTypes()).Where(t => !t.IsAbstract).ToList();
+            var concreteTypes = assemblies.SelectMany(a => a.GetTypes()).Where(t => !t.IsAbstract).OrderBy(x => x.FullName).ToList();
 
             List<Type> componentTypes;
             ComponentInitializer.Initialize(concreteTypes, out ComponentCount, out OnNewManager, out componentTypes);

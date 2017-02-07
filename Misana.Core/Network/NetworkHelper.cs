@@ -8,7 +8,7 @@ namespace Misana.Core.Network
     public delegate void DataHandler(byte[] buffer, ref int processed);
     public class NetworkHelper
     {
-        public const int InitialTcpBufferSize = 16384;
+        public const int InitialTcpBufferSize = 1024 * 1024;
         public const int InitialUdpBufferSize = 1536 * 2;
 
         public static void Serialize(SendableMessage msg, ref byte[] buffer, ref int index)
@@ -48,18 +48,38 @@ namespace Misana.Core.Network
             }
         }
 
-
-
-        public static void ProcessData(DataHandler handler, byte[] buffer, int read)
+        public static void ProcessData(DataHandler handler, byte[] buffer, int read, ref bool overflown, ref int expectedLength, byte[] overflow, ref int overflowIndex)
         {
+            if (overflown)
+            {
+                Buffer.BlockCopy(buffer, 0, overflow, overflowIndex, read);
+                overflowIndex += read;
+
+                if (overflowIndex < expectedLength)
+                {
+                    return;
+                }
+
+                overflown = false;
+                read = overflowIndex;
+                overflowIndex = 0;
+                expectedLength = 0;
+                buffer = overflow;
+            }
+
             var processed = 0;
+
             while (true)
             {
                 var len = Deserializer.ReadInt32(buffer, ref processed);
 
                 if (read - processed < len)
                 {
-                    throw new NotImplementedException("Nope");
+                    overflown = true;
+                    expectedLength = len + 4;
+                    Buffer.BlockCopy(buffer, processed - 4, overflow, 0, read - processed + 4);
+                    overflowIndex = read - processed + 4;
+                    return;
                 }
 
                 handler(buffer, ref processed);

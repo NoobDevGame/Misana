@@ -28,6 +28,7 @@ namespace Misana.Core.Network
         private readonly TcpClient _tcpClient;
         private NetworkStream _stream;
         private readonly byte[] _tcpReadBuffer = new byte[NetworkHelper.InitialTcpBufferSize];
+        private readonly byte[] _tcpOverflowBuffer = new byte[NetworkHelper.InitialTcpBufferSize];
         private readonly Queue<SendableMessage> _immediateTcpQueue = new Queue<SendableMessage>();
         private readonly Queue<SendableMessage> _batchingTcpQueue = new Queue<SendableMessage>();
 
@@ -35,6 +36,9 @@ namespace Misana.Core.Network
         private readonly AutoResetEvent _tcpWorkerResetEvent = new AutoResetEvent(false);
 
         private int _tcpSendIndex;
+        private int _tcpOverflowIndex;
+        private int _overflowExpectedLength;
+        private bool _tcpOverflow;
         private byte[] _tcpSendBuffer;
 
         private readonly object _batchedTcpLock = new object();
@@ -75,7 +79,7 @@ namespace Misana.Core.Network
             try
             {
                 var read = _stream.EndRead(ar);
-                NetworkHelper.ProcessData(_handler, _tcpReadBuffer, read);
+                NetworkHelper.ProcessData(_handler, _tcpReadBuffer, read, ref _tcpOverflow, ref _overflowExpectedLength, _tcpOverflowBuffer, ref _tcpOverflowIndex);
                 _stream.BeginRead(_tcpReadBuffer, 0, _tcpReadBuffer.Length, OnTcpRead, null);
 
             }
