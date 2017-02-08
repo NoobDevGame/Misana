@@ -251,7 +251,7 @@
             // 
             this.splitContainer_left.Panel2.Controls.Add(this.splitContainer_right);
             this.splitContainer_left.Size = new System.Drawing.Size(1249, 587);
-            this.splitContainer_left.SplitterDistance = 202;
+            this.splitContainer_left.SplitterDistance = 249;
             this.splitContainer_left.TabIndex = 5;
             // 
             // splitContainer_left_v
@@ -268,7 +268,7 @@
             // splitContainer_left_v.Panel2
             // 
             this.splitContainer_left_v.Panel2.Controls.Add(this.tabControl_left_bottom);
-            this.splitContainer_left_v.Size = new System.Drawing.Size(202, 587);
+            this.splitContainer_left_v.Size = new System.Drawing.Size(249, 587);
             this.splitContainer_left_v.SplitterDistance = 248;
             this.splitContainer_left_v.TabIndex = 0;
             // 
@@ -278,7 +278,7 @@
             this.tabControl_left_top.Location = new System.Drawing.Point(0, 0);
             this.tabControl_left_top.Name = "tabControl_left_top";
             this.tabControl_left_top.SelectedIndex = 0;
-            this.tabControl_left_top.Size = new System.Drawing.Size(202, 248);
+            this.tabControl_left_top.Size = new System.Drawing.Size(249, 248);
             this.tabControl_left_top.TabIndex = 0;
             // 
             // tabControl_left_bottom
@@ -287,7 +287,7 @@
             this.tabControl_left_bottom.Location = new System.Drawing.Point(0, 0);
             this.tabControl_left_bottom.Name = "tabControl_left_bottom";
             this.tabControl_left_bottom.SelectedIndex = 0;
-            this.tabControl_left_bottom.Size = new System.Drawing.Size(202, 335);
+            this.tabControl_left_bottom.Size = new System.Drawing.Size(249, 335);
             this.tabControl_left_bottom.TabIndex = 1;
             // 
             // splitContainer_right
@@ -304,8 +304,8 @@
             // splitContainer_right.Panel2
             // 
             this.splitContainer_right.Panel2.Controls.Add(this.splitContainer_right_v);
-            this.splitContainer_right.Size = new System.Drawing.Size(1043, 587);
-            this.splitContainer_right.SplitterDistance = 816;
+            this.splitContainer_right.Size = new System.Drawing.Size(996, 587);
+            this.splitContainer_right.SplitterDistance = 672;
             this.splitContainer_right.TabIndex = 0;
             // 
             // tabControl_center
@@ -314,7 +314,7 @@
             this.tabControl_center.Location = new System.Drawing.Point(0, 0);
             this.tabControl_center.Name = "tabControl_center";
             this.tabControl_center.SelectedIndex = 0;
-            this.tabControl_center.Size = new System.Drawing.Size(816, 587);
+            this.tabControl_center.Size = new System.Drawing.Size(672, 587);
             this.tabControl_center.TabIndex = 2;
             // 
             // splitContainer_right_v
@@ -331,7 +331,7 @@
             // splitContainer_right_v.Panel2
             // 
             this.splitContainer_right_v.Panel2.Controls.Add(this.tabControl_right_bottom);
-            this.splitContainer_right_v.Size = new System.Drawing.Size(223, 587);
+            this.splitContainer_right_v.Size = new System.Drawing.Size(320, 587);
             this.splitContainer_right_v.SplitterDistance = 256;
             this.splitContainer_right_v.TabIndex = 0;
             // 
@@ -341,7 +341,7 @@
             this.tabControl_right_top.Location = new System.Drawing.Point(0, 0);
             this.tabControl_right_top.Name = "tabControl_right_top";
             this.tabControl_right_top.SelectedIndex = 0;
-            this.tabControl_right_top.Size = new System.Drawing.Size(223, 256);
+            this.tabControl_right_top.Size = new System.Drawing.Size(320, 256);
             this.tabControl_right_top.TabIndex = 2;
             // 
             // tabControl_right_bottom
@@ -350,7 +350,7 @@
             this.tabControl_right_bottom.Location = new System.Drawing.Point(0, 0);
             this.tabControl_right_bottom.Name = "tabControl_right_bottom";
             this.tabControl_right_bottom.SelectedIndex = 0;
-            this.tabControl_right_bottom.Size = new System.Drawing.Size(223, 327);
+            this.tabControl_right_bottom.Size = new System.Drawing.Size(320, 327);
             this.tabControl_right_bottom.TabIndex = 2;
             // 
             // MainForm

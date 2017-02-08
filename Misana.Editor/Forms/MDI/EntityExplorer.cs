@@ -66,14 +66,15 @@ namespace Misana.Editor.Forms.MDI
                 return;
             }
 
-            //EntityDefinition eDef = new EntityDefinition("Entity"+(listView.Items.Count+1));
-            //app.Map.GlobalEntityDefinitions.Add(eDef.Name,eDef);
-            //var lvi = new ListViewItem(eDef.Name) { Tag = eDef };
-            //listView.Items.Add(lvi);
-            
+            EntityDefinition eDef = new EntityDefinition("Entity" + (listView.Items.Count + 1).ToString(), listView.Items.Count + 1);
+            app.Map.GlobalEntityDefinitions.Add(eDef.Name, eDef);
+            var lvi = new ListViewItem(eDef.Name) { Tag = eDef };
+            listView.Items.Add(lvi);
+
 
             //EntityEditor ee = new EntityEditor(app, eDef);
             ////app.WindowManager.AddShowWindow(ee);
+            app.WindowManager.AddControl(new EntityEditor(app, eDef), Helper.WindowManager.ControlPosition.Center, eDef.Name);
         }
 
         public void RemoveEntityDefinition(EntityDefinition edef)

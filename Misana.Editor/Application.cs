@@ -1,4 +1,5 @@
 ﻿using Misana.Core.Maps;
+using Misana.Editor.Events;
 using Misana.Editor.Helper;
 using Misana.Editor.Models;
 using Redbus;
@@ -45,6 +46,7 @@ namespace Misana.Editor
         public void OnInitialize()
         {
             windowManager.Initialize();
+            SetMap(new MapModel("Unnamed"));
         }
 
         public void ShowErrorMessage(string message, string name = "Error")
@@ -55,6 +57,7 @@ namespace Misana.Editor
         public void SetMap(MapModel m)
         {
             Map = (m);
+            EventBus.Publish(new MapChangedEvent(m));
         }
 
         internal void Close()

@@ -77,7 +77,7 @@ namespace Misana.Editor.Forms.MDI
 
         private void listView_Click(object sender, EventArgs e)
         {
-            if(listView.SelectedItems.Count != null)
+            if(listView.SelectedItems.Count != 0)
             {
                 var def = entityDefinition.Definitions.FirstOrDefault(t => t.GetType() == listView.SelectedItems[0].Tag.GetType());
 

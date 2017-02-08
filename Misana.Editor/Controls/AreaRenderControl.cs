@@ -28,12 +28,12 @@ namespace Misana.Editor.Controls
 
         public Index2[] SelectedTiles { get { return selectedTiles.ToArray(); } }
 
-        //public AreaEntity[] SelectedEntities { get { return selectedEntities.ToArray(); } }
+        public EntityDefinition[] SelectedEntities { get { return selectedEntities.ToArray(); } }
 
         public int? SelectedLayer { get { return selectedLayer; } }
 
         private List<Index2> selectedTiles = new List<Index2>();
-        //private List<AreaEntity> selectedEntities = new List<AreaEntity>();
+        private List<EntityDefinition> selectedEntities = new List<EntityDefinition>();
         private int selectedLayer;
 
         public Area Area { get; private set; }
@@ -109,6 +109,10 @@ namespace Misana.Editor.Controls
               });
 
             mainForm.EventBus.Subscribe<LayerVisibilityChangedEvent>((e) => Invalidate());
+
+            mainForm.EventBus.Subscribe<EntityVisibilityChangedEvent>((e) => {
+                Invalidate(); }
+            );
         }
 
         private void TilesheetTileSelectionChanged(TilesheetTileSelectionEvent ev)
@@ -164,6 +168,9 @@ namespace Misana.Editor.Controls
                     //if (editor.LayerVisibilities[editor.CurrentArea.Layers[l].Id] == false)
                     //    continue;
 
+                    if (SelectedLayer >= 0 && app.WindowManager.GetWindow<LayerView>().HiddenLayers.Contains(l))
+                        continue;
+
                     for (int x = 0; x < Area.Width; x++)
                     {
                         for (int y = 0; y < Area.Height; y++)
@@ -207,32 +214,37 @@ namespace Misana.Editor.Controls
 
             g.DrawImage(bitmapCache, new Point(0, 0));
 
-            //foreach (var eD in Area.Entities)
-            //{
-            //    var transformDefintion = (TransformDefinition)eD.Definition.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
-            //    if (transformDefintion == null)
-            //        continue;
 
-            //    g.FillEllipse(new SolidBrush(Color.Red), new Rectangle((int)transformDefintion.Position.X * 32, (int)transformDefintion.Position.Y * 32, 32, 32));
-            //}
+            if (app.WindowManager.GetWindow<LayerView>().ShowEntities)
+            {
+                foreach (var eD in Area.Entities)
+                {
+                    var transformDefintion = (TransformDefinition)eD.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                    if (transformDefintion == null)
+                        continue;
+
+                    g.FillEllipse(new SolidBrush(Color.Red), new Rectangle((int)transformDefintion.Position.X * 32, (int)transformDefintion.Position.Y * 32, 32, 32));
+                }
+            }
 
 
-            //var selWidth = SelectionEnd.X - SelectionStart.X+1;
-            //var selHeight = selectionEnd.Y - SelectionStart.Y+1;
+            //var selWidth = SelectionEnd.X - SelectionStart.X + 1;
+            //var selHeight = selectionEnd.Y - SelectionStart.Y + 1;
 
-            //g.DrawRectangle(new Pen(Color.FromArgb(255, 0, 102, 204)), new Rectangle(SelectionStart.X * 32 - 1, SelectionStart.Y * 32 - 1, selWidth*32, selHeight*32));
+            //g.DrawRectangle(new Pen(Color.FromArgb(255, 0, 102, 204)), new Rectangle(SelectionStart.X * 32 - 1, SelectionStart.Y * 32 - 1, selWidth * 32, selHeight * 32));
 
             if (Mode == AreaMode.Select)
             {
-                foreach (var tile in SelectedTiles)
-                {
-                    g.FillRectangle(new SolidBrush(Color.FromArgb(100, Color.Blue)), new Rectangle(tile.X * 32, tile.Y * 32, 32, 32));
-                }
+                //foreach (var tile in SelectedTiles)
+                //{
+                //    g.FillRectangle(new SolidBrush(Color.FromArgb(100, Color.Blue)), new Rectangle(tile.X * 32, tile.Y * 32, 32, 32));
+                //}
+                var selWidth = tempSelectionEnd.X - tempSelectionStart.X + 1;
+                var selHeight = tempSelectionEnd.Y - tempSelectionStart.Y + 1;
+                g.FillRectangle(new SolidBrush(Color.FromArgb(100, Color.Blue)), new Rectangle(tempSelectionStart.X * 32, tempSelectionStart.Y * 32,selWidth*32,selHeight*32));
 
-                if(mouseDown)
+                if (mouseDown)
                 {
-                    var selWidth = tempSelectionEnd.X - tempSelectionStart.X + 1;
-                    var selHeight = tempSelectionEnd.Y - tempSelectionStart.Y + 1;
                     g.DrawRectangle(new Pen(Color.Blue), new Rectangle(tempSelectionStart.X * 32, tempSelectionStart.Y  * 32, selWidth * 32, selHeight * 32));
                 }
             }
@@ -250,12 +262,14 @@ namespace Misana.Editor.Controls
             base.OnMouseDown(e);
             mouseDown = true;
 
+         
+
             if (Mode == AreaMode.Select)
             {
-                selectionStartBuffer = new Index2(e.X / 32, e.Y / 32);
-                tempSelectionStart = selectionStartBuffer;
+                selectionStartBuffer = new Index2((int)Math.Round(e.X / 32f-0.5f,MidpointRounding.AwayFromZero), (int)Math.Round(e.Y / 32f - 0.5f, MidpointRounding.AwayFromZero));
+                tempSelectionStart = tempSelectionEnd= selectionStartBuffer;
             }
-            else if(Mode == AreaMode.Fill && SelectedLayer != null && tilesheetName != null && tilesheetTileIndex != null)
+            else if(Mode == AreaMode.Fill && SelectedLayer != null && SelectedLayer >= 0 && tilesheetName != null && tilesheetTileIndex != null)
             {
                 if (!Area.Tilesheets.ContainsValue(tilesheetName))
                     Area.AddTilesheet(tilesheetName);
@@ -266,6 +280,11 @@ namespace Misana.Editor.Controls
                     t.TextureID = tilesheetTileID;
                 }
                 Invalidate();
+            }
+
+            else if (Mode == AreaMode.Paint && tilesheetName != null && tilesheetTileIndex != null)
+            {
+                PaintTile(e.X,e.Y);
             }
 
         }
@@ -286,7 +305,7 @@ namespace Misana.Editor.Controls
 
             if(Mode == AreaMode.Select)
             {
-                selectionEndBuffer = new Index2(e.X / 32, e.Y / 32);
+                selectionEndBuffer = new Index2((int)Math.Round(e.X / 32f - 0.5f, MidpointRounding.AwayFromZero), (int)Math.Round(e.Y / 32f - 0.5f, MidpointRounding.AwayFromZero));
 
                 var selStart = selectionStartBuffer;
                 var selEnd = selectionEndBuffer;
@@ -310,26 +329,30 @@ namespace Misana.Editor.Controls
             }
             else if(Mode == AreaMode.Paint && tilesheetName != null && tilesheetTileIndex != null)
             {
-                Index3 tile = new Index3(e.X / 32, e.Y / 32, 0);
-
-                if (!Area.Tilesheets.ContainsValue(tilesheetName))
-                    Area.AddTilesheet(tilesheetName);
-
-                var tileIndex = Area.GetTileIndex(tile.X, tile.Y);
-                try
-                {
-                    if (SelectedLayer != null)
-                    {
-                        Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TextureID = tilesheetTileID;
-                        Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TilesheetID = Area.Tilesheets.FirstOrDefault(t => t.Value == tilesheetName).Key;
-                    }
-                }catch(Exception ex)
-                {
-                    app.EventBus.Publish(new ErrorEvent("Paint Error", "Could not paint tile " + tileIndex + " on Layer " + tile.Z, false, ex));
-                }
+                PaintTile(e.X,e.Y);
             }
         }
+        private void PaintTile(int x,int y)
+        {
+            Index3 tile = new Index3(x / 32, y / 32, 0);
 
+            if (!Area.Tilesheets.ContainsValue(tilesheetName))
+                Area.AddTilesheet(tilesheetName);
+
+            var tileIndex = Area.GetTileIndex(tile.X, tile.Y);
+            try
+            {
+                if (SelectedLayer != null && SelectedLayer >= 0)
+                {
+                    Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TextureID = tilesheetTileID;
+                    Area.Layers[(int)SelectedLayer].Tiles[tileIndex].TilesheetID = Area.Tilesheets.FirstOrDefault(t => t.Value == tilesheetName).Key;
+                }
+            }
+            catch (Exception ex)
+            {
+                app.EventBus.Publish(new ErrorEvent("Paint Error", "Could not paint tile " + tileIndex + " on Layer " + tile.Z, false, ex));
+            }
+        }
         protected override void OnMouseUp(MouseEventArgs e)
         {
             base.OnMouseUp(e);
@@ -345,6 +368,8 @@ namespace Misana.Editor.Controls
                     Select(tempSelectionStart, tempSelectionEnd, true);
                 else
                     Select(tempSelectionStart, tempSelectionEnd, false);
+
+
             }
         }
 
@@ -353,7 +378,7 @@ namespace Misana.Editor.Controls
             if (!keepSelection)
             {
                 selectedTiles.Clear();
-                //selectedEntities.Clear();
+                selectedEntities.Clear();
             }
 
             start.X = Math.Max(0, Math.Min(start.X, Area.Width - 1));
@@ -365,17 +390,23 @@ namespace Misana.Editor.Controls
             {
                 for (int y = start.Y; y <= end.Y; y++)
                 {
-                    var tiles = SelectedTiles.Where(t => t.X == x && t.Y == y);
-                    if (tiles.Count() == 0)
-                        selectedTiles.Add(new Index2(x, y));
-
-                    
-                    foreach(var en in Area.Entities)
+                    if (selectedLayer >= 0)
                     {
-                        //TODO: REDO!
-                        //var transform = (TransformDefinition)en.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
-                        //if (transform != null && (int) transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
-                        //    selectedEntities.Add(en); 
+                        var tiles = SelectedTiles.Where(t => t.X == x && t.Y == y);
+                        if (tiles.Count() == 0)
+                            selectedTiles.Add(new Index2(x, y));
+                    }
+                    else if (selectedLayer == -1)
+                    {
+                        foreach (var en in Area.Entities)
+                        {
+                            //TODO: REDO!
+                            var transform = (TransformDefinition)en.Definitions.FirstOrDefault(t => t.GetType() == typeof(TransformDefinition));
+                            if (transform != null && (int)transform.Position.X == x && (int)transform.Position.Y == y && !selectedEntities.Contains(en))
+                                selectedEntities.Add(en);
+                        }
+
+                        app.WindowManager.GetWindow<PropertyView>().SelectObjects<EntityDefinition>(selectedEntities.ToArray());
                     }
                 }
             }
@@ -384,7 +415,7 @@ namespace Misana.Editor.Controls
 
             Tile[] sTiles = new Tile[SelectedTiles.Length];
             var count = 0;
-            if (SelectedLayer != null)
+            if (SelectedLayer != null && SelectedLayer >= 0)
             {
                 foreach (var ind2 in SelectedTiles)
                 {
@@ -434,7 +465,7 @@ namespace Misana.Editor.Controls
             z.Position = new Vector2(x+0.5f, y+0.5f);
             z.Radius = 0.9f;
 
-            //Area.Entities.Add(new AreaEntity() { Name = new Random().Next().ToString(), Definition =  ndef });
+            Area.Entities.Add(ndef);
 
             Invalidate();
 
@@ -445,11 +476,11 @@ namespace Misana.Editor.Controls
         {
             if(e.KeyCode == Keys.Delete)
             {
-                //if(selectedEntities.Count > 0)
-                //{
-                //    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
-                //    selectedEntities.Clear();
-                //}
+                if (selectedEntities.Count > 0)
+                {
+                    Area.Entities.RemoveAll(t => selectedEntities.Contains(t));
+                    selectedEntities.Clear();
+                }
             }
             base.OnKeyDown(e);
         }

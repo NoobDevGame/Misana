@@ -53,7 +53,7 @@ namespace Misana.Editor.Helper
 
         public T GetWindow<T>() where T : Control
         {
-            return (T)controls.FirstOrDefault(t => t.GetType() == typeof(T)).Key;
+            return (T)controls.FirstOrDefault(t => t.Key.GetType() == typeof(T)).Key;
         }
 
         public void AddControl(Control c, ControlPosition p, string name = null)
@@ -62,7 +62,7 @@ namespace Misana.Editor.Helper
                 throw new NotSupportedException("Control already added");
 
             if (name == null)
-                name = c.Name;
+                name = c.Text;
 
             TabPage page = new TabPage(name);
             c.Dock = DockStyle.Fill;
@@ -72,8 +72,7 @@ namespace Misana.Editor.Helper
             ControlPane cPane = new ControlPane(c, page, name, p);
             controls.Add(c, cPane);
 
-            TabControl  tControl = GetTabControl(p);
-            tControl.TabPages.Add(page);
+            AddControlPane(cPane);
         }
 
         public void RemoveControl(Control c)
@@ -97,6 +96,9 @@ namespace Misana.Editor.Helper
         {
             TabControl tControl = GetTabControl(p.ControlPosition);
             tControl.TabPages.Add(p.TabPage);
+
+            if (p.ControlPosition == ControlPosition.Center)
+                tControl.SelectedTab = p.TabPage;
         }
 
 
