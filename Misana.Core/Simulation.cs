@@ -76,10 +76,9 @@ namespace Misana.Core
 
             Entities = EntityManager.Create("LocalWorld",systems, mode);
 
-            for (int i = start; i < start + 50000; i++)
-            {
-                Entities.AvailableEntityIds.Enqueue(i);
-            }
+            Entities.AddEntitieIds(start,50000);
+            
+
         }
 
         public async Task ChangeMap(Map map)

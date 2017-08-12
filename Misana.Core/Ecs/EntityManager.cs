@@ -184,6 +184,17 @@ namespace Misana.Core.Ecs
             return e;
         }
 
+        public void AddEntitieIds(int start, int count)
+        {
+            lock (_idLock)
+            {
+                for (int i = start; i < start + count; i++)
+                {
+                    availableEntityIds.Enqueue(i);
+                }
+            }
+        }
+
         public void Clear()
         {
             while (true)
@@ -256,11 +267,11 @@ namespace Misana.Core.Ecs
         {
             lock (_idLock)
             {
-                return AvailableEntityIds.Dequeue();
+                return availableEntityIds.Dequeue();
             }
         }
         
-        public Queue<int> AvailableEntityIds = new Queue<int>();
+        private Queue<int> availableEntityIds = new Queue<int>();
 
         public List<Tuple<byte[], bool>> Messages = new List<Tuple<byte[], bool>>(); 
 
